@@ -1,0 +1,250 @@
+.container {
+    display: flex;
+    overflow-y: scroll;
+    align-items: center;
+    /* flex: 1; */
+    flex-direction: column;
+    justify-content: space-between;
+    width: 100%;
+    height: calc(100dvh - 64px - 64px);
+    /* height: calc(100dvh - 64px - 44px); */
+    background-image: url('../../public/BannerMobile.png');
+    background-repeat: no-repeat;
+    background-position: 0 -45px;
+    background-size: cover;
+    
+}
+
+
+
+
+
+.landingTop {
+    display: flex;
+    align-items: flex-start !important;
+    flex: 1;
+    flex-direction: column;
+    width: 100%;
+    height: 35%;
+    padding: 30px 0 0 20px;
+    border: solid gold 2px;
+    gap: 20px;
+}
+
+
+.landingTop>* {
+    margin: 0;
+}
+
+.landingTop h1 {
+    width: 190px;
+    line-height: 1.2;
+    color: white;
+    font-size: clamp(20px, 5vw, 27px);
+
+}
+
+.landingTop p {
+    color: var(--lima);
+    font-size: clamp(12px, 5vw, 21.5px);
+}
+
+
+
+.landingBottom {
+    position: relative;
+    display: flex;
+    /* overflow-y: scroll; */
+    align-items: center;
+    flex: 1;
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+
+    height: 35%;
+    border: solid blue 2px;
+    border-radius: 25px 25px 0 0;
+    background-color: var(--lima);
+    gap: 15px;
+}
+
+
+.landingBottomGroup {
+    position: absolute;
+    bottom: 72px;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    
+    border: solid blue 2px;
+    gap: 20px;
+}
+
+
+
+
+
+.divider {
+    width: 28px;
+    height: 4px;
+    border: 0;
+    background-color: var(--lima);
+}
+
+
+
+
+
+
+
+@media (max-width: 280px) and (orientation: portrait) {
+   
+}
+
+
+
+
+
+
+
+
+
+
+
+@media (min-width: 281px)
+/* and (min-height: 500px) */
+    {
+
+    .landingBottom {
+        /* height: 36%; */
+        /* min-height: 100%; */
+    }
+
+    /* .container {
+        background-position: 0 -58px;
+    } */
+}
+
+
+@media (min-width: 361px) {
+    .landingBottom {
+        /* height: 43%; */
+    }
+}
+
+@media (min-width: 375px) {
+    .landingBottom {
+        /* height: 36%; */
+    }
+}
+
+@media (min-width: 384px) {
+    .landingBottom {
+        /* height: 34%; */
+    }
+}
+
+@media (min-width: 390px) {
+    .landingBottom {
+        /* height: 44%; */
+    }
+
+    .landingTop h1 {
+        font-size: clamp(27px, 5vw, 30px);
+    }
+
+    .landingTop p {
+
+        font-size: clamp(21px, 5vw, 30px);
+    }
+}
+
+@media (min-width: 410px) {
+
+    .landingBottom {
+        /* height: 38%; */
+    }
+
+}
+
+/* @media (min-width: 500px) {
+    .container {
+        background-image: url('../../public/LogoTablet.png');
+    }
+
+    .landingBottom {
+    }
+
+}
+
+@media (min-width: 600px) {
+    .landingTop {
+        border: solid gold 2px;
+    }
+
+    .landingTop {
+
+        border: solid gold 2px;
+    }
+
+    .landingTop h1 {
+        width: 46%;
+        border: solid gold 2px;
+    }
+
+    .landingBottom {
+        border: solid gold 2px;
+    }
+
+    .hide {
+        display: none;
+    }
+
+    .container {
+        max-width: 100%;
+    }
+
+}
+
+@media (min-width: 768px) {
+
+    .landingTop {
+        padding: 30px;
+    }
+
+    .landingTop h1 {
+        width: 38%;
+    }
+
+    .landingBottom {
+    }
+}
+
+@media (min-width: 800px) {
+
+    .landingTop {
+        flex: 1;
+    }
+
+    .landingTop {
+        padding: 80px 40px;
+    }
+
+    .landingBottom {
+    }
+
+}
+
+@media (min-width: 900px) {
+
+
+    .landingTop {
+        padding: 80px 40px;
+    }
+
+    .landingBottom {
+    }
+} */

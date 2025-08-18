@@ -1,0 +1,142 @@
+.card {
+    /* position: relative;
+    bottom: 40px; */
+    display: flex;
+    
+    align-items: flex-start;
+    flex-direction: column;
+    justify-content: center;
+    padding: 16px;
+    margin: 0 16px;
+    border: solid black 1px;
+    border-radius: 25px;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    gap: 5px;
+}
+
+.divider {
+    width: 100%;
+    height: 2px;
+    border: 0;
+    background-color: var(--lima);
+}
+
+.card h2 {
+    width: 100%;
+    /* border: solid black 1px; */
+    text-align: left;
+    font-size: clamp(12px, 2vw, 28px);
+    font-weight: bold;
+}
+
+.card p {
+    /* color: black; */
+    font-size: clamp(10px, 2vw, 16px);
+}
+
+
+
+@media (min-width: 384px) {
+    .card {
+        /* bottom: 30px; */
+    }
+
+    .card h2 {
+        font-size: clamp(15px, 2vw, 28px);
+    }
+
+    .card p {
+        font-size: clamp(13px, 2vw, 16px);
+    }
+
+
+
+}
+
+@media (min-width: 390px) {
+    .card h2 {
+        font-size: clamp(28px, 2vw, 38px);
+    }
+
+    .card p {
+        font-size: clamp(16px, 2vw, 20px);
+    }
+
+    .card {
+        /* bottom: 42px; */
+
+    }
+}
+
+@media (min-width: 410px) {
+    .card h2 {
+        font-size: clamp(26px, 2vw, 38px);
+    }
+
+    .card p {
+        font-size: clamp(14px, 2vw, 20px);
+    }
+
+    .card {
+        /* bottom: 45px; */
+    }
+}
+
+@media (min-width: 410px) and (max-width: 500px) and (min-height: 700px) and (max-height: 800px) {
+    .card h2 {
+        font-size: clamp(20px, 2vw, 38px);
+    }
+    
+    .card p {
+        font-size: clamp(10px, 2vw, 20px);
+    }
+    
+    .card {
+        /* bottom: 44px; */
+        width:  350px; 
+    }
+}
+
+
+@media (min-width: 500px) {
+    .card h2 {
+        font-size: clamp(24px, 2vw, 38px);
+    }
+
+    .card p {
+        font-size: clamp(13px, 2vw, 20px);
+    }
+
+    .card {
+        /* bottom: 38px; */
+        width: 450px;
+    }
+}
+@media (min-width: 600px) {
+    .card h2 {
+        font-size: clamp(28px, 2vw, 38px);
+    }
+    
+    .card p {
+        font-size: clamp(16px, 2vw, 20px);
+    }
+    
+    .card {
+        bottom: 65px;
+        
+    }
+}
+
+@media (min-width: 768px) {
+    .card {
+        bottom: 55px;        
+        width: 597px;
+    }
+}
+
+@media (min-width: 800px) and (orientation: landscape) {
+    .card {
+        bottom: 45px;        
+    }
+}

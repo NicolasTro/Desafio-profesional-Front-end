@@ -1,0 +1,43 @@
+.buttonGroup {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.button1 {
+    height: 40px;
+    padding: 8px 13px;
+    border-radius: 8px;
+    font-size: clamp(10px, 3vw, 14px);
+    font-weight: bold;
+}
+.button2 {
+    height: 40px;
+    padding: 10px 10px;
+    border-radius: 6px;
+    text-align: center;
+    font-size: clamp(10px, 3vw, 14px);
+    font-weight: bold;
+}
+
+
+
+@media (min-width: 280px) {
+
+
+
+}
+
+
+
+@media (min-width: 390px) {
+    .button1 {
+        width: 99px;
+        height: 40px;
+    }
+    .button2 {
+        width: 131px;
+        height: 40px;
+    }
+} 
