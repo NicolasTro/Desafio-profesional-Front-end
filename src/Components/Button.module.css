@@ -2,6 +2,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    margin-right: 10px;
     gap: 15px;
 }
 
@@ -22,14 +23,7 @@
 }
 
 
-
-@media (min-width: 280px) {
-
-
-
-}
-
-
+ 
 
 @media (min-width: 390px) {
     .button1 {
@@ -40,4 +34,4 @@
         width: 131px;
         height: 40px;
     }
-} 
+}  

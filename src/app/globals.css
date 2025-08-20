@@ -1,21 +1,24 @@
 @import "tailwindcss";
 
 * {
-  /* box-sizing: border-box; */
+  box-sizing: border-box;
   padding: 0;
   margin: 0;
+  /* outline: solid brown 1px; */
 }
 
 html {
-  width: 100%;
+  min-width: 280px;
+  /* width: 100%; */
   height: 100dvh;
-  border: solid brown 1px;
+  /* height: 100dvh; */
+  min-height: 640px;
+  /* outline: solid brown 1px; */
 }
 
 
 :root {
   --lima: #C1FD35;
-  /* --lima: transparent; */
   --dark: #201F22;
   --lightDark: #3A393E;
 }
@@ -24,17 +27,26 @@ html {
 
 body {
   display: flex;
-  /* overflow-y: scroll; */
+  align-items: center;
   flex-direction: column;
-  height: 100dvh; 
-  border: solid red 1px;
-
+  /* overflow-y: scroll; */
+   justify-content: space-between ;
+  height: 100%;
+  /* border: solid red 1px; */
+  min-height: 640px;
+  
 }
 
 main {
-  overflow-y: scroll;
-  height: 100dvh;
-  border: solid grey 1px;
+  display: flex;
+  align-items: center;
+  flex: 1;
+  flex-direction: column;
+  justify-content: space-between ;
+  width: 100%;
+  /* height: 100dvh; */
+  /* overflow-y: scroll; */
+  /* height: 640px; */
+  /* border: solid magenta 2px; */
 }
 
-/* main styles can be added here if needed */

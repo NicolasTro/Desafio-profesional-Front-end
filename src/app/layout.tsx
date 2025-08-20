@@ -3,7 +3,7 @@ import "./globals.css";
 import Header from "@/Components/Header";
 import { Open_Sans } from "next/font/google";
 
-// Configure Open Sans once and apply globally
+
 const openSans = Open_Sans({
   subsets: ["latin"],
   display: "swap",
