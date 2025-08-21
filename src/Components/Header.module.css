@@ -7,6 +7,9 @@
     background-color: var(--dark);
 }
 
+
+
+
 .header>* {
     margin: 0 0 0 0;
 }
@@ -24,3 +27,9 @@
         margin-left: 20px;
     }
 }
+
+
+/* Route-based variants applied from Header.tsx */
+.routeHome { background-color: var(--dark); }
+.routeLogin { background-color: var(--lima); }
+.routeDefault { background-color: #000; }
