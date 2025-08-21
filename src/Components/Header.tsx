@@ -8,7 +8,7 @@ export default function Header() {
   const router = useRouter();
   const pathname = usePathname();
   const routeClass =
-    pathname === "/login" ? headerStyle.routeLogin : headerStyle.routeHome;
+    pathname === "/login" ? headerStyle["route-login"] : headerStyle["route-home"];
 
   const goToLogin = () => router.push("/login");
   const goToRegister = () => router.push("/register");

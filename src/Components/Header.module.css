@@ -30,6 +30,5 @@
 
 
 /* Route-based variants applied from Header.tsx */
-.routeHome { background-color: var(--dark); }
-.routeLogin { background-color: var(--lima); }
-.routeDefault { background-color: #000; }
+.route-home { background-color: var(--dark); }
+.route-login { background-color: var(--lima); }
