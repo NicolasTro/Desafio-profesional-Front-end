@@ -8,8 +8,6 @@
 }
 
 
-
-
 .header>* {
     margin: 0 0 0 0;
 }
@@ -21,7 +19,6 @@
 }
 
 @media (min-width: 600px) {
-    
 
     .logo img {
         margin-left: 20px;
@@ -29,6 +26,10 @@
 }
 
 
-/* Route-based variants applied from Header.tsx */
-.route-home { background-color: var(--dark); }
-.route-login { background-color: var(--lima); }
+.route-home {
+    background-color: var(--dark);
+}
+
+.route-default {
+    background-color: var(--lima);
+}

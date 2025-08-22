@@ -3,8 +3,17 @@ import { useState, useMemo } from "react";
 import BasicButtons from "./Components/buttonLogin";
 import BasicInput from "../../Components/input";
 import style from "./styles/login.module.css";
+import { useRouter } from "next/navigation";
+
+const errorMessage ={
+  color: "text-red-400",
+  font: "italic",
+  size: "text-[15px]",
+}
+
 
 export default function Login() {
+  const router = useRouter();
   const [step, setStep] = useState<1 | 2>(1);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -13,10 +22,11 @@ export default function Login() {
 
   const emailValid = useMemo(() => /.+@.+\..+/.test(email), [email]);
   const canContinue = emailValid;
-  const canSubmit = password.trim().length >= 6; // simple min length check
+  const canSubmit = password.trim().length >= 6; 
 
   const handleContinue = () => {
     if (!canContinue) return;
+    setError(null);
     setStep(2);
   };
 
@@ -30,10 +40,38 @@ export default function Login() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data?.error || "Error de login");
-      // éxito: cookie seteada por el route handler. Redirigir o mostrar estado.
-      // TODO: useRouter().push('/dashboard') si corresponde
+      const contentType = res.headers.get("content-type") || "";
+      const payload: unknown = contentType.includes("application/json")
+        ? await res.json()
+        : await res.text();
+
+      if (!res.ok) {
+        if (res.status === 404) {
+          setStep(1);
+          setError("Usuario inexistente. Vuelve a intentarlo");
+          return;
+        }
+        if (res.status === 401) {
+          setStep(2);
+          setError("Contraseña incorrecta. Vuelve a intentarlo");
+          return;
+        }
+        let message = "Error de login";
+        if (typeof payload === "string") {
+          message = payload || message;
+        } else if (
+          payload &&
+          typeof payload === "object" &&
+          "error" in payload &&
+          typeof (payload as { error?: unknown }).error === "string"
+        ) {
+          message = (payload as { error?: string }).error ?? message;
+        }
+        setError(message);
+        return;
+      }
+
+      // TODO: useRouter().push('/dashboard') 
     } catch (e) {
       const msg = e instanceof Error ? e.message : "Error de login";
       setError(msg);
@@ -54,14 +92,21 @@ export default function Login() {
               onChange={setEmail}
               type="email"
               name="email"
+              className={error?.includes("Usuario inexistente") ? "border-red-500" : ""}
             />
+            {!emailValid && (
+              <p className={`${errorMessage.color} ${errorMessage.font} ${errorMessage.size} mt-2`}>Formato incorrecto</p>
+            )}
             <BasicButtons
               label="Continuar"
               color="Black"
               onClick={handleContinue}
-            //   disabled={!canContinue}
+              // disabled={!canContinue}
             />
-            <BasicButtons label="Crear cuenta" backgroundColor="#CECECE" />
+            <BasicButtons label="Crear cuenta" backgroundColor="#CECECE" onClick={() => router.push("/register")}/>
+            {error?.includes("Usuario inexistente") && (
+              <p className={`${errorMessage.color} ${errorMessage.font} ${errorMessage.size} `}>{error}</p>
+            )}
           </>
         ) : (
           <>
@@ -72,18 +117,24 @@ export default function Login() {
               onChange={setPassword}
               type="password"
               name="password"
+              className={error?.includes("Contraseña incorrecta") ? "border-red-500" : ""}
             />
-            {error && <p className="text-red-400 text-sm">{error}</p>}
             <BasicButtons
               label="Ingresar"
               color="Black"
               onClick={handleSubmit}
               disabled={!canSubmit || loading}
             />
+            {error?.includes("Contraseña incorrecta") && (
+              <p className={`${errorMessage.color} ${errorMessage.font} ${errorMessage.size} `}>{error}</p>
+            )}
             <BasicButtons
               label="Volver"
               backgroundColor="#CECECE"
-              onClick={() => setStep(1)}
+              onClick={() => {
+                setError(null);
+                setStep(1);
+              }}
             />
           </>
         )}

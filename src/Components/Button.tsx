@@ -20,7 +20,11 @@ export default function Button({
   return (
     <button
       className={className}
-      style={{ backgroundColor, border, color: textColor }}
+      style={{
+        backgroundColor: backgroundColor,
+        border: border,
+        color: textColor
+      }}
       onClick={onClick}
     >
       {label}
