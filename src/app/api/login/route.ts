@@ -53,6 +53,6 @@ export async function POST(req: Request) {
   return NextResponse.json(data, { status: upstream.status });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "Login failed";
-    return NextResponse.json({ error: message }, { status: 502 });
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

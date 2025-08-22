@@ -47,7 +47,7 @@ export default function Header() {
         <Logo onClick={() => router.push("/")} />
       </div>
 
-      <div className={style.buttonGroup}>
+      <div className={style.buttonGroup} style={{ display: pathname === "/login" ? "none" : "flex" }}>
         {authenticated ? (
           <Button
             className={style.button1}
@@ -59,22 +59,38 @@ export default function Header() {
           />
         ) : (
           <>
-            <Button
-              className={style.button1}
-              label="Ingresar"
-              backgroundColor="var(--dark)"
-              border="solid var(--lima) 1px"
-              textColor="var(--lima)"
-              onClick={goToLogin}
-            />
-            <Button
-              className={style.button2}
-              label="Crear cuenta"
-              backgroundColor="var(--lima)"
-              border=""
-              textColor="black"
-              onClick={goToRegister}
-            />
+            {pathname !== "/register" && (
+              <>
+                <Button
+                  className={style.button1}
+                  label="Ingresar"
+                  backgroundColor="var(--dark)"
+                  border="solid var(--lima) 1px"
+                  textColor="var(--lima)"
+                  onClick={goToLogin}
+                />
+                <Button
+                  className={style.button2}
+                  label="Crear cuenta"
+                  backgroundColor="var(--lima)"
+                  border=""
+                  textColor="black"
+                  onClick={goToRegister}
+                />
+              </>
+            )}
+            {pathname === "/register" && (
+              <Button
+                className={`${style.button1} flex justify-center items-center`}
+                height="31px"
+                width="122px"
+                label="Iniciar sesión"
+                backgroundColor="#3B3A3F"
+                border="solid var(--lima) 1px"
+                textColor="white"
+                onClick={goToLogin}
+              />
+            )}
           </>
         )}
       </div>

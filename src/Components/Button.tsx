@@ -1,6 +1,8 @@
 "use client";
 
 type ButtonProps = {
+  height?: string;
+  width?: string;
   className?: string;
   label?: string;
   backgroundColor?: string;
@@ -11,6 +13,8 @@ type ButtonProps = {
 
 export default function Button({
   className,
+  height,
+  width,
   label,
   backgroundColor,
   border,
@@ -23,7 +27,9 @@ export default function Button({
       style={{
         backgroundColor: backgroundColor,
         border: border,
-        color: textColor
+        color: textColor,
+        height: height,
+        width: width
       }}
       onClick={onClick}
     >

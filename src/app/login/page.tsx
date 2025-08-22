@@ -48,6 +48,7 @@ export default function Login() {
       if (!res.ok) {
         if (res.status === 404) {
           setStep(1);
+          setPassword("")
           setError("Usuario inexistente. Vuelve a intentarlo");
           return;
         }
@@ -89,14 +90,17 @@ export default function Login() {
             <BasicInput
               placeholder="Correo electrónico"
               value={email}
-              onChange={setEmail}
+              onChange={(value) => {
+                setEmail(value);
+                if (error?.includes("Usuario inexistente")) setError(null);
+              }}
               type="email"
               name="email"
-              className={error?.includes("Usuario inexistente") ? "border-red-500" : ""}
+              border={error?.includes("Usuario inexistente") ? "solid red 1px" : "none"}
             />
-            {!emailValid && (
-              <p className={`${errorMessage.color} ${errorMessage.font} ${errorMessage.size} mt-2`}>Formato incorrecto</p>
-            )}
+            {/* {!emailValid && (
+              <p className={`${errorMessage.color} ${errorMessage.font} ${errorMessage.size}`}>{emailValid}</p>
+            )} */}
             <BasicButtons
               label="Continuar"
               color="Black"
@@ -104,38 +108,47 @@ export default function Login() {
               // disabled={!canContinue}
             />
             <BasicButtons label="Crear cuenta" backgroundColor="#CECECE" onClick={() => router.push("/register")}/>
-            {error?.includes("Usuario inexistente") && (
+            {error?.includes("Usuario inexistente. Vuelve a intentarlo") && (
               <p className={`${errorMessage.color} ${errorMessage.font} ${errorMessage.size} `}>{error}</p>
             )}
           </>
         ) : (
           <>
             <h1 className="text-white text-[20px]">Ingresá tu contraseña</h1>
+            
             <BasicInput
               placeholder="Contraseña"
               value={password}
-              onChange={setPassword}
+              onChange={(value) => {
+                setPassword(value);
+                if (error?.includes("Contraseña incorrecta")) setError(null);
+              }}
+              border={error?.includes("Contraseña incorrecta") ? "1px solid red" : "none"}
               type="password"
-              name="password"
-              className={error?.includes("Contraseña incorrecta") ? "border-red-500" : ""}
+              name="password"              
             />
+
             <BasicButtons
               label="Ingresar"
               color="Black"
               onClick={handleSubmit}
-              disabled={!canSubmit || loading}
+              // disabled={!canSubmit || loading}
             />
+
             {error?.includes("Contraseña incorrecta") && (
               <p className={`${errorMessage.color} ${errorMessage.font} ${errorMessage.size} `}>{error}</p>
             )}
+
             <BasicButtons
               label="Volver"
               backgroundColor="#CECECE"
               onClick={() => {
                 setError(null);
+                setPassword("")
                 setStep(1);
               }}
             />
+
           </>
         )}
       </div>

@@ -33,7 +33,7 @@ export default function BasicButtons({
         backgroundColor: backgroundColor || "var(--lima)",
         color: color || "black",
         fontSize: fontSize || "16px",
-        fontWeight: fontWeight || "bold"
+        fontWeight: fontWeight || "bold",        
       }}
     >
       {label}

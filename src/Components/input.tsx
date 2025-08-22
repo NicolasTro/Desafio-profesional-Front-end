@@ -5,15 +5,16 @@ import Input from "@mui/joy/Input";
 import style from "./input.module.css";
 
 type InputProps = {
+  border?:string;
   placeholder?: string;
   value?: string;
   type?: string;
   name?: string;
   onChange?: (value: string) => void;
-  className?: string; // Added className prop for dynamic styling
+  className?: string; 
 };
 
-export default function BasicInput({ placeholder, value, type = "text", name, onChange, className }: InputProps) {
+export default function BasicInput({ placeholder, value, type = "text", name, onChange, className, border }: InputProps) {
   return (
     <Input
       placeholder={placeholder}
@@ -21,7 +22,10 @@ export default function BasicInput({ placeholder, value, type = "text", name, on
       type={type}
       name={name}
       onChange={(e) => onChange?.(e.target.value)}
-      className={`${style.input} ${className || ""}`} // Combine existing and dynamic classes
+      className={`${style.input} ${className || ""}`} 
+      sx={{
+        border: border
+      }}
     />
   );
 }
