@@ -28,11 +28,6 @@ export async function POST(req: Request) {
       phone: phone ?? telefono ?? "",
     };
 
-    // Basic server-side validation
-    if (!upstreamBody.email || !upstreamBody.firstname || !upstreamBody.lastname || !upstreamBody.password || !upstreamBody.phone) {
-      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
-    }
-
     const upstream = await fetch(`${DIGITALMONEY_API_BASE}/api/users`, {
       method: "POST",
       headers: {
@@ -69,6 +64,6 @@ export async function POST(req: Request) {
   return NextResponse.json(respPayload, { status: upstream.status });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "Register failed";
-    return NextResponse.json({ error: message }, { status: 502 });
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

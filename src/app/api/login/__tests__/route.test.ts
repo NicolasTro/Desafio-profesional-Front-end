@@ -1,6 +1,6 @@
 import { POST } from '../route';
 
-const mockRequest = (body: object) => {
+const mockRequest = (body) => {
   return new Request('http://localhost/api/login', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
