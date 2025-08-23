@@ -4,6 +4,7 @@ import Button from "@mui/joy/Button";
 import styleButton from "./button.module.css";
 
 type ButtonProps = {
+  id?: string;
   fontWeight?: string;
   fontSize?: string;
   backgroundColor?: string;
@@ -15,6 +16,7 @@ type ButtonProps = {
 };
 
 export default function BasicButtons({
+  id,
   fontSize,
   fontWeight,
   backgroundColor,
@@ -26,6 +28,7 @@ export default function BasicButtons({
 }: ButtonProps) {
   return (
     <Button
+      id={id}
       className={`${styleButton["button-size"]} ${className}`}
       onClick={onClick}
       disabled={disabled}
@@ -33,7 +36,7 @@ export default function BasicButtons({
         backgroundColor: backgroundColor || "var(--lima)",
         color: color || "black",
         fontSize: fontSize || "16px",
-        fontWeight: fontWeight || "bold",        
+        fontWeight: fontWeight || "bold"
       }}
     >
       {label}

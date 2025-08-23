@@ -72,7 +72,7 @@ export default function Login() {
         return;
       }
 
-      // TODO: useRouter().push('/dashboard') 
+      router.push("/dashboard");
     } catch (e) {
       const msg = e instanceof Error ? e.message : "Error de login";
       setError(msg);
@@ -88,6 +88,7 @@ export default function Login() {
           <>
             <h1 className="text-white text-[20px]">¡Hola! Ingresá tu e-mail</h1>
             <BasicInput
+              id="email-input"
               placeholder="Correo electrónico"
               value={email}
               onChange={(value) => {
@@ -98,16 +99,13 @@ export default function Login() {
               name="email"
               border={error?.includes("Usuario inexistente") ? "solid red 1px" : "none"}
             />
-            {/* {!emailValid && (
-              <p className={`${errorMessage.color} ${errorMessage.font} ${errorMessage.size}`}>{emailValid}</p>
-            )} */}
             <BasicButtons
+              id="continue-button"
               label="Continuar"
               color="Black"
               onClick={handleContinue}
-              // disabled={!canContinue}
             />
-            <BasicButtons label="Crear cuenta" backgroundColor="#CECECE" onClick={() => router.push("/register")}/>
+            <BasicButtons id="create-account-button" label="Crear cuenta" backgroundColor="#CECECE" onClick={() => router.push("/register")}/>
             {error?.includes("Usuario inexistente. Vuelve a intentarlo") && (
               <p className={`${errorMessage.color} ${errorMessage.font} ${errorMessage.size} `}>{error}</p>
             )}
@@ -117,6 +115,7 @@ export default function Login() {
             <h1 className="text-white text-[20px]">Ingresá tu contraseña</h1>
             
             <BasicInput
+              id="password-input"
               placeholder="Contraseña"
               value={password}
               onChange={(value) => {
@@ -129,10 +128,10 @@ export default function Login() {
             />
 
             <BasicButtons
+              id="login-button"
               label="Ingresar"
               color="Black"
               onClick={handleSubmit}
-              // disabled={!canSubmit || loading}
             />
 
             {error?.includes("Contraseña incorrecta") && (
@@ -140,6 +139,7 @@ export default function Login() {
             )}
 
             <BasicButtons
+              id="back-button"
               label="Volver"
               backgroundColor="#CECECE"
               onClick={() => {

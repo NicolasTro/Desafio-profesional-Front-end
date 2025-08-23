@@ -5,34 +5,35 @@ import { getTokenFromCookie } from "@/lib/auth";
 
 export async function POST() {
   const jar = await cookies();
-  let upstreamStatus: number | null = null;
   try {
     const token = await getTokenFromCookie();
-    if (token) {
-      const upstream = await fetch(`${DIGITALMONEY_API_BASE}/api/logout`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          Accept: "application/json",
-        },
-        cache: "no-store",
-      });
-      upstreamStatus = upstream.status;
-      // If upstream returns HTML (e.g., 404 page), avoid bubbling it up
-      if (!upstream.ok) {
-        const ct = upstream.headers.get("content-type") || "";
-        if (ct.includes("text/html")) {
-          return NextResponse.json(
-            { ok: false, error: `Upstream ${upstream.status} ${upstream.statusText}` },
-            { status: upstream.status }
-          );
-        }
-      }
+    if (!token) {
+      return NextResponse.json(
+        { ok: false },
+        { status: 500 }
+      );
     }
-    return NextResponse.json({ ok: true, upstreamStatus });
+
+    const upstream = await fetch(`${DIGITALMONEY_API_BASE}/api/logout`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/json",
+      },
+      cache: "no-store",
+    });
+
+    if (!upstream.ok) {
+      return NextResponse.json(
+        { ok: false },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json({ ok: true }, { status: 202 });
   } catch (e: unknown) {
     const message = e instanceof Error ? e.message : "Logout failed";
-    return NextResponse.json({ ok: false, error: message, upstreamStatus }, { status: 502 });
+    return NextResponse.json({ ok: false, error: message }, { status: 500 });
   } finally {
     // Always clear local session cookie
     jar.set("dm_token", "", { httpOnly: true, maxAge: 0, path: "/" });
