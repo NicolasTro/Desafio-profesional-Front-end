@@ -36,7 +36,7 @@ export default function Header() {
       await fetch("/api/logout", { method: "POST" });
     } finally {
       setAuthenticated(false);
-      router.push("/login");
+      router.push("/");
       router.refresh?.();
     }
   };
@@ -50,11 +50,11 @@ export default function Header() {
       <div className={style.buttonGroup} style={{ display: pathname === "/login" ? "none" : "flex" }}>
         {authenticated ? (
           <Button
-            className={style.button1}
+            className={"w-[122px] h-[31px] rounded-[10px] "}
             label="Cerrar sesión"
             backgroundColor="var(--dark)"
-            border="solid var(--lima) 1px"
-            textColor="var(--lima)"
+            
+            textColor="white"
             onClick={doLogout}
           />
         ) : (

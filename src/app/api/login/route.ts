@@ -26,7 +26,7 @@ export async function POST(req: Request) {
       ? await upstream.json()
       : await upstream.text();
 
-    console.log("Upstream response:", upstream);
+    
 
     if (!upstream.ok) {
       // Forward real status and payload from upstream (e.g., 400/401/404)
@@ -42,7 +42,7 @@ export async function POST(req: Request) {
     const data = payload as LoginResponse;
     // If upstream returns a token, store it securely
     const token = data.token || data.accessToken;
-    console.log("Token:", token);
+    
     if (token) {
       const jar = await cookies();
       jar.set("dm_token", token, {
@@ -52,7 +52,7 @@ export async function POST(req: Request) {
         path: "/",
         maxAge: 60 * 60 * 24, // 1 day
       });
-      console.log("Setting cookie with token:", token);
+      
     }
 
   // Preserve upstream success status (e.g., 202 Accepted)

@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { DIGITALMONEY_API_BASE } from "@/lib/env";
 import { getTokenFromCookie } from "@/lib/auth";
+import { redirect } from "next/navigation";
 
 export async function POST() {
   const jar = await cookies();
@@ -29,6 +30,9 @@ export async function POST() {
         { status: 500 }
       );
     }
+
+    // Redirect to landing page after successful logout
+    redirect("/");
 
     return NextResponse.json({ ok: true }, { status: 202 });
   } catch (e: unknown) {

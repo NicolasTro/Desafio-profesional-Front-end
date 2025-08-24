@@ -10,7 +10,7 @@ export default function Dashboard() {
     <div>
       <h1>Dashboard</h1>
 
-      <Button label="Logout" onClick={() => {}} />
+      <Button label="Logout" />
     </div>
   );
 }

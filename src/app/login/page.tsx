@@ -72,7 +72,7 @@ export default function Login() {
         return;
       }
 
-      router.push("/dashboard");
+      router.push("/home");
     } catch (e) {
       const msg = e instanceof Error ? e.message : "Error de login";
       setError(msg);

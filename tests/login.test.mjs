@@ -33,7 +33,7 @@ dotenv.config({ path: '.env.local' }); // Cargar variables de entorno desde .env
         // Esperar a que el path sea '/dashboard'
         await driver.wait(async () => {
             const currentUrl = await driver.getCurrentUrl();
-            return currentUrl.includes('/dashboard');
+            return currentUrl.includes('/home');
         }, 10000); // 10 segundos
 
         console.log('Prueba de inicio de sesión exitosa');
