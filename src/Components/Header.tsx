@@ -5,11 +5,14 @@ import style from "./Button.module.css";
 import headerStyle from "./Header.module.css";
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import Image from "next/image";
+import NameTag from "./nameTag";
+import styleTag from "./nameTag.module.css";
 
 export default function Header() {
   const router = useRouter();
   const pathname = usePathname();
-  const routeClass = pathname === "/" ? headerStyle["route-home"] : headerStyle["route-default"];
+  const routeClass = pathname === "/" || pathname === "/home" ? headerStyle["route-home"] : headerStyle["route-default"];
   const [authenticated, setAuthenticated] = useState(false);
 
   useEffect(() => {
@@ -41,22 +44,38 @@ export default function Header() {
     }
   };
 
+  // Change the logo color to --lima when authenticated
   return (
     <header className={`${headerStyle.header} ${routeClass}`}>
       <div>
-        <Logo onClick={() => router.push("/")} />
+        <Logo
+          onClick={() => router.push("/")}
+
+          // style={{ color: authenticated ? "var(--dark)" : "inherit" }}
+        />
       </div>
 
       <div className={style.buttonGroup} style={{ display: pathname === "/login" ? "none" : "flex" }}>
         {authenticated ? (
-          <Button
-            className={"w-[122px] h-[31px] rounded-[10px] "}
-            label="Cerrar sesión"
-            backgroundColor="var(--dark)"
+          <div className="flex items-center gap-4">
+            {/* User initials */}
+            <div
+              className="w-8 h-8 flex items-center justify-center bg-gray-800 text-white rounded-full text-sm font-bold"
+              title="Usuario Autenticado"
+            >
+              <NameTag className={styleTag.nameTag} name="AB" />
+            </div>
+
             
-            textColor="white"
-            onClick={doLogout}
-          />
+            <div className="md:hidden">
+              <button
+                className="flex flex-col space-y-1.5 focus:outline-none"
+                aria-label="Abrir menú"
+              >
+                <Image src="/menuHamb.png" width={34} height={34} alt="Menu" />
+              </button>
+            </div>
+          </div>
         ) : (
           <>
             {pathname !== "/register" && (

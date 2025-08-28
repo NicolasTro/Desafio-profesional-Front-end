@@ -1,20 +1,28 @@
 "use client";
-import style from "./Header.module.css";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 
-type LogoProps = {
-  onClick: () => void;
-};
 
-export default function Logo({ onClick }: LogoProps) {
+
+interface LogoProps {
+  onClick?: () => void;
+  style?: React.CSSProperties;
+}
+
+const Logo: React.FC<LogoProps> = ({ onClick, style }) => {
   const pathname = usePathname();
-  const isHome = pathname === "/";
-  
+  const isHome = pathname === "/" || pathname==="/home";
+
   const src = isHome ? "/LogoMobile.png" : "/LogoMobileDark.png";
   return (
-    <div className={style.logo} onClick={onClick}>
-      <Image src={src} width={120} height={40} alt="Logo" priority />
+    <div
+      onClick={onClick}
+      style={style}
+      className="cursor-pointer text-2xl font-bold"
+    >
+      <Image src={src} width={80} height={40} alt="Logo" priority />
     </div>
   );
-}
+};
+
+export default Logo;

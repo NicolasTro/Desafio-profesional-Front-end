@@ -1,0 +1,32 @@
+.card {
+    min-width: 280px;
+    height: 160px;
+    padding: 10px;
+    /* margin: 0px 10px; */
+    border: solid green 3px;
+    color: white;
+    background-color: var(--dark);
+}
+
+.card h3 {
+    text-decoration-line: underline;
+}
+
+.top-card-container {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+    border: solid green 3px;
+
+}
+
+.top-card-container1 {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    width: 100%;
+    border: solid green 3px;
+    gap: 20px;
+
+}
