@@ -8,12 +8,14 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import NameTag from "./nameTag";
 import styleTag from "./nameTag.module.css";
+import SlideMenu from "./slideMenu"; // Corrected import path to match file casing
 
 export default function Header() {
   const router = useRouter();
   const pathname = usePathname();
   const routeClass = pathname === "/" || pathname === "/home" ? headerStyle["route-home"] : headerStyle["route-default"];
   const [authenticated, setAuthenticated] = useState(false);
+  const [slideMenuOpen, setSlideMenuOpen] = useState(false); // State to control SlideMenu visibility
 
   useEffect(() => {
     let cancelled = false;
@@ -34,14 +36,9 @@ export default function Header() {
 
   const goToLogin = () => router.push("/login");
   const goToRegister = () => router.push("/register");
-  const doLogout = async () => {
-    try {
-      await fetch("/api/logout", { method: "POST" });
-    } finally {
-      setAuthenticated(false);
-      router.push("/");
-      router.refresh?.();
-    }
+
+  const toggleSlideMenu = () => {
+    setSlideMenuOpen((prev) => !prev);
   };
 
   // Change the logo color to --lima when authenticated
@@ -71,6 +68,7 @@ export default function Header() {
               <button
                 className="flex flex-col space-y-1.5 focus:outline-none"
                 aria-label="Abrir menú"
+                onClick={toggleSlideMenu} // Add onClick handler
               >
                 <Image src="/menuHamb.png" width={34} height={34} alt="Menu" />
               </button>
@@ -113,6 +111,7 @@ export default function Header() {
           </>
         )}
       </div>
+      <SlideMenu isOpen={slideMenuOpen} onClose={toggleSlideMenu} /> {/* Render SlideMenu */}
     </header>
   );
 }
