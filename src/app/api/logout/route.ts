@@ -18,7 +18,7 @@ export async function POST() {
     const upstream = await fetch(`${DIGITALMONEY_API_BASE}/api/logout`, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: token,
         Accept: "application/json",
       },
       cache: "no-store",
