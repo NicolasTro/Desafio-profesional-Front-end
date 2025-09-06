@@ -1,73 +1,115 @@
-import Table from '@mui/joy/Table';
+"use client";
+import React, { useMemo } from "react";
+import Table from "@mui/joy/Table";
+import style from "./table-activity.module.css";
 
-import style from './TableActivity.module.css';
-
-
-function createData(
-  name: string,
-  calories: number,
-  fat: number,
-  carbs: number,
-  protein: number,
-) {
-  return { name, calories, fat, carbs, protein };
-}
-const rows = [
-  createData('1', 159, 6.0, 24, 4.0),
-  createData('2', 237, 9.0, 37, 4.3),
-  createData('3', 262, 16.0, 24, 6.0),
-  createData('4', 305, 3.7, 67, 4.3),
-  createData('5', 356, 16.0, 49, 3.9),
-  createData('6', 159, 6.0, 24, 4.0),
-  createData('7', 237, 9.0, 37, 4.3),
-  createData('8', 262, 16.0, 24, 6.0),
-  createData('9', 305, 3.7, 67, 4.3),
-  createData('10', 356, 16.0, 49, 3.9),
-];
-
+type Row = {
+  id: number;
+  label: string;
+  amount: number;
+  weekday: string;
+};
 
 export default function TableActivity() {
-  return (
-    <div className={style["table-container"]}>
-      
-      
-        <Table
-          aria-label="table with sticky header"
-          stickyHeader
-          stickyFooter
-          // stripe="odd"
-          // hoverRow
-        >
-          <thead>
-            <tr>
-              <th>Row</th>
-              <th>Calories</th>
-              <th>Fat&nbsp;(g)</th>
-              
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((row) => (
-              <tr key={row.name}>
-                <td>{row.name}</td>
-                <td>{row.calories}</td>
-                <td>{row.fat}</td>
-                
-                
-              </tr>
-            ))}
-          </tbody>
+  const rows: Row[] = useMemo(() => {
+    const names = [
+      "Ana",
+      "Carlos",
+      "María",
+      "Luis",
+      "Sofía",
+      "Pedro",
+      "Lucía",
+      "Mateo",
+      "Camila",
+      "Diego"
+    ];
+    const weekdays = [
+      "Lunes",
+      "Martes",
+      "Miércoles",
+      "Jueves",
+      "Viernes",
+      "Sábado",
+      "Domingo"
+    ];
 
-          <tfoot>
-            <tr>
-              <th scope="row" colSpan={4}><h2>Ver toda tu actividad</h2></th>
-          
-          
-            </tr>
-            
-          </tfoot>
-        </Table>
-      
-    </div>
+    return Array.from({ length: 10 }).map((_, i) => {
+      const type = Math.floor(Math.random() * 3); // 0: sent, 1: ingresaste, 2: te transfirieron
+      const name = names[Math.floor(Math.random() * names.length)];
+      const amount = Number((Math.random() * 990 + 10).toFixed(2));
+      const weekday = weekdays[Math.floor(Math.random() * weekdays.length)];
+
+      if (type === 0) {
+        return {
+          id: i,
+          label: `Transferiste a ${name}`,
+          amount: -amount,
+          weekday
+        } as Row;
+      }
+
+      if (type === 1) {
+        return {
+          id: i,
+          label: `Ingresaste dinero`,
+          amount: amount,
+          weekday
+        } as Row;
+      }
+
+      return {
+        id: i,
+        label: `Te transfirieron dinero`,
+        amount: amount,
+        weekday
+      } as Row;
+    });
+  }, []);
+
+  return (
+    <Table className={style["table-container"]}>
+      <thead className={style["table-header"]}>
+        <tr className={style["table-row"]}>
+          <th>Tu actividad</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {rows.map(row =>
+          <tr key={row.id} className={style.row}>
+            <td className={style.cell}>
+              <div className={style.left}>
+                <div className={style.dot} />
+                <div className={style.text}>
+                  <span className={style.title}>
+                    {row.label}
+                  </span>
+                </div>
+              </div>
+
+              <div className={style.right}>
+                <span
+                  className={
+                    row.amount < 0 ? style.negativeAmount : style.positiveAmount
+                  }
+                >
+                  {row.amount < 0 ? "-" : "+"}${Math.abs(
+                    row.amount
+                  ).toLocaleString("es-AR", {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                  })}
+                </span>
+
+                <div className={style.weekday}>
+                  {row.weekday}
+                </div>
+              </div>
+            </td>
+          </tr>
+        )}
+      </tbody>
+    </Table>
   );
 }

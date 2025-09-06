@@ -1,23 +1,28 @@
+"use client"
 import Link from "next/link";
-import style from "./Card.module.css";
+import style from "./card.module.css";
 
 export default function Card() {
   return (
     <div className={`${style.card}  shadow-md rounded-lg p-4`}>
       <div className={style["top-card-container"]}>
         <div className={style["top-card-container1"]}>
-          <Link href="/card">
-            <h3 className="text-lg font-semibold">Ver tarjetas</h3>
+          <Link href="/personalCards">
+            <h3>Ver tarjetas</h3>
           </Link>
-          <Link href="/card">
-            <h3 className="text-lg font-semibold">Ver CVU</h3>
+          <Link href="/profile">
+            <h3>Ver CVU</h3>
           </Link>
         </div>
       </div>
 
-      <h2>Dinero disponible</h2>
+      <div className={style["middle-card-container"]}>
+        <h2>Dinero disponible</h2>
+      </div>
 
-      <div>$6565656556</div>
+      <div className={style["bottom-card-container"]}>
+        <p> $ 6.890.534,17</p>
+      </div>
     </div>
   );
 }
