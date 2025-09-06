@@ -1,0 +1,60 @@
+.table {
+  overflow-y: scroll;
+  width: 100%;
+  height: 100%;
+  padding: 15px;
+  border-radius: 20px;
+  background-color: white;
+}
+
+.table thead th {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.table tbody {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.table tbody tr {
+  display: flex;
+  flex-direction: column;
+}
+
+
+
+.table tbody tr td {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 60px;
+  font-size: 14px;
+
+}
+
+
+.left {
+  display: flex;
+  width: 100%;
+
+  gap: 20px;
+}
+
+
+.table td button{
+  font-size: 14px;
+  font-weight: bold;
+}
+ 
+.dot {
+  display: flex;
+  width: 20px;
+
+  height: 20px;
+
+  border-radius: 50%;
+  background-color: var(--lima);
+}
+
