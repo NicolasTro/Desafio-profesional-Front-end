@@ -1,9 +1,10 @@
 "use client"
 import { useState, useMemo } from "react";
 import BasicButtons from "./Components/buttonLogin";
-import BasicInput from "../../Components/input";
+import BasicInput from "../../Components/Input";
 import style from "./styles/login.module.css";
 import { useRouter } from "next/navigation";
+import { useAppContext } from "@/Context/AppContext";
 
 const errorMessage ={
   color: "text-red-400",
@@ -14,6 +15,7 @@ const errorMessage ={
 
 export default function Login() {
   const router = useRouter();
+  const { refreshSession } = useAppContext();
   const [step, setStep] = useState<1 | 2>(1);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -72,6 +74,7 @@ export default function Login() {
         return;
       }
 
+      refreshSession();
       router.push("/home");
     } catch (e) {
       const msg = e instanceof Error ? e.message : "Error de login";

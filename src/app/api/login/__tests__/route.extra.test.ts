@@ -2,7 +2,6 @@ import { POST } from '../route';
 import jwt from 'jsonwebtoken';
 import { makeNextRequestMock } from '@/tests/utils/makeNextRequestMock';
 
-// Mock next/headers.cookies to capture cookie set calls
 const jarSet = jest.fn();
 jest.mock('next/headers', () => ({
   cookies: () => ({ set: jarSet }),
@@ -12,13 +11,10 @@ describe('/api/login extra tests', () => {
   afterEach(() => {
     jest.restoreAllMocks();
     jarSet.mockClear();
-    // reset fetch mock
-    // @ts-ignore
     global.fetch = undefined;
   });
 
   it('forwards upstream text when upstream returns non-ok text', async () => {
-    // upstream returns text/html error
     const mockResp1 = {
       ok: false,
       status: 401,
@@ -36,7 +32,6 @@ describe('/api/login extra tests', () => {
   });
 
   it('sets cookie with default maxAge when jwt.decode throws', async () => {
-    // mock fetch to return json with token
     const mockResp2 = {
       ok: true,
       status: 200,
@@ -45,7 +40,6 @@ describe('/api/login extra tests', () => {
     } as unknown as Response;
     global.fetch = jest.fn(() => Promise.resolve(mockResp2));
 
-    // make jwt.decode throw
     jest.spyOn(jwt, 'decode').mockImplementation(() => {
       throw new Error('bad');
     });
@@ -54,7 +48,6 @@ describe('/api/login extra tests', () => {
     const res = await POST(req as unknown as Request);
     expect(res.status).toBe(200);
 
-    // cookie should have been set once with default maxAge (86400)
     expect(jarSet).toHaveBeenCalledTimes(1);
     const opts = jarSet.mock.calls[0][2];
     expect(opts).toBeDefined();
