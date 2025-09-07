@@ -1,8 +1,19 @@
+"use client";
+import Card from "./Components/Card";
+import style from "./styles/card-register.module.css";
+import Arrow from "../../../public/arrow.svg";
+
 export default function CardRegisterPage() {
   return (
-    <div>
-      <h1>Card Register</h1>
-      {/* Aquí puedes agregar el contenido de la página de registro de tarjetas */}
+    <div className={style["container"]}>
+      <div className={style.content}>
+        <div className={style.flex}>
+          <Arrow />
+          <p>Tarjetas</p>
+        </div>
+
+        <Card />
+      </div>
     </div>
   );
 }
