@@ -1,9 +1,13 @@
 .buttonGroup {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    margin-right: 10px;
+    justify-content: flex-end;
+    margin-left: auto;
     gap: 15px;
+}
+
+.hidden {
+    display: none!important;
 }
 
 .button1 {

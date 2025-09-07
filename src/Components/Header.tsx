@@ -5,77 +5,81 @@ import style from "./Button.module.css";
 import headerStyle from "./Header.module.css";
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import Image from "next/image";
-import NameTag from "./nameTag";
+import NameTag from "./NameTag";
+import MenuHamb from "../../public/menuHamb.svg";
 import styleTag from "./nameTag.module.css";
-import SlideMenu from "./slideMenu"; // Corrected import path to match file casing
+import { useAppContext } from "@/Context/AppContext";
+ 
 
 export default function Header() {
   const router = useRouter();
   const pathname = usePathname();
-  const routeClass = pathname === "/" || pathname === "/home" ? headerStyle["route-home"] : headerStyle["route-default"];
-  const [authenticated, setAuthenticated] = useState(false);
-  const [slideMenuOpen, setSlideMenuOpen] = useState(false); // State to control SlideMenu visibility
+  const { userInfo, toggleSlideMenu, isLoading } = useAppContext();
+  const routeClass = pathname === "/" || pathname === "/home" || pathname === "/profile" || pathname === "/personalCards" || pathname === "/cardRegister" ? headerStyle["route-home"] : headerStyle["route-default"];
+  // NOTE: do not treat root ("/") as an authenticated path; root should show public actions
+  const authPaths = new Set(["/home", "/profile", "/personalCards", "/cardRegister"]);
+  const isAuthRoute = authPaths.has(pathname || "");
+  const [authenticated, setAuthenticated] = useState<boolean>(isAuthRoute);
+  // user display name is taken from userInfo directly; no separate state needed
+  const [userInitials, setUserInitials] = useState<string>('U');
 
   useEffect(() => {
-    let cancelled = false;
-    const check = async () => {
-      try {
-        const res = await fetch("/api/session", { cache: "no-store" });
-        const data = await res.json();
-        if (!cancelled) setAuthenticated(Boolean(data?.authenticated));
-      } catch {
-        if (!cancelled) setAuthenticated(false);
-      }
-    };
-    check();
-    return () => {
-      cancelled = true;
-    };
-  }, [pathname]);
+    // Use either userInfo presence or the path to determine auth UI
+  setAuthenticated(Boolean(userInfo) || isAuthRoute);
+    const namePart = (userInfo?.name || '').trim();
+    const lastPart = (userInfo?.lastname || '').trim();
+    if (namePart && lastPart) {
+      setUserInitials((namePart[0] + lastPart[0]).toUpperCase());
+    } else if (namePart) {
+      const parts = namePart.split(/\s+/).filter(Boolean);
+      if (parts.length >= 2) setUserInitials((parts[0][0] + parts[1][0]).toUpperCase());
+      else setUserInitials(parts[0][0].toUpperCase());
+    } else {
+      setUserInitials('U');
+    }
+  }, [userInfo, isLoading, isAuthRoute]);
 
   const goToLogin = () => router.push("/login");
   const goToRegister = () => router.push("/register");
 
-  const toggleSlideMenu = () => {
-    setSlideMenuOpen((prev) => !prev);
-  };
+  
+  
 
-  // Change the logo color to --lima when authenticated
   return (
     <header className={`${headerStyle.header} ${routeClass}`}>
-      <div>
-        <Logo
-          onClick={() => router.push("/")}
-
-          // style={{ color: authenticated ? "var(--dark)" : "inherit" }}
-        />
+      <div className={headerStyle.logo}>
+        <Logo onClick={() => router.push("/")} />
       </div>
 
-      <div className={style.buttonGroup} style={{ display: pathname === "/login" ? "none" : "flex" }}>
-        {authenticated ? (
-          <div className="flex items-center gap-4">
-            {/* User initials */}
-            <div
-              className="w-8 h-8 flex items-center justify-center bg-gray-800 text-white rounded-full text-sm font-bold"
-              title="Usuario Autenticado"
-            >
-              <NameTag className={styleTag.nameTag} name="AB" />
+      <div className={headerStyle.actions} style={{ display: pathname === "/login" ? "none" : "flex" }}>
+        {isLoading ? (
+          <div style={{ minWidth: 200 }} />
+        ) : authenticated ? (
+            <div className={headerStyle.userArea}>
+            <div className={headerStyle.nameWrapper}>
+              <div
+                className="w-8 h-8 flex items-center justify-center bg-gray-800 text-white rounded-full text-sm font-bold"
+                title="Usuario Autenticado"
+              >
+                <NameTag className={styleTag.nameTag} name={userInitials} />
+              </div>
+              <div className={headerStyle.userName}>
+                {userInfo?.name || userInfo?.email || ''}
+              </div>
             </div>
-
-            
-            <div className="md:hidden">
+            <div className={headerStyle.hamburgerWrapper}>
               <button
                 className="flex flex-col space-y-1.5 focus:outline-none"
                 aria-label="Abrir menú"
-                onClick={toggleSlideMenu} // Add onClick handler
+                onClick={() => toggleSlideMenu?.()}
               >
-                <Image src="/menuHamb.png" width={34} height={34} alt="Menu" />
+                <MenuHamb />
               </button>
             </div>
           </div>
+
         ) : (
-          <>
+          <div className={headerStyle.authButtons}>
             {pathname !== "/register" && (
               <>
                 <Button
@@ -108,10 +112,10 @@ export default function Header() {
                 onClick={goToLogin}
               />
             )}
-          </>
+          </div>
         )}
+        
       </div>
-      <SlideMenu isOpen={slideMenuOpen} onClose={toggleSlideMenu} /> {/* Render SlideMenu */}
     </header>
   );
 }

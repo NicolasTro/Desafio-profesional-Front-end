@@ -5,7 +5,7 @@ import Input from "@mui/joy/Input";
 import style from "./input.module.css";
 
 type InputProps = {
-  id: string;
+  id?: string;
   border?: string;
   placeholder?: string;
   value?: string;
@@ -13,6 +13,7 @@ type InputProps = {
   name?: string;
   onChange?: (value: string) => void;
   className?: string; 
+  
 };
 
 export default function BasicInput({ id, placeholder, value, type = "text", name, onChange, className, border }: InputProps) {

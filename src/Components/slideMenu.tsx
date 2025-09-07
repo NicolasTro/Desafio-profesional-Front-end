@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { useAppContext } from "@/Context/AppContext";
 import { useUser } from "@/hooks/useUser";
+import { usePathname } from 'next/navigation';
 import Box from "@mui/joy/Box";
 import Drawer from "@mui/joy/Drawer";
 import List from "@mui/joy/List";
@@ -17,34 +18,31 @@ interface SlideMenuProps {
 
 export default function SlideMenu({ isOpen, onClose }: SlideMenuProps) {
   const router = useRouter();
-  // prevent Drawer (which may mutate body / document during mount) from
-  // rendering during SSR. Render it only after client mount to avoid
-  // hydration attribute mismatches.
+  
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
     setMounted(true);
   }, []);
-  // combine user data from context and remote /me
   const { userInfo, refreshSession, slideMenuOpen, toggleSlideMenu } = useAppContext();
   const { data: meData } = useUser();
   const first = (meData as { name?: string })?.name ?? userInfo?.name ?? '';
   const last = (meData as { lastname?: string })?.lastname ?? userInfo?.lastname ?? '';
 
+  const pathname = usePathname();
+  // root is public; do not include "/" here
+  const authPaths = new Set(["/home", "/profile", "/personalCards", "/cardRegister"]);
+  const isAuthRoute = authPaths.has(pathname || "");
+  const isAuthenticated = Boolean(userInfo) || isAuthRoute;
+
   if (!mounted) return null;
 
-  // if parent didn't provide isOpen/onClose, use context
   const drawerOpen = typeof isOpen === 'boolean' ? isOpen : !!slideMenuOpen;
   const handleClose = onClose ?? (() => toggleSlideMenu?.());
 
-  const items = [
-    "Inicio",
-    "Actividad",
-    "Tu perfil",
-    "Cargar dinero",
-    "Pagar Servicios",
-    "Tarjetas",
-    "Cerrar sesión",
-  ];
+  const publicItems = ["Inicio", "Actividad"];
+  const authOnlyItems = ["Tu perfil", "Cargar dinero", "Pagar Servicios", "Tarjetas", "Cerrar sesión"];
+  const unauthItems = ["Ingresar", "Crear cuenta"];
+  const items = isAuthenticated ? [...publicItems, ...authOnlyItems] : [...publicItems, ...unauthItems];
 
   const routeMap: Record<string, string> = {
     "Inicio": "/home",
@@ -53,7 +51,9 @@ export default function SlideMenu({ isOpen, onClose }: SlideMenuProps) {
     "Cargar dinero": "/deposit",
     "Pagar Servicios": "/pay-services",
     "Tarjetas": "/personalCards",
-    "Cerrar sesión": "/logout",
+  "Cerrar sesión": "/logout",
+  "Ingresar": "/login",
+  "Crear cuenta": "/register",
   };
 
   return (
@@ -70,16 +70,16 @@ export default function SlideMenu({ isOpen, onClose }: SlideMenuProps) {
                 return (
                   <ListItem key={text} className={style["slide-content"]}>
                     <button onClick={async (e) => {
-                      e.preventDefault();
-                      try {
-                        await fetch('/api/logout', { method: 'POST', cache: 'no-store' });
-                        void refreshSession();
-                        router.push('/');
-                      } catch {
-                        void refreshSession();
-                        router.push('/');
-                      }
-                    }}>
+                          e.preventDefault();
+                          try {
+                            await fetch('/api/logout', { method: 'POST', cache: 'no-store' });
+                            await refreshSession();
+                            router.push('/');
+                          } catch {
+                            await refreshSession();
+                            router.push('/');
+                          }
+                        }}>
                       <p>{text}</p>
                     </button>
                   </ListItem>
@@ -97,7 +97,6 @@ export default function SlideMenu({ isOpen, onClose }: SlideMenuProps) {
         </nav>
       </aside>
 
-      {/* Mobile Drawer */}
       <Drawer open={drawerOpen} onClose={handleClose} >
         <Box role="presentation" onClick={handleClose} onKeyDown={handleClose} className={style["drawer-body"]}>
           <div className={style["slide-header"]}>
@@ -112,16 +111,12 @@ export default function SlideMenu({ isOpen, onClose }: SlideMenuProps) {
                   <ListItem key={text} className={style["slide-content"]}>
                     <button onClick={async (e) => {
                       e.preventDefault();
-                      // attempt server logout
                       try {
                         await fetch('/api/logout', { method: 'POST', cache: 'no-store' });
-                        // refresh client session state regardless of response
-                        void refreshSession();
-                        // navigate to landing
+                        await refreshSession();
                         router.push('/');
                       } catch {
-                        // on network error still refresh and redirect
-                        void refreshSession();
+                        await refreshSession();
                         router.push('/');
                       } finally {
                         onClose?.();

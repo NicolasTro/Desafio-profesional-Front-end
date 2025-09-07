@@ -1,27 +1,21 @@
 "use client";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
-
-
+import LogoSvg from "../../public/LogoMobileSVG.svg"; 
+import styleLogo from "./Header.module.css"
 
 interface LogoProps {
   onClick?: () => void;
-  style?: React.CSSProperties;
+  
 }
 
-const Logo: React.FC<LogoProps> = ({ onClick, style }) => {
+const Logo: React.FC<LogoProps> = ({ onClick }) => {
   const pathname = usePathname();
-  const isHome = pathname === "/" || pathname==="/home";
+  const isAuth = pathname === "/login" || pathname === "/register";
 
-  const src = isHome ? "/LogoMobile.png" : "/LogoMobileDark.png";
   return (
-    <div
-      onClick={onClick}
-      style={style}
-      className="cursor-pointer text-2xl font-bold"
-    >
-      <Image src={src} width={80} height={40} alt="Logo" priority />
-    </div>
+
+      <LogoSvg className={`${styleLogo.logo}  ${!isAuth ? styleLogo["green-log"] : styleLogo["dark-logo"]}`}  onClick={onClick} />
+
   );
 };
 

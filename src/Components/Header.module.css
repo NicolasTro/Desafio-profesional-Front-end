@@ -2,29 +2,83 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    min-width: 100%;
-    height: 64px;
+    width: 100%;
+    /* height: 64px; */
+    padding: 0 25px; 
     background-color: var(--dark);
 }
 
-
-.header>* {
-    margin: 0 0 0 0;
+.logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 80px;
+}
+.green-log{
+    color: var(--lima);
 }
 
-.logo img {
-    width: 63px;
-    height: 25px;
-    margin-left: 10px;
+.dark-logo{
+    color: var(--dark);
 }
+
+
+
+
+ .actions {
+    width: fit-content !important;
+} 
+
+.userArea {
+    display: flex;
+    align-items: center;
+    width: fit-content !important;
+    /* flex-direction: row; */
+    gap: 12px;
+}
+
+.nameWrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.userName {
+    display: none;
+    color: white;
+    font-size: 14px;
+    margin-left: 8px;
+}
+
+.hamburgerWrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.authButtons {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* .logo img {
+  width: 1000px;
+  height: 25px;
+} */
 
 @media (min-width: 600px) {
-
-    .logo img {
+    /* .logo img {
         margin-left: 20px;
-    }
+    } */
 }
 
+@media (min-width: 768px) {
+    /* show full name next to name tag on desktop */
+    .userName { display: inline-block; }
+    /* hide hamburger on desktop */
+    .hamburgerWrapper { display: none; }
+}
 
 .route-home {
     background-color: var(--dark);
@@ -33,3 +87,8 @@
 .route-default {
     background-color: var(--lima);
 }
+
+/* .header .logo svg {
+    display: block;
+    height: auto;
+} */

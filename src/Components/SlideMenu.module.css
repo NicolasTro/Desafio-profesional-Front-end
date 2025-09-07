@@ -16,7 +16,6 @@
     background-color: var(--lima);
 }
 
-/* Drawer-only body (used inside MUI Drawer on mobile). Keep visible on mobile. */
 .drawer-body {
     height: 100dvh;
     color: var(--lima);
@@ -31,22 +30,18 @@
     font-weight: bold;
 }
 
-/* Desktop: show persistent aside and style */
 @media (min-width: 768px) {
     .slide-body {
     z-index: 1000;
-    display: block; /* ensure visible as aside */
+    display: block; 
     width: 280px;
     height: 100%;
     }
-    /* hide the internal slide header since the header bar contains user info */
     .slide-header { display: none; }
 }
 
-/* Mobile: inside Drawer, use default rendering (no fixed aside) */
 @media (max-width: 767px) {
-    /* hide the aside on mobile, but keep drawer-body visible for Drawer content */
     .slide-body {
-        display: none; /* aside hidden on mobile */
+        display: none; 
     }
 }
