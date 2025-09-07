@@ -43,11 +43,11 @@
 }
 
 
-.table td button{
+.table td button {
   font-size: 14px;
   font-weight: bold;
 }
- 
+
 .dot {
   display: flex;
   width: 20px;
@@ -57,4 +57,3 @@
   border-radius: 50%;
   background-color: var(--lima);
 }
-

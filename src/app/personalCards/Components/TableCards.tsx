@@ -92,10 +92,9 @@ export default function DataProfileTable() {
       };
       if (token) headers["Authorization"] = token as string;
 
-      const res = await fetch(`/api/accounts/${accountId}/cards`, {
+      const res = await fetch(`/api/accounts/${accountId}/cards/${cardId}`, {
         method: "DELETE",
         headers,
-        body: JSON.stringify({ id: cardId })
       });
 
       if (!res.ok) {
@@ -111,22 +110,6 @@ export default function DataProfileTable() {
     }
   };
 
-  // if (!accountId) {
-  //   return <div className={style.placeholder}>No hay cuenta asociada.</div>;
-  // }
-
-  if (loading)
-    return <div className={style.placeholder}>Cargando tarjetas...</div>;
-  if (error)
-    return (
-      <div className={style.placeholder}>
-        {error}
-      </div>
-    );
-
-  // if (!cards || cards.length === 0) {
-  //   return <div className={style.placeholder}>No hay tarjetas registradas.</div>;
-  // }
 
   return (
     <Table className={style.table}>
@@ -136,13 +119,31 @@ export default function DataProfileTable() {
         </tr>
       </thead>
       <tbody>
-        {(!cards || cards.length === 0) &&
+        {loading && (
+          <tr className={style.row}>
+            <td colSpan={1} className={style.placeholder}>
+              Cargando tarjetas...
+            </td>
+          </tr>
+        )}
+
+        {!loading && error && (!cards || cards.length === 0) && (
+          <tr className={style.row}>
+            <td colSpan={1} className={style.placeholder}>
+              {error}
+            </td>
+          </tr>
+        )}
+
+        {!loading && !error && (!cards || cards.length === 0) && (
           <tr className={style.row}>
             <td colSpan={1} className={style.placeholder}>
               No hay tarjetas registradas.
             </td>
-          </tr>}
-        {cards.map(card =>
+          </tr>
+        )}
+
+        {cards.map(card => (
           <tr key={card.id} className={style.row}>
             <td className={style.cell}>
               <div className={style.left}>
@@ -167,7 +168,8 @@ export default function DataProfileTable() {
               </div>
             </td>
           </tr>
-        )}
+        ))}
+        <tr></tr>
       </tbody>
     </Table>
   );
