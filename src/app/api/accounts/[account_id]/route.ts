@@ -23,15 +23,19 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ accoun
       cache: 'no-store'
     });
 
-    console.log("aca viene esto", body);
+    if (process.env.LOG_API === 'true' || process.env.NODE_ENV !== 'test') {
+      console.log("aca viene esto", body);
+    }
      
 
     const contentType = upstream.headers.get('content-type') || '';
     const payload = contentType.includes('application/json') ? await upstream.json() : await upstream.text();
 
     return NextResponse.json(payload, { status: upstream.status });
-  } catch (err) {
-    console.error('Error in /api/accounts/[account_id] PATCH', err);
+  } catch (err: unknown) {
+    if (process.env.LOG_API === 'true' || process.env.NODE_ENV !== 'test') {
+      console.error('Error in /api/accounts/[account_id] PATCH', err);
+    }
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

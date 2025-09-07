@@ -10,9 +10,9 @@ describe('apiFetch', () => {
       Promise.resolve({
         ok: true,
         status: 200,
-        headers: { get: () => 'application/json' } as any,
+        headers: new Headers({ 'content-type': 'application/json' }),
         json: () => Promise.resolve({ hello: 'world' }),
-      } as Response)
+      } as unknown as Response)
     );
 
     const res = await apiFetch('/api/ping');
@@ -24,9 +24,9 @@ describe('apiFetch', () => {
       Promise.resolve({
         ok: true,
         status: 200,
-        headers: { get: () => 'text/plain' } as any,
+        headers: new Headers({ 'content-type': 'text/plain' }),
         text: () => Promise.resolve('pong'),
-      } as Response)
+      } as unknown as Response)
     );
 
     const res = await apiFetch('/api/ping');
@@ -38,9 +38,9 @@ describe('apiFetch', () => {
       Promise.resolve({
         ok: false,
         status: 502,
-        headers: { get: () => 'text/plain' } as any,
+        headers: new Headers({ 'content-type': 'text/plain' }),
         text: () => Promise.resolve('bad gateway'),
-      } as Response)
+      } as unknown as Response)
     );
 
     await expect(apiFetch('/api/fail')).rejects.toThrow(/502/);

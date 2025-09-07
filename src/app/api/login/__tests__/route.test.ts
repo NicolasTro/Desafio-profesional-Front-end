@@ -1,23 +1,16 @@
 import { POST } from '../route';
+import { makeNextRequestMock } from '@/tests/utils/makeNextRequestMock';
 
 const setMock = jest.fn();
 jest.mock("next/headers", () => ({
   cookies: jest.fn(() => ({ set: setMock })),
 }));
 
-const mockRequest = (body) => {
-  return new Request('http://localhost/api/login', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
-  });
-};
-
 describe('POST /api/login', () => {
   it('should return 200 for a successful login', async () => {
     const validCredentials = { email: "nikprueba@user.com", password: "Colmillo27!" };
 
-    const req = mockRequest(validCredentials);
+  const req = makeNextRequestMock({ url: 'http://localhost/api/login', method: 'POST', body: validCredentials });
     const res = await POST(req);
 
     expect(res.status).toBe(200);
@@ -28,7 +21,7 @@ describe('POST /api/login', () => {
   it('should return 404 for a non-existent user', async () => {
     const invalidUser = { email: 'nonexistent@user.com', password: 'password' };
 
-    const req = mockRequest(invalidUser);
+  const req = makeNextRequestMock({ url: 'http://localhost/api/login', method: 'POST', body: invalidUser });
     const res = await POST(req);
 
     expect(res.status).toBe(404);
@@ -39,7 +32,7 @@ describe('POST /api/login', () => {
   it('should return 401 for an incorrect password', async () => {
     const wrongPassword = { email: 'nikprueba@user.com', password: 'wrongpassword' };
 
-    const req = mockRequest(wrongPassword);
+  const req = makeNextRequestMock({ url: 'http://localhost/api/login', method: 'POST', body: wrongPassword });
     const res = await POST(req);
 
     expect(res.status).toBe(401);
@@ -48,7 +41,7 @@ describe('POST /api/login', () => {
   });
 
   it('should return 400 for a bad request', async () => {
-    const req = mockRequest({});
+  const req = makeNextRequestMock({ url: 'http://localhost/api/login', method: 'POST', body: {} });
     const res = await POST(req);
 
     expect(res.status).toBe(400);
@@ -59,7 +52,7 @@ describe('POST /api/login', () => {
   it('should store token in cookies on successful login', async () => {
     const validCredentials = { email: "nikprueba@user.com", password: "Colmillo27!" };
 
-    const req = mockRequest(validCredentials);
+  const req = makeNextRequestMock({ url: 'http://localhost/api/login', method: 'POST', body: validCredentials });
 
     
     global.fetch = jest.fn(() =>

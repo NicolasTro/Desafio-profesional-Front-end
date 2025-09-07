@@ -14,7 +14,9 @@ describe('auth helpers', () => {
   });
 
   it('getDecodedTokenFromCookie returns decoded data when token decodes', async () => {
-    jest.spyOn(jwt, 'decode').mockReturnValue({ user_id: 'u1', email: 'a@b.com', exp: 999999 } as any);
+    jest
+      .spyOn(jwt, 'decode')
+      .mockReturnValue({ user_id: 'u1', email: 'a@b.com', exp: 999999 } as unknown as { user_id: string; email: string; exp: number });
     const decoded = await auth.getDecodedTokenFromCookie();
     expect(decoded).toHaveProperty('id');
   });

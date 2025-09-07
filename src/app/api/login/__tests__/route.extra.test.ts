@@ -11,20 +11,21 @@ describe('/api/login extra tests', () => {
   afterEach(() => {
     jest.restoreAllMocks();
     jarSet.mockClear();
-    global.fetch = undefined;
+  // restore global.fetch to a noop mock to avoid type issues
+  (global as unknown as { fetch?: unknown }).fetch = jest.fn();
   });
 
   it('forwards upstream text when upstream returns non-ok text', async () => {
     const mockResp1 = {
       ok: false,
       status: 401,
-      headers: { get: () => 'text/html' },
+      headers: new Headers({ 'content-type': 'text/html' }),
       text: () => Promise.resolve('Unauthorized access'),
     } as unknown as Response;
     global.fetch = jest.fn(() => Promise.resolve(mockResp1));
 
-  const req = makeNextRequestMock({ url: 'http://localhost', method: 'POST', body: { email: 'a', password: 'b' } });
-    const res = await POST(req as unknown as Request);
+    const req = makeNextRequestMock({ url: 'http://localhost', method: 'POST', body: { email: 'a', password: 'b' } });
+    const res = await POST(req);
     expect(res.status).toBe(401);
     const txt = await res.text();
     expect(txt).toBe('Unauthorized access');
@@ -35,7 +36,7 @@ describe('/api/login extra tests', () => {
     const mockResp2 = {
       ok: true,
       status: 200,
-      headers: { get: () => 'application/json' },
+      headers: new Headers({ 'content-type': 'application/json' }),
       json: () => Promise.resolve({ token: 'abc.def.ghi' }),
     } as unknown as Response;
     global.fetch = jest.fn(() => Promise.resolve(mockResp2));
@@ -45,7 +46,7 @@ describe('/api/login extra tests', () => {
     });
 
   const req = makeNextRequestMock({ url: 'http://localhost', method: 'POST', body: { email: 'x', password: 'y' } });
-    const res = await POST(req as unknown as Request);
+  const res = await POST(req);
     expect(res.status).toBe(200);
 
     expect(jarSet).toHaveBeenCalledTimes(1);
@@ -58,13 +59,13 @@ describe('/api/login extra tests', () => {
     const mockResp3 = {
       ok: true,
       status: 200,
-      headers: { get: () => 'application/json' },
+      headers: new Headers({ 'content-type': 'application/json' }),
       json: () => Promise.resolve({}),
     } as unknown as Response;
     global.fetch = jest.fn(() => Promise.resolve(mockResp3));
 
-  const req = makeNextRequestMock({ url: 'http://localhost', method: 'POST', body: { email: 'no', password: 'token' } });
-    const res = await POST(req as unknown as Request);
+    const req = makeNextRequestMock({ url: 'http://localhost', method: 'POST', body: { email: 'no', password: 'token' } });
+    const res = await POST(req);
     expect(res.status).toBe(200);
     expect(jarSet).not.toHaveBeenCalled();
   });

@@ -12,8 +12,11 @@ type LoginResponse = {
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    console.log("DIGITALMONEY_API_BASE:", DIGITALMONEY_API_BASE);
-    console.log("Request body:", body);
+    // avoid noisy logs during tests; enable with LOG_API=true
+    if (process.env.LOG_API === 'true' || process.env.NODE_ENV !== 'test') {
+      console.log("DIGITALMONEY_API_BASE:", DIGITALMONEY_API_BASE);
+      console.log("Request body:", body);
+    }
     
     const upstream = await fetch(`${DIGITALMONEY_API_BASE}/api/login`, {
       method: "POST",
@@ -55,7 +58,9 @@ export async function POST(req: Request) {
           if (maxAge <= 0) maxAge = 60 * 60 * 24; // Si ya expiró, usa default
         }
       } catch (error) {
-        console.error("Error decoding token for maxAge:", error);
+        if (process.env.LOG_API === 'true' || process.env.NODE_ENV !== 'test') {
+          console.error("Error decoding token for maxAge:", error);
+        }
       }
 
       const jar = await cookies();
