@@ -48,7 +48,7 @@ describe('POST /api/login', () => {
   });
 
   it('should return 400 for a bad request', async () => {
-    const req = mockRequest({}); // Simulate an empty request body
+    const req = mockRequest({});
     const res = await POST(req);
 
     expect(res.status).toBe(400);
@@ -61,13 +61,13 @@ describe('POST /api/login', () => {
 
     const req = mockRequest(validCredentials);
 
-    // Mock fetch to simulate a successful login response
+    
     global.fetch = jest.fn(() =>
       Promise.resolve({
-        ok: true,
-        status: 200,
-        headers: new Headers({ "content-type": "application/json" }),
-        json: () => Promise.resolve({ token: "mocked_token" }),
+  ok: true,
+  status: 200,
+  headers: new Headers({ "content-type": "application/json" }),
+  json: () => Promise.resolve({ token: "mocked_token" }),
       } as Response)
     );
 
