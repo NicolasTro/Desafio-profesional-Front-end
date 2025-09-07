@@ -1,7 +1,7 @@
 import Footer from "@/Components/Footer";
 import "./globals.css";
 import Header from "@/Components/Header";
-import SlideMenu from "@/Components/SlideMenu";
+import SlideMenu from "@/Components/slideMenu";
 import { getTokenFromCookie } from "@/lib/auth";
 import { AppProvider } from "@/Context/AppContext";
 import { Open_Sans } from "next/font/google";

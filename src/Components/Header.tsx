@@ -5,7 +5,7 @@ import style from "./Button.module.css";
 import headerStyle from "./Header.module.css";
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import NameTag from "./NameTag";
+import NameTag from "./nameTag";
 import MenuHamb from "../../public/menuHamb.svg";
 import styleTag from "./nameTag.module.css";
 import { useAppContext } from "@/Context/AppContext";
