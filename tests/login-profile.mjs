@@ -1,6 +1,6 @@
+import dotenv from 'dotenv';
 import { Builder, By, until } from 'selenium-webdriver';
 import edge from 'selenium-webdriver/edge.js';
-import dotenv from 'dotenv';
 
 dotenv.config({ path: '.env.local' });
 
@@ -17,22 +17,24 @@ dotenv.config({ path: '.env.local' });
     let hadError = false;
 
     try {
-        const base = process.env.E2E_BASE_URL || 'http://localhost:3000';
-        await driver.get(`${base}/login`);
+    const base = process.env.E2E_BASE_URL || 'http://localhost:3000';
+    const elemTimeout = Number(process.env.E2E_ELEMENT_TIMEOUT_MS || 7000);
+    const navTimeout = Number(process.env.E2E_NAV_TIMEOUT_MS || 10000);
+    await driver.get(`${base}/login`);
 
-        // Login
-        const emailField = await driver.wait(until.elementLocated(By.id('email-input')), 7000);
-        const continueButton = await driver.wait(until.elementLocated(By.id('continue-button')), 7000);
+    // Login
+    const emailField = await driver.wait(until.elementLocated(By.id('email-input')), elemTimeout);
+    const continueButton = await driver.wait(until.elementLocated(By.id('continue-button')), elemTimeout);
         await emailField.sendKeys(process.env.E2E_TEST_EMAIL || 'nikprueba@user.com');
         await continueButton.click();
 
-        const passwordField = await driver.wait(until.elementLocated(By.id('password-input')), 7000);
-        const loginButton = await driver.wait(until.elementLocated(By.id('login-button')), 7000);
+    const passwordField = await driver.wait(until.elementLocated(By.id('password-input')), elemTimeout);
+    const loginButton = await driver.wait(until.elementLocated(By.id('login-button')), elemTimeout);
         await passwordField.sendKeys(process.env.E2E_TEST_PASSWORD || 'Colmillo27!');
         await loginButton.click();
 
-        // Wait for home
-        await driver.wait(async () => (await driver.getCurrentUrl()).includes('/home'), 10000);
+    // Wait for home
+    await driver.wait(async () => (await driver.getCurrentUrl()).includes('/home'), navTimeout);
 
         // Try to click a profile link in the UI
         const profileLinkCandidates = await driver.findElements(By.css('a[href*="/profile"], a[href*="/perfil"], [data-testid="profile-link"], #profile-link'));
@@ -43,8 +45,8 @@ dotenv.config({ path: '.env.local' });
             await driver.get(`${base}/profile`);
         }
 
-        // Wait for profile URL
-        await driver.wait(async () => (await driver.getCurrentUrl()).includes('/profile'), 10000);
+    // Wait for profile URL
+    await driver.wait(async () => (await driver.getCurrentUrl()).includes('/profile'), navTimeout);
 
         // Basic content check: look for 'perfil' word in body or known selectors
         const bodyText = await driver.findElement(By.css('body')).getText();
@@ -64,7 +66,7 @@ dotenv.config({ path: '.env.local' });
         hadError = true;
         console.error('Login->profile test failed:', err);
     } finally {
-        try { await driver.quit(); } catch (e) {}
+        try { await driver.quit(); } catch { }
         process.exit(hadError ? 1 : 0);
     }
 })();

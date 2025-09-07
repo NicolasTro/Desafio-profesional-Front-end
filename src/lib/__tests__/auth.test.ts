@@ -1,8 +1,8 @@
-import * as auth from '../auth';
 import jwt from 'jsonwebtoken';
+import * as auth from '../auth';
 
 jest.mock('next/headers', () => ({
-  cookies: jest.fn(() => ({ get: (name: string) => ({ value: 'token123' }) })),
+  cookies: jest.fn(() => ({ get: () => ({ value: 'token123' }) })),
 }));
 
 describe('auth helpers', () => {

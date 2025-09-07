@@ -1,7 +1,6 @@
-import { POST } from "../route";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
-import { getTokenFromCookie } from "@/lib/auth";
+import { POST } from "../route";
 
 jest.mock("next/headers", () => ({
   cookies: jest.fn(),

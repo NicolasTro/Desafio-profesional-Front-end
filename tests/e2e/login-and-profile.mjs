@@ -1,6 +1,6 @@
+import dotenv from 'dotenv';
 import { Builder, By, until } from 'selenium-webdriver';
 import edge from 'selenium-webdriver/edge.js';
-import dotenv from 'dotenv';
 
 dotenv.config({ path: '.env.local' });
 
@@ -16,21 +16,23 @@ dotenv.config({ path: '.env.local' });
 
   let hadError = false;
   try {
-    const base = process.env.E2E_BASE_URL || 'http://localhost:3000';
-    await driver.get(`${base}/login`);
+  const base = process.env.E2E_BASE_URL || 'http://localhost:3000';
+  const elemTimeout = Number(process.env.E2E_ELEMENT_TIMEOUT_MS || 8000);
+  const navTimeout = Number(process.env.E2E_NAV_TIMEOUT_MS || 10000);
+  await driver.get(`${base}/login`);
 
-    const emailField = await driver.wait(until.elementLocated(By.id('email-input')), 8000);
-    const continueButton = await driver.wait(until.elementLocated(By.id('continue-button')), 8000);
+  const emailField = await driver.wait(until.elementLocated(By.id('email-input')), elemTimeout);
+  const continueButton = await driver.wait(until.elementLocated(By.id('continue-button')), elemTimeout);
     await emailField.sendKeys(process.env.E2E_TEST_EMAIL || 'nikprueba@user.com');
     await continueButton.click();
 
-    const passwordField = await driver.wait(until.elementLocated(By.id('password-input')), 8000);
-    const loginButton = await driver.wait(until.elementLocated(By.id('login-button')), 8000);
+  const passwordField = await driver.wait(until.elementLocated(By.id('password-input')), elemTimeout);
+  const loginButton = await driver.wait(until.elementLocated(By.id('login-button')), elemTimeout);
     await passwordField.sendKeys(process.env.E2E_TEST_PASSWORD || 'Colmillo27!');
     await loginButton.click();
 
     // wait for home/dashboard
-    await driver.wait(async () => (await driver.getCurrentUrl()).includes('/home'), 10000);
+  await driver.wait(async () => (await driver.getCurrentUrl()).includes('/home'), navTimeout);
 
     // Open the side menu (hamburger) and click the "Tu perfil" / profile link inside it
     try {
@@ -39,16 +41,16 @@ dotenv.config({ path: '.env.local' });
       // wait for profile link inside the menu
       const profileLink = await driver.wait(
         until.elementLocated(By.xpath("//a[@href='/profile'] | //p[normalize-space(.)='Tu perfil']/ancestor::a")),
-        7000
+        elemTimeout
       );
       await profileLink.click();
-    } catch (e) {
+    } catch {
       // fallback: navigate directly if menu/button not found
       await driver.get(`${base}/profile`);
     }
 
     // wait for profile page
-    await driver.wait(async () => (await driver.getCurrentUrl()).includes('/profile'), 10000);
+  await driver.wait(async () => (await driver.getCurrentUrl()).includes('/profile'), navTimeout);
 
     // Verify content presence
     const bodyText = await driver.findElement(By.css('body')).getText();
@@ -69,16 +71,16 @@ dotenv.config({ path: '.env.local' });
       await menuButton2.click();
       const cardsLink = await driver.wait(
         until.elementLocated(By.xpath("//a[@href='/personalCards'] | //p[normalize-space(.)='Tarjetas']/ancestor::a")),
-        7000
+        elemTimeout
       );
       await cardsLink.click();
-    } catch (e) {
+    } catch {
       // fallback: direct
       await driver.get(`${base}/personalCards`);
     }
 
     // wait for personalCards page
-    await driver.wait(async () => (await driver.getCurrentUrl()).includes('/personalCards'), 10000);
+  await driver.wait(async () => (await driver.getCurrentUrl()).includes('/personalCards'), navTimeout);
     // basic check for cards table
     const cardsBody = await driver.findElement(By.css('body')).getText();
     if (!/tarjeta|tarjetas|card|cards|Cargando tarjetas/i.test(cardsBody)) {
@@ -91,8 +93,8 @@ dotenv.config({ path: '.env.local' });
   } catch (err) {
     hadError = true;
     console.error('E2E login->profile failed:', err);
-  } finally {
-    try { await driver.quit(); } catch (e) {}
+    } finally {
+    try { await driver.quit(); } catch { }
     process.exit(hadError ? 1 : 0);
   }
 })();
