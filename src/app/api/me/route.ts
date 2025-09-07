@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
 import { getTokenFromCookie } from "@/lib/auth";
 import { DIGITALMONEY_API_BASE } from "@/lib/env";
-import { jwtDecode } from 'jwt-decode';
+import jwt from 'jsonwebtoken';
+
+export const runtime = 'nodejs';
 
 interface JwtPayload {
   user_id?: string;
@@ -14,12 +16,10 @@ interface JwtPayload {
 }
 
 export async function GET() {
-    console.log("🚀🚀🚀 GET /api/me CALLED 🚀🚀🚀");
-    console.log("✅ Función ejecutándose correctamente");
-    console.log("se ejecuto");
+    
     
   try {
-    console.log("API /me called");
+    
     const token = await getTokenFromCookie();
     console.log("Token found:", !!token);
     if (!token) {
@@ -28,14 +28,22 @@ export async function GET() {
     }
 
     // Decodificar el token para obtener el user_id
-    let decoded: JwtPayload;
+    let decoded: JwtPayload | null = null;
     try {
-      decoded = jwtDecode(token);
+      decoded = jwt.decode(token) as JwtPayload | null;
       console.log("Decoded JWT:", decoded);
     } catch (decodeError) {
       console.log("Error decoding JWT:", decodeError);
       return NextResponse.json(
         { error: "Token inválido - error al decodificar" },
+        { status: 400 }
+      );
+    }
+
+    if (!decoded) {
+      console.log("Decoded token is null or invalid");
+      return NextResponse.json(
+        { error: "Token inválido - no se pudo decodificar" },
         { status: 400 }
       );
     }
@@ -81,12 +89,11 @@ export async function GET() {
     const userData = await upstream.json();
     console.log("User data received:", userData);
     
-    // Mapear los datos del API externa al formato esperado por el frontend
     const mappedUserData = {
       id: String(userData.id),
-      name: `${userData.firstname} ${userData.lastname}`,
+      name: userData.firstname ,
+      lastname: userData.lastname,
       email: userData.email,
-      // Agregar otros campos que puedan ser útiles
       dni: userData.dni,
       phone: userData.phone
     };
