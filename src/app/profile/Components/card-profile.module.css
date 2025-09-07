@@ -1,0 +1,31 @@
+.container {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+    padding: 20px;
+    border-radius: 10px;
+    color: var(--lightGrey);
+    background-color: var(--dark);
+}
+
+.container p {
+    color: var(--lima);
+    font-weight: bold;
+}
+
+.container div,
+.container h2 {
+    width: 100%;
+}
+
+.cvu-container {
+    display: flex;
+    justify-content: space-between;
+    padding-top: 20px;
+    color: var(--lima);
+    font-size: 20px;
+    font-weight: bold;
+}
