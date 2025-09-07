@@ -4,7 +4,7 @@ import { DIGITALMONEY_API_BASE } from "@/lib/env";
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    // Map client payload to upstream shape
+    
     const {
       name,
       surname,
@@ -60,7 +60,7 @@ export async function POST(req: Request) {
       return NextResponse.json(respPayload, { status: upstream.status });
     }
 
-  // Preserve upstream success status (e.g., 202 Accepted)
+  
   return NextResponse.json(respPayload, { status: upstream.status });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "Register failed";

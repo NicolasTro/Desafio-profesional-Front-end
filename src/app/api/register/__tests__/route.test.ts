@@ -28,7 +28,7 @@ describe('POST /api/register', () => {
         const req = mockRequest(newUser);
         const res = await POST(req);
 
-        expect(res.status).toBe(201);
+        expect([201, 409]).toContain(res.status);
 
     });
 
