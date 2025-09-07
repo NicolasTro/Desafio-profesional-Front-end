@@ -2,8 +2,8 @@
 import Button from "@/Components/Button";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import BasicInput from "../../Components/input";
-import styleRegister from "./register.module.css";
+import BasicInput from "../../Components/Input";
+import styleRegister from "./styles/register.module.css";
 
 export default function Register() {
   const [name, setName] = useState("");
