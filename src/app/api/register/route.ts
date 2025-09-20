@@ -4,21 +4,25 @@ import { DIGITALMONEY_API_BASE } from "@/lib/env";
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    
+
     const {
       name,
       surname,
       dni,
       telefono,
       email,
-      password,
-      // allow passthrough for alternative naming just in case
+      password,      
       firstname,
       lastname,
       phone,
     } = body || {};
 
-    const parsedDni = typeof dni === "string" ? parseInt(dni, 10) : typeof dni === "number" ? dni : NaN;
+    const parsedDni =
+      typeof dni === "string"
+        ? parseInt(dni, 10)
+        : typeof dni === "number"
+          ? dni
+          : NaN;
     const upstreamBody = {
       dni: Number.isNaN(parsedDni) ? 0 : parsedDni,
       email: email ?? "",
@@ -44,11 +48,14 @@ export async function POST(req: Request) {
       : await upstream.text();
 
     if (!upstream.ok) {
-      // If upstream returned HTML (common for 404 pages), do not bubble raw HTML—normalize to JSON
-      if (typeof respPayload === "string" && contentType.includes("text/html")) {
+      
+      if (
+        typeof respPayload === "string" &&
+        contentType.includes("text/html")
+      ) {
         return NextResponse.json(
           { error: `Upstream ${upstream.status} ${upstream.statusText}` },
-          { status: upstream.status }
+          { status: upstream.status },
         );
       }
       if (typeof respPayload === "string") {
@@ -60,8 +67,7 @@ export async function POST(req: Request) {
       return NextResponse.json(respPayload, { status: upstream.status });
     }
 
-  
-  return NextResponse.json(respPayload, { status: upstream.status });
+    return NextResponse.json(respPayload, { status: upstream.status });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "Register failed";
     return NextResponse.json({ error: message }, { status: 500 });
