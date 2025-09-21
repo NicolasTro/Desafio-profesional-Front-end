@@ -9,13 +9,14 @@ export default function Success() {
   return (
     <section className={style["success-section"]}>
       <div className={style["success-container"]}>
-        <h1 className="text-white text-[34px] font-semibold">Registro Exitoso</h1>
+        <h1 className="text-white text-[34px] font-semibold">
+          Registro Exitoso
+        </h1>
         <Image
           src="/Success.png"
           alt="Registro Exitoso"
           width={96}
           height={96}
-          
         />
         <p className="text-white text-[12px] w-[210px] text-center">
           Hemos enviado un correo de confirmación para validar tu email, por

@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 import { getTokenFromCookie } from "@/lib/auth";
 import { DIGITALMONEY_API_BASE } from "@/lib/env";
-import jwt from 'jsonwebtoken';
+import jwt from "jsonwebtoken";
 
-export const runtime = 'nodejs';
+export const runtime = "nodejs";
 
 interface DecodedToken {
   username?: string;
@@ -35,10 +35,14 @@ export async function GET() {
     }
 
     // Extraer el user ID (usando username como en /api/me)
-    const userId = decoded?.username || decoded?.user_id || decoded?.id || decoded?.sub;
+    const userId =
+      decoded?.username || decoded?.user_id || decoded?.id || decoded?.sub;
     if (!userId) {
       console.log("No user ID found in token");
-      return NextResponse.json({ error: "No user ID in token" }, { status: 401 });
+      return NextResponse.json(
+        { error: "No user ID in token" },
+        { status: 401 },
+      );
     }
     console.log("Extracted user ID:", userId, "from field: username");
 
@@ -49,7 +53,7 @@ export async function GET() {
     const response = await fetch(externalUrl, {
       method: "GET",
       headers: {
-        "Authorization": token, 
+        Authorization: token,
         "Content-Type": "application/json",
       },
       cache: "no-store",
@@ -60,7 +64,10 @@ export async function GET() {
     if (!response.ok) {
       const errorText = await response.text();
       console.log("External API error:", errorText);
-      return NextResponse.json({ error: "Failed to fetch account data" }, { status: response.status });
+      return NextResponse.json(
+        { error: "Failed to fetch account data" },
+        { status: response.status },
+      );
     }
 
     const accountData = await response.json();
@@ -70,6 +77,9 @@ export async function GET() {
     return NextResponse.json(accountData);
   } catch (error) {
     console.error("Error in /api/account:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 },
+    );
   }
 }

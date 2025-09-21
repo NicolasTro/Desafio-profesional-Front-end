@@ -23,17 +23,13 @@
   flex-direction: column;
 }
 
-
-
 .table tbody tr td {
   display: flex;
   align-items: center;
   justify-content: center;
   height: 60px;
   font-size: 14px;
-
 }
-
 
 .left {
   display: flex;
@@ -41,7 +37,6 @@
 
   gap: 20px;
 }
-
 
 .table td button {
   font-size: 14px;

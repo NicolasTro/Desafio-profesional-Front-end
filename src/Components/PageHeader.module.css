@@ -1,0 +1,19 @@
+.header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.header p {
+  text-decoration: underline;
+}
+
+.arrow {
+  display: flex;
+  align-items: center;
+}
+
+.title {
+  margin: 0;
+  font-size: 18px;
+}

@@ -36,7 +36,7 @@ export default function InputCard(data: InputCardProps) {
     value,
     className,
     handleInputChange,
-    handleInputFocus
+    handleInputFocus,
   } = data.data;
   return (
     <input

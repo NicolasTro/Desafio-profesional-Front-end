@@ -13,11 +13,10 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
     // avoid noisy logs during tests; enable with LOG_API=true
-    if (process.env.LOG_API === 'true' || process.env.NODE_ENV !== 'test') {
-      console.log("DIGITALMONEY_API_BASE:", DIGITALMONEY_API_BASE);
+    if (process.env.LOG_API === "true" || process.env.NODE_ENV !== "test") {
       console.log("Request body:", body);
     }
-    
+
     const upstream = await fetch(`${DIGITALMONEY_API_BASE}/api/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -30,10 +29,7 @@ export async function POST(req: Request) {
       ? await upstream.json()
       : await upstream.text();
 
-    
-
     if (!upstream.ok) {
-      
       if (typeof payload === "string") {
         return new NextResponse(payload, {
           status: upstream.status,
@@ -44,9 +40,9 @@ export async function POST(req: Request) {
     }
 
     const data = payload as LoginResponse;
-    
+
     const token = data.token || data.accessToken;
-    
+
     if (token) {
       // Decodificar el token para obtener la expiración real
       let maxAge = 60 * 60 * 24; // Default: 1 día
@@ -58,7 +54,7 @@ export async function POST(req: Request) {
           if (maxAge <= 0) maxAge = 60 * 60 * 24; // Si ya expiró, usa default
         }
       } catch (error) {
-        if (process.env.LOG_API === 'true' || process.env.NODE_ENV !== 'test') {
+        if (process.env.LOG_API === "true" || process.env.NODE_ENV !== "test") {
           console.error("Error decoding token for maxAge:", error);
         }
       }
@@ -71,11 +67,9 @@ export async function POST(req: Request) {
         path: "/",
         maxAge: maxAge,
       });
-      
     }
 
-  
-  return NextResponse.json(data, { status: upstream.status });
+    return NextResponse.json(data, { status: upstream.status });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "Login failed";
     return NextResponse.json({ error: message }, { status: 500 });

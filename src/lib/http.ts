@@ -11,6 +11,16 @@ export async function apiFetch(path: string, init?: RequestInit) {
     cache: "no-store",
   });
   if (!res.ok) {
+    
+    if (res.status === 401) {
+      try {
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(new CustomEvent("session:expired"));
+        }
+      } catch {
+        // ignore
+      }
+    }
     const text = await res.text().catch(() => "");
     throw new Error(`API ${path} failed: ${res.status} ${text}`);
   }

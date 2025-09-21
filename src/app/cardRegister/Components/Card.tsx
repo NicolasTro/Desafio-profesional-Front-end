@@ -12,7 +12,7 @@ export default function CardForm() {
     name: "",
     expiry: "",
     cvc: "",
-    focus: ""
+    focus: "",
   });
 
   const { userInfo, refreshSession } = useAppContext();
@@ -26,17 +26,22 @@ export default function CardForm() {
       const accountId = userInfo.account_id || userInfo.id;
       if (!accountId) return;
       try {
-        const res = await fetch(`/api/accounts/${accountId}/cards`, { cache: 'no-store' });
+        const res = await fetch(`/api/accounts/${accountId}/cards`, {
+          cache: "no-store",
+        });
         if (!res.ok) return;
         const data = await res.json();
         if (!mounted) return;
         if (Array.isArray(data)) setCardsCount(data.length);
-        else if (data?.cards && Array.isArray(data.cards)) setCardsCount(data.cards.length);
+        else if (data?.cards && Array.isArray(data.cards))
+          setCardsCount(data.cards.length);
       } catch {
         // ignore fetch errors; leave cardsCount null
       }
     })();
-    return () => { mounted = false; };
+    return () => {
+      mounted = false;
+    };
   }, [userInfo]);
 
   // ===== helpers
@@ -63,11 +68,11 @@ export default function CardForm() {
     if (name === "number") next = formatCardNumber(value);
     if (name === "expiry") next = formatExpiry(value);
     if (name === "cvc") next = formatCvc(value);
-    setForm(s => ({ ...s, [name]: next }));
+    setForm((s) => ({ ...s, [name]: next }));
   };
 
   const handleInputFocus = (e: React.FocusEvent<HTMLInputElement>) =>
-    setForm(s => ({ ...s, focus: e.target.name }));
+    setForm((s) => ({ ...s, focus: e.target.name }));
 
   // ===== Validaciones
   const luhnValid = (num: string) => {
@@ -109,13 +114,14 @@ export default function CardForm() {
     cvcValid(onlyDigits(form.cvc)) &&
     nameValid(form.name);
 
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!isFormValid) return;
 
-    // Prevent creating more than 10 cards
     if (cardsCount !== null && cardsCount >= 10) {
-      window.alert('Has alcanzado el límite de 10 tarjetas. No puedes registrar más.');
+      window.alert(
+        "Has alcanzado el límite de 10 tarjetas. No puedes registrar más.",
+      );
       return;
     }
 
@@ -145,11 +151,31 @@ export default function CardForm() {
         ? `${expiryParts[0]}/20${expiryParts[1]}`
         : form.expiry;
 
+    const codDigits = onlyDigits(form.cvc);
+    const codNumber = codDigits ? parseInt(codDigits, 10) : NaN;
+    if (Number.isNaN(codNumber)) {
+      window.alert("Código de seguridad inválido");
+      return;
+    }
+
+    // number_id expected by upstream as an int
+    const numberIdDigits = form.number.replace(/\s/g, "");
+    const numberIdInt = numberIdDigits ? parseInt(numberIdDigits, 10) : NaN;
+    if (Number.isNaN(numberIdInt)) {
+      window.alert("Número de tarjeta inválido");
+      return;
+    }
+    // optional: guard for extremely large numbers
+    if (!Number.isSafeInteger(numberIdInt)) {
+      window.alert("Número de tarjeta demasiado largo");
+      return;
+    }
+
     const payload = {
-      cod: onlyDigits(form.cvc),
+      cod: codNumber,
       expiration_date,
       first_last_name: form.name,
-      number_id: form.number.replace(/\s/g, "")
+      number_id: numberIdInt,
     };
 
     console.debug("Posting card payload to proxy", { accountId, payload });
@@ -159,9 +185,9 @@ export default function CardForm() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Accept: "application/json"
+          Accept: "application/json",
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
@@ -177,7 +203,7 @@ export default function CardForm() {
     } catch (error) {
       console.error("Error creando tarjeta:", error);
       window.alert(
-        "Error al crear la tarjeta. Revisa la consola para más detalles."
+        "Error al crear la tarjeta. Revisa la consola para más detalles.",
       );
     }
   };
@@ -196,7 +222,6 @@ export default function CardForm() {
             name={form.name}
             expiry={form.expiry}
             cvc={form.cvc}
-          
             locale={{ valid: "VENCE" }}
             placeholders={{ name: "NOMBRE DEL TITULAR" }}
           />
@@ -213,7 +238,7 @@ export default function CardForm() {
                 value: form.number,
                 className: `${style["input-card"]} ${style["placeholder"]}`,
                 handleInputChange,
-                handleInputFocus
+                handleInputFocus,
               }}
             />
 
@@ -228,7 +253,7 @@ export default function CardForm() {
                 value: form.name,
                 className: `${style["input-card"]}`,
                 handleInputChange,
-                handleInputFocus
+                handleInputFocus,
               }}
             />
           </div>
@@ -244,7 +269,7 @@ export default function CardForm() {
                 value: form.expiry,
                 className: `${style["input-card"]}`,
                 handleInputChange,
-                handleInputFocus
+                handleInputFocus,
               }}
             />
 
@@ -259,7 +284,7 @@ export default function CardForm() {
                 value: form.cvc,
                 className: `${style["input-card"]}`,
                 handleInputChange,
-                handleInputFocus
+                handleInputFocus,
               }}
             />
           </div>
@@ -269,10 +294,14 @@ export default function CardForm() {
               <div className={style["card-left"]}></div>
               <button
                 type="submit"
-                disabled={!isFormValid || (cardsCount !== null && cardsCount >= 10)}
-                className={`w-full rounded-xl px-4 py-3 font-semibold shadow-md transition-all ${isFormValid && !(cardsCount !== null && cardsCount >= 10)
-                  ? "bg-lime-400 hover:bg-lime-300 active:scale-[0.99]"
-                  : "bg-gray-300 text-gray-600 cursor-not-allowed"}`}
+                disabled={
+                  !isFormValid || (cardsCount !== null && cardsCount >= 10)
+                }
+                className={`w-full rounded-xl px-4 py-3 font-semibold shadow-md transition-all ${
+                  isFormValid && !(cardsCount !== null && cardsCount >= 10)
+                    ? "bg-lime-400 hover:bg-lime-300 active:scale-[0.99]"
+                    : "bg-gray-300 text-gray-600 cursor-not-allowed"
+                }`}
               >
                 Continuar
               </button>

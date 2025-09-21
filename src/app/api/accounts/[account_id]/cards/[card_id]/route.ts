@@ -4,7 +4,7 @@ import { DIGITALMONEY_API_BASE } from "@/lib/env";
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: Promise<{ account_id: string; card_id: string }> }
+  { params }: { params: Promise<{ account_id: string; card_id: string }> },
 ) {
   try {
     const token = await getTokenFromCookie();
@@ -13,8 +13,13 @@ export async function DELETE(
     }
 
     const { account_id: accountId, card_id: cardId } = await params;
-    if (process.env.LOG_API === 'true' || process.env.NODE_ENV !== 'test') {
-      console.log('DELETE /api/accounts/[account_id]/cards/[card_id] - accountId:', accountId, 'cardId:', cardId);
+    if (process.env.LOG_API === "true" || process.env.NODE_ENV !== "test") {
+      console.log(
+        "DELETE /api/accounts/[account_id]/cards/[card_id] - accountId:",
+        accountId,
+        "cardId:",
+        cardId,
+      );
     }
 
     const upstreamUrl = `${DIGITALMONEY_API_BASE}/api/accounts/${accountId}/cards/${cardId}`;
@@ -28,22 +33,34 @@ export async function DELETE(
 
     const text = await response.text().catch(() => "");
     if (!response.ok) {
-      if (process.env.LOG_API === 'true' || process.env.NODE_ENV !== 'test') {
-        console.log('Upstream DELETE error:', response.status, text);
+      if (process.env.LOG_API === "true" || process.env.NODE_ENV !== "test") {
+        console.log("Upstream DELETE error:", response.status, text);
       }
-      return NextResponse.json({ error: text || 'Upstream error' }, { status: response.status });
+      return NextResponse.json(
+        { error: text || "Upstream error" },
+        { status: response.status },
+      );
     }
 
     try {
       const json = JSON.parse(text || "{}");
       return NextResponse.json(json, { status: response.status });
     } catch {
-      return NextResponse.json({ message: text || 'Deleted' }, { status: response.status });
+      return NextResponse.json(
+        { message: text || "Deleted" },
+        { status: response.status },
+      );
     }
   } catch (error: unknown) {
-    if (process.env.LOG_API === 'true' || process.env.NODE_ENV !== 'test') {
-      console.error('Error in DELETE /api/accounts/[account_id]/cards/[card_id]:', error);
+    if (process.env.LOG_API === "true" || process.env.NODE_ENV !== "test") {
+      console.error(
+        "Error in DELETE /api/accounts/[account_id]/cards/[card_id]:",
+        error,
+      );
     }
-    return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 });
+    return NextResponse.json(
+      { error: "Error interno del servidor" },
+      { status: 500 },
+    );
   }
 }

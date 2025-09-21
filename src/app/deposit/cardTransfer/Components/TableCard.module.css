@@ -1,0 +1,72 @@
+.table {
+  padding: 15px;
+  background-color: white;
+}
+
+
+.table thead tr th {
+  border: transparent;
+  background-color: white;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.row {
+  height: 60px;
+  font-size: 14px;
+}
+
+.dot {
+  width: 25px;
+  height: 25px;
+  border-radius: 100%;
+  background-color: var(--lima);
+}
+
+.card-info {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+}
+
+.text {
+  display: flex;
+  justify-content: space-between;
+}
+
+.radioLarge {
+  width: 20px;
+  height: 20px;
+  margin: 0 4px;
+  transform: scale(1.4);
+}
+
+.radioCustom {
+  position: relative;
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 1px solid var(--dark);
+  border-radius: 50%;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.radioCustom:checked {
+  border-color: var(--gold);
+  background-color: var(--lima);
+}
+
+.radioCustom:checked::after {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--dark);
+  content: "";
+  transform: translate(-50%, -50%);
+}
+

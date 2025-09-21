@@ -1,6 +1,5 @@
 @import "tailwindcss";
-@import '@fortawesome/fontawesome-free/css/all.min.css';
-
+@import "@fortawesome/fontawesome-free/css/all.min.css";
 
 * {
   box-sizing: border-box;
@@ -16,22 +15,16 @@ html {
   min-height: 640px;
 }
 
-
 :root {
-  --lima: #C1FD35;
-  --dark: #201F22;
-  --lightDark: #3A393E;
-  --lightGrey: #EEEAEA;
-  --editGrey: #CECECE;
+  --lima: #c1fd35;
+  --dark: #201f22;
+  --lightDark: #3a393e;
+  --lightGrey: #eeeaea;
+  --editGrey: #cecece;
   --header-height: 80px;
   --footer-height: 60px;
-  --input--border--color: #D2FFEC;
-
+  --input--border--color: #d2ffec;
 }
-
-
-
-
 
 body {
   display: flex;
@@ -71,14 +64,22 @@ main {
   grid-template-rows: auto 1fr auto;
 }
 
-.app-grid > header { grid-area: header; }
-.app-grid > aside { grid-area: aside; }
-.app-grid > main { grid-area: main; }
+.app-grid > header {
+  grid-area: header;
+}
+.app-grid > aside {
+  grid-area: aside;
+}
+.app-grid > main {
+  grid-area: main;
+}
 .app-grid > main {
   overflow: auto;
   min-height: 0;
 }
-.app-grid > footer { grid-area: footer; }
+.app-grid > footer {
+  grid-area: footer;
+}
 
 @media (min-width: 768px) {
   .app-grid.with-aside {
@@ -86,10 +87,18 @@ main {
       "header header"
       "aside main"
       "footer footer";
-    grid-template-columns: 280px 1fr; 
+    grid-template-columns: 280px 1fr;
     grid-template-rows: var(--header-height) 1fr var(--footer-height);
   }
-  .app-grid.with-aside > aside { display: block; }
+  .app-grid.with-aside > aside {
+    display: block;
+  }
+  /* When the layout does not opt-in to show the aside (no token at SSR),
+     keep any mounted aside hidden so it doesn't break layout or appear
+     stuck to the page edge. */
+  .app-grid:not(.with-aside) > aside {
+    display: none;
+  }
 }
 
 .radius {

@@ -6,13 +6,15 @@ export default function Home() {
     <div className={style.container}>
       <div className={style.landingTop}>
         <h1>
-          De ahora <br className={style.hide} />en adelante,{" "}
-          <br className={style.hide} />hacés más <br className={style.hide} />con
-          tu dinero
+          De ahora <br className={style.hide} />
+          en adelante, <br className={style.hide} />
+          hacés más <br className={style.hide} />
+          con tu dinero
         </h1>
         <hr className={style.divider} />
         <p className={style.subtitle}>
-          {" "}Tu nueva <br className={style.hide} />
+          {" "}
+          Tu nueva <br className={style.hide} />
           <span className="font-bold">billetera virtual</span>
         </p>
       </div>

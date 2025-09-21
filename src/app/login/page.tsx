@@ -1,17 +1,16 @@
-"use client"
+"use client";
 import { useState, useMemo } from "react";
 import BasicButtons from "./Components/buttonLogin";
-import BasicInput from "../../Components/Input";
+import BasicInput from "../../Components/input";
 import style from "./styles/login.module.css";
 import { useRouter } from "next/navigation";
 import { useAppContext } from "@/Context/AppContext";
 
-const errorMessage ={
+const errorMessage = {
   color: "text-red-400",
   font: "italic",
   size: "text-[15px]",
-}
-
+};
 
 export default function Login() {
   const router = useRouter();
@@ -24,7 +23,7 @@ export default function Login() {
 
   const emailValid = useMemo(() => /.+@.+\..+/.test(email), [email]);
   const canContinue = emailValid;
-  const canSubmit = password.trim().length >= 6; 
+  const canSubmit = password.trim().length >= 6;
 
   const handleContinue = () => {
     if (!canContinue) return;
@@ -50,7 +49,7 @@ export default function Login() {
       if (!res.ok) {
         if (res.status === 404) {
           setStep(1);
-          setPassword("")
+          setPassword("");
           setError("Usuario inexistente. Vuelve a intentarlo");
           return;
         }
@@ -75,6 +74,19 @@ export default function Login() {
       }
 
       refreshSession();
+      try {
+        // save default theme to sessionStorage so other pages can read it
+        const { setSavedTheme } = await import("@/lib/authClient");
+        setSavedTheme("dark");
+      } catch {
+        // ignore theme write errors
+      }
+      try {
+        const { setIsLogin } = await import("@/lib/authClient");
+        setIsLogin(true);
+      } catch {
+        // ignore
+      }
       router.push("/home");
     } catch (e) {
       const msg = e instanceof Error ? e.message : "Error de login";
@@ -98,9 +110,19 @@ export default function Login() {
                 setEmail(value);
                 if (error?.includes("Usuario inexistente")) setError(null);
               }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  handleContinue();
+                }
+              }}
               type="email"
               name="email"
-              border={error?.includes("Usuario inexistente") ? "solid red 1px" : "none"}
+              border={
+                error?.includes("Usuario inexistente")
+                  ? "solid red 1px"
+                  : "none"
+              }
             />
             <BasicButtons
               id="continue-button"
@@ -108,15 +130,24 @@ export default function Login() {
               color="Black"
               onClick={handleContinue}
             />
-            <BasicButtons id="create-account-button" label="Crear cuenta" backgroundColor="#CECECE" onClick={() => router.push("/register")}/>
+            <BasicButtons
+              id="create-account-button"
+              label="Crear cuenta"
+              backgroundColor="#CECECE"
+              onClick={() => router.push("/register")}
+            />
             {error?.includes("Usuario inexistente. Vuelve a intentarlo") && (
-              <p className={`${errorMessage.color} ${errorMessage.font} ${errorMessage.size} `}>{error}</p>
+              <p
+                className={`${errorMessage.color} ${errorMessage.font} ${errorMessage.size} `}
+              >
+                {error}
+              </p>
             )}
           </>
         ) : (
           <>
             <h1 className="text-white text-[20px]">Ingresá tu contraseña</h1>
-            
+
             <BasicInput
               id="password-input"
               placeholder="Contraseña"
@@ -125,9 +156,19 @@ export default function Login() {
                 setPassword(value);
                 if (error?.includes("Contraseña incorrecta")) setError(null);
               }}
-              border={error?.includes("Contraseña incorrecta") ? "1px solid red" : "none"}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  handleSubmit();
+                }
+              }}
+              border={
+                error?.includes("Contraseña incorrecta")
+                  ? "1px solid red"
+                  : "none"
+              }
               type="password"
-              name="password"              
+              name="password"
             />
 
             <BasicButtons
@@ -138,7 +179,11 @@ export default function Login() {
             />
 
             {error?.includes("Contraseña incorrecta") && (
-              <p className={`${errorMessage.color} ${errorMessage.font} ${errorMessage.size} `}>{error}</p>
+              <p
+                className={`${errorMessage.color} ${errorMessage.font} ${errorMessage.size} `}
+              >
+                {error}
+              </p>
             )}
 
             <BasicButtons
@@ -147,11 +192,10 @@ export default function Login() {
               backgroundColor="#CECECE"
               onClick={() => {
                 setError(null);
-                setPassword("")
+                setPassword("");
                 setStep(1);
               }}
             />
-
           </>
         )}
       </div>

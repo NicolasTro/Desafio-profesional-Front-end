@@ -2,12 +2,12 @@
 import Button from "@/Components/Button";
 import { useAppContext } from "@/Context/AppContext";
 import { useEffect, useMemo, useCallback } from "react";
+import PageHeader from "@/Components/PageHeader";
 import Arrow from "./../../../public/arrow.svg";
 import CardProfile from "./Components/CardProfile";
 import DataProfileTable from "./Components/DataProfileTable";
 import style from "./styles/profile.module.css";
 import { useUser } from "@/hooks/useUser";
-import { useQueryClient } from '@tanstack/react-query';
 
 interface UserData {
   id: string;
@@ -24,8 +24,7 @@ interface UserData {
 
 export default function ProfilePage() {
   const { userInfo, refreshSession } = useAppContext();
-  const { data: meData, isLoading: isLoadingMe } = useUser();
-  const qc = useQueryClient();
+  const { data: meData, isLoading: isLoadingMe, refetch: refetchMe } = useUser();
 
   useEffect(() => {
     if (!userInfo) refreshSession();
@@ -41,28 +40,37 @@ export default function ProfilePage() {
     } as UserData;
   }, [meData, userInfo]);
 
-  const handleSave = useCallback(async (updates: Partial<UserData>) => {
-  const maybeIdFromMe = meData && typeof meData === 'object' && 'id' in (meData as object) ? (meData as Record<string, unknown>)['id'] : undefined;
-  const userId = maybeIdFromMe || userData?.id;
-    if (!userId) {
-      throw new Error('No user id available to save profile');
-    }
+  const handleSave = useCallback(
+    async (updates: Partial<UserData>) => {
+      const maybeIdFromMe =
+        meData && typeof meData === "object" && "id" in (meData as object)
+          ? (meData as Record<string, unknown>)["id"]
+          : undefined;
+      const userId = maybeIdFromMe || userData?.id;
+      if (!userId) {
+        throw new Error("No user id available to save profile");
+      }
 
-    const res = await fetch(`/api/users/${userId}`, {
-      method: 'PATCH',
-  headers: { 'Content-Type': 'application/json' },
-  credentials: 'include',
-      body: JSON.stringify(updates),
-    });
+      const res = await fetch(`/api/users/${userId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(updates),
+      });
 
-    if (!res.ok) {
-      const text = await res.text().catch(() => '');
-      throw new Error(text || `HTTP ${res.status}`);
-    }
+      console.log("ressss", res);
 
-  qc.invalidateQueries({ queryKey: ['me'] });
-    refreshSession();
-  }, [userData, meData, qc, refreshSession]);
+      if (!res.ok) {
+        const text = await res.text().catch(() => "");
+        throw new Error(text || `HTTP ${res.status}`);
+      }
+
+  // re-fetch user data after profile update and refresh session
+  await refetchMe();
+  refreshSession();
+    },
+    [userData, meData, refetchMe, refreshSession],
+  );
 
   if (loading) return <div>Cargando...</div>;
 
@@ -70,14 +78,9 @@ export default function ProfilePage() {
     <div className={style.container}>
       <div className={style.content}>
         <div className={style.flex}>
-          <Arrow />
-          <h2>
-            <p>Perfil</p>
-          </h2>
+          <PageHeader nombre="Perfil" />
         </div>
         <div className="">
-          
-          
           <DataProfileTable userData={userData} onSave={handleSave} />
         </div>
         <div className={style["button-container"]}>
@@ -91,7 +94,7 @@ export default function ProfilePage() {
         </div>
 
         <div className={style["card-profile"]}>
-          <CardProfile data={userData} onSave={handleSave} />
+          <CardProfile onSave={handleSave} />
         </div>
       </div>
     </div>

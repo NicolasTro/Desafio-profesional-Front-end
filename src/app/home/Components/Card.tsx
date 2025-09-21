@@ -1,7 +1,19 @@
+"use client";
 import Link from "next/link";
 import style from "./card.module.css";
+import { useAppContext } from "@/Context/AppContext";
 
 export default function Card() {
+  const { userInfo } = useAppContext();
+  const amount = userInfo?.available_amount ?? 0;
+
+  const formatted = new Intl.NumberFormat("es-AR", {
+    style: "currency",
+    currency: "ARS",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(amount);
+
   return (
     <div className={`${style.card}  shadow-md rounded-lg p-4`}>
       <div className={style["top-card-container"]}>
@@ -20,7 +32,7 @@ export default function Card() {
       </div>
 
       <div className={style["bottom-card-container"]}>
-        <p> $ 6.890.534,17</p>
+        <p>{formatted}</p>
       </div>
     </div>
   );

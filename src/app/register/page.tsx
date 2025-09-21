@@ -2,7 +2,7 @@
 import Button from "@/Components/Button";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import BasicInput from "../../Components/Input";
+import BasicInput from "../../Components/input";
 import styleRegister from "./styles/register.module.css";
 
 export default function Register() {
@@ -19,14 +19,25 @@ export default function Register() {
   const handleSubmit = async () => {
     const newErrors: string[] = [];
     // Required fields
-    if (!name || !surname || !dni || !telefono || !email || !password || !confirmPassword) {
+    if (
+      !name ||
+      !surname ||
+      !dni ||
+      !telefono ||
+      !email ||
+      !password ||
+      !confirmPassword
+    ) {
       newErrors.push("Completa los campos requeridos");
     }
     // Format validations
     if (dni && !/^\d+$/.test(dni)) newErrors.push("DNI: solo números");
-    if (telefono && !/^\d+$/.test(telefono)) newErrors.push("Teléfono: solo números");
-    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) newErrors.push("Ingresa un email válido");
-    if (password && confirmPassword && password !== confirmPassword) newErrors.push("Las contraseñas no coinciden");
+    if (telefono && !/^\d+$/.test(telefono))
+      newErrors.push("Teléfono: solo números");
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+      newErrors.push("Ingresa un email válido");
+    if (password && confirmPassword && password !== confirmPassword)
+      newErrors.push("Las contraseñas no coinciden");
 
     if (newErrors.length > 0) {
       setErrors(newErrors);
@@ -34,7 +45,7 @@ export default function Register() {
     }
     setErrors([]);
     try {
-  const res = await fetch("/api/register", {
+      const res = await fetch("/api/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -43,8 +54,8 @@ export default function Register() {
           dni,
           telefono,
           email,
-          password,
-        }),
+          password
+        })
       });
       if (!res.ok) {
         const text = await res.text();
@@ -78,7 +89,7 @@ export default function Register() {
         <BasicInput
           placeholder="DNI*"
           value={dni}
-          onChange={(v) => setDni(v.replace(/\D/g, ""))}
+          onChange={v => setDni(v.replace(/\D/g, ""))}
           type="text"
           name="dni"
         />
@@ -90,9 +101,7 @@ export default function Register() {
           type="email"
           name="email"
         />
-        <p
-          className="text-white text-[11.2px] text-justify"
-        >
+        <p className="text-white text-[11.2px] text-justify">
           Usa entre 6 y 20 caracteres (debe contener al menos 1 carácter
           especial, una mayúscula y un número)
         </p>
@@ -115,7 +124,7 @@ export default function Register() {
         <BasicInput
           placeholder="Teléfono*"
           value={telefono}
-          onChange={(v) => setTelefono(v.replace(/\D/g, ""))}
+          onChange={v => setTelefono(v.replace(/\D/g, ""))}
           type="tel"
           name="telefono"
         />
@@ -126,13 +135,17 @@ export default function Register() {
           className="w-full h-[50px] rounded-[8px] font-bold"
           onClick={handleSubmit}
         />
-        {errors.length > 0 && (
+        {errors.length > 0 &&
           <div className="w-full text-left mt-2">
-            {errors.map((err, idx) => (
-                <p key={idx} className="text-center text-red-400 text-[15px] italic">{err}</p>
-            ))}
-          </div>
-        )}
+            {errors.map((err, idx) =>
+              <p
+                key={idx}
+                className="text-center text-red-400 text-[15px] italic"
+              >
+                {err}
+              </p>
+            )}
+          </div>}
       </div>
     </section>
   );

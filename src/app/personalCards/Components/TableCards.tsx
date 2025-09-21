@@ -23,57 +23,54 @@ export default function DataProfileTable() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(
-    () => {
-      if (!accountId) return;
-      let mounted = true;
+  useEffect(() => {
+    if (!accountId) return;
+    let mounted = true;
 
-      const fetchCards = async () => {
-        setLoading(true);
-        setError(null);
-        try {
-          const headers: Record<string, string> = {
-            Accept: "application/json"
-          };
-          if (token) headers["Authorization"] = token as string;
+    const fetchCards = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const headers: Record<string, string> = {
+          Accept: "application/json",
+        };
+        if (token) headers["Authorization"] = token as string;
 
-          const res = await fetch(`/api/accounts/${accountId}/cards`, {
-            method: "GET",
-            headers
-          });
+        const res = await fetch(`/api/accounts/${accountId}/cards`, {
+          method: "GET",
+          headers,
+        });
 
-          if (!mounted) return;
+        if (!mounted) return;
 
-          if (!res.ok) {
-            const txt = await res.text().catch(() => "");
-            setError(`Error al obtener tarjetas: ${res.status} ${txt}`);
-            setCards([]);
-            return;
-          }
-
-          const data = await res.json();
-          if (Array.isArray(data)) setCards(data);
-          else setCards([]);
-        } catch (e) {
-          if (e instanceof Error) {
-            setError(e.message);
-          } else {
-            setError(String(e));
-          }
+        if (!res.ok) {
+          const txt = await res.text().catch(() => "");
+          setError(`Error al obtener tarjetas: ${res.status} ${txt}`);
           setCards([]);
-        } finally {
-          setLoading(false);
+          return;
         }
-      };
 
-      fetchCards();
+        const data = await res.json();
+        if (Array.isArray(data)) setCards(data);
+        else setCards([]);
+      } catch (e) {
+        if (e instanceof Error) {
+          setError(e.message);
+        } else {
+          setError(String(e));
+        }
+        setCards([]);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-      return () => {
-        mounted = false;
-      };
-    },
-    [accountId, token]
-  );
+    fetchCards();
+
+    return () => {
+      mounted = false;
+    };
+  }, [accountId, token]);
 
   const last4 = (n: number | string) => {
     const s = String(n || "");
@@ -83,12 +80,12 @@ export default function DataProfileTable() {
   const handleDelete = async (cardId: number) => {
     if (!accountId) return;
     const previous = cards;
-    setCards(prev => prev.filter(c => c.id !== cardId));
+    setCards((prev) => prev.filter((c) => c.id !== cardId));
 
     try {
       const headers: Record<string, string> = {
         Accept: "application/json",
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       };
       if (token) headers["Authorization"] = token as string;
 
@@ -101,7 +98,7 @@ export default function DataProfileTable() {
         setCards(previous);
         console.error(
           "Failed to delete card",
-          await res.text().catch(() => "")
+          await res.text().catch(() => ""),
         );
       }
     } catch (e) {
@@ -109,7 +106,6 @@ export default function DataProfileTable() {
       console.error("Error deleting card", e);
     }
   };
-
 
   return (
     <Table className={style.table}>
@@ -143,7 +139,7 @@ export default function DataProfileTable() {
           </tr>
         )}
 
-        {cards.map(card => (
+        {cards.map((card) => (
           <tr key={card.id} className={style.row}>
             <td className={style.cell}>
               <div className={style.left}>
@@ -160,7 +156,7 @@ export default function DataProfileTable() {
                   className={style.delete}
                   onClick={() => handleDelete(card.id)}
                   aria-label={`Eliminar tarjeta termina en ${last4(
-                    card.number_id
+                    card.number_id,
                   )}`}
                 >
                   Eliminar

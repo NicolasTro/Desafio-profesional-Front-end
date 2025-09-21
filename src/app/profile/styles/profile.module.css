@@ -1,54 +1,51 @@
 .container {
-    display: flex;
-    flex: 1;
-    flex-direction: column;
-    justify-content: space-between;
-    width: 100%;
-    padding: 20px;
-    background-color: var(--lightGrey);
-    gap: 20px;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
+  padding: 20px;
+  background-color: var(--lightGrey);
+  gap: 20px;
 }
 
 .content {
-    display: flex;
-    align-items: center;
-    flex-direction: column;
-    justify-content: center;
-    gap: 20px;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  gap: 20px;
 }
 
 .flex {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    width: 100%;
-    gap: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  gap: 10px;
 }
 
 .flex p {
-    text-decoration: underline;
+  text-decoration: underline;
 }
 
-
 .button-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    border-radius: 10px;
-    background-color: var(--lima);
-    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-    font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  border-radius: 10px;
+  background-color: var(--lima);
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  font-weight: bold;
 }
 
 .card-profile {
-    width: 100%;
+  width: 100%;
 }
 
 @media (min-width: 768px) {
-   
-    .flex{
-        display: none;
-    }
-
+  .flex {
+    display: none;
+  }
 }

@@ -1,385 +1,315 @@
 .container {
-    display: flex;
-    overflow-y: scroll;
-    align-items: center;
-    flex-direction: column;
-    justify-content: space-between;
-    width: 100%;
-    height: 100%;
-    background-image: url('../../public/BannerMobile.png');
-    background-repeat: no-repeat;
-    background-position: 0 -45px;
-    background-size: cover;
-
+  display: flex;
+  overflow-y: scroll;
+  align-items: center;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
+  height: 100%;
+  background-image: url("../../public/BannerMobile.png");
+  background-repeat: no-repeat;
+  background-position: 0 -45px;
+  background-size: cover;
 }
-
-
-
-
 
 .landingTop {
-    display: flex;
-    align-items: flex-start !important;
-    /* flex: 1; */
-    flex-direction: column;
-    width: 100%;
-    padding: 30px 0 0 20px;
-    gap: 20px;
+  display: flex;
+  align-items: flex-start !important;
+  /* flex: 1; */
+  flex-direction: column;
+  width: 100%;
+  padding: 30px 0 0 20px;
+  gap: 20px;
 }
 
-
-.landingTop>* {
-    margin: 0;
+.landingTop > * {
+  margin: 0;
 }
 
 .landingTop h1 {
-    width: 190px;
-    line-height: 1.2;
-    color: white;
-    font-size: clamp(20px, 5vw, 27px);
-
+  width: 190px;
+  line-height: 1.2;
+  color: white;
+  font-size: clamp(20px, 5vw, 27px);
 }
 
 .landingTop p {
-    color: var(--lima);
-    font-size: clamp(12px, 5vw, 21.5px);
+  color: var(--lima);
+  font-size: clamp(12px, 5vw, 21.5px);
 }
 
-
-
 .landingBottom {
-    position: relative;
-    display: flex;
-    align-items: center;
-    flex: 2;
-    flex-direction: column;
-    justify-content: space-evenly;
-    width: 100%;
-    height: 68%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 2;
+  flex-direction: column;
+  justify-content: space-evenly;
+  width: 100%;
+  height: 68%;
 }
 
 .landingBottomUp {
-    flex: 0.5;
-    width: 100%;
+  flex: 0.5;
+  width: 100%;
 }
 
 .landingBottomDown {
-    position: relative;
-    display: flex;
-    flex: 2;
-    width: 100%;
-    border-radius: 25px 25px 0 0;
-    background-color: var(--lima);
+  position: relative;
+  display: flex;
+  flex: 2;
+  width: 100%;
+  border-radius: 25px 25px 0 0;
+  background-color: var(--lima);
 }
-
-
 
 .landingBottomGroup {
-    position: absolute;
-    bottom: 35px;
-    display: flex;
-    align-items: center;
-    flex-direction: column;
-    justify-content: center;
-    width: 100%;
-    height: 100%;
-    gap: 20px;
+  position: absolute;
+  bottom: 35px;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  gap: 20px;
 }
-
-
 
 .divider {
-    width: 28px;
-    height: 4px;
-    border: 0;
-    background-color: var(--lima);
+  width: 28px;
+  height: 4px;
+  border: 0;
+  background-color: var(--lima);
 }
-
-
-
-
 
 @media (min-width: 360px) and (max-height: 640px) and (orientation: portrait) {
-    .container {
-        height: 100%;
-    }
+  .container {
+    height: 100%;
+  }
 
-    .landingBottomGroup {
-        bottom: 28px;
-    }
-
-
+  .landingBottomGroup {
+    bottom: 28px;
+  }
 }
 
-
-
 @media (min-width: 360px) and (min-height: 667px) and (max-height: 740px) and (orientation: portrait) {
+  .landingBottomGroup {
+    bottom: 55 px;
+  }
 
-    .landingBottomGroup {
-        bottom: 55 px;
-    }
-
-    .landingBottom {
-        height: 30%;
-    }
+  .landingBottom {
+    height: 30%;
+  }
 }
 
 @media (min-width: 360px) and (min-height: 741px) and (max-height: 800px) and (orientation: portrait) {
+  .landingBottomGroup {
+    bottom: 30px;
+  }
 
-    .landingBottomGroup {
-        bottom: 30px;
-    }
-
-    .landingBottom {
-        flex: 0.7;
-    }
+  .landingBottom {
+    flex: 0.7;
+  }
 }
 
 @media (min-width: 375px) and (min-height: 667px) and (max-height: 667px) and (orientation: portrait) {
+  .landingBottomGroup {
+    bottom: 30px;
+  }
 
-    .landingBottomGroup {
-        bottom: 30px;
-    }
-
-    .landingBottom {
-        flex: 0.95;
-    }
+  .landingBottom {
+    flex: 0.95;
+  }
 }
 
 @media (min-width: 375px) and (min-height: 800px) and (max-height: 812px) and (orientation: portrait) {
+  .landingBottomGroup {
+    bottom: 35px;
+  }
 
-    .landingBottomGroup {
-        bottom: 35px;
-    }
-
-    .landingBottom {
-        flex: 0.8;
-    }
+  .landingBottom {
+    flex: 0.8;
+  }
 }
 
 @media (min-width: 384px) and (min-height: 800px) and (max-height: 854px) and (orientation: portrait) {
+  .landingBottomGroup {
+    bottom: 36px;
+  }
 
-    .landingBottomGroup {
-        bottom: 36px;
-    }
-
-    .landingBottom {
-        flex: 0.75;
-    }
+  .landingBottom {
+    flex: 0.75;
+  }
 }
 
 @media (min-width: 390px) and (min-height: 854px) and (max-height: 905px) and (orientation: portrait) {
+  .landingBottomGroup {
+    bottom: 36px;
+  }
 
-    .landingBottomGroup {
-        bottom: 36px;
-    }
-
-    .landingBottom {
-        flex: 0.75;
-    }
-
+  .landingBottom {
+    flex: 0.75;
+  }
 }
 
 @media (min-width: 412px) and (min-height: 732px) and (max-height: 800px) and (orientation: portrait) {
+  .landingBottomGroup {
+    bottom: 36px;
+  }
 
-    .landingBottomGroup {
-        bottom: 36px;
-    }
-
-    .landingBottom {
-        flex: 0.75;
-    }
-
+  .landingBottom {
+    flex: 0.75;
+  }
 }
 
 @media (min-width: 412px) and (min-height: 801px) and (max-height: 936px) and (orientation: portrait) {
+  .landingBottomGroup {
+    bottom: 36px;
+  }
 
-    .landingBottomGroup {
-        bottom: 36px;
-    }
-
-    .landingBottom {
-        flex: 0.75;
-    }
-
+  .landingBottom {
+    flex: 0.75;
+  }
 }
 
 /***********************************************TABLET*****************************************************************/
 
 @media (min-width: 600px) {
+  .container {
+    overflow-y: none;
+    background-image: url("../../public/BannerTablet.png");
+    background-position: 0 -68px;
+  }
 
-    .container {
-        overflow-y: none;
-        background-image: url('../../public/BannerTablet.png');
-        background-position: 0 -68px;
+  .divider {
+    display: none;
+  }
 
-    }
+  .hide {
+    display: none;
+  }
 
-    .divider {
-        display: none;
-    }
-
-    .hide {
-        display: none;
-    }
-
-    .landingTop h1 {
-        width: 320px;
-        font-size: 35px;
-    }
+  .landingTop h1 {
+    width: 320px;
+    font-size: 35px;
+  }
 }
 
 @media (min-width: 600px) and (min-height: 900px) and (max-height: 980px) and (orientation: portrait) {
+  .landingTop p {
+    font-size: 24px;
+  }
 
+  .landingBottomGroup {
+    bottom: 50px;
+  }
 
-
-    .landingTop p {
-        font-size: 24px;
-    }
-
-
-    .landingBottomGroup {
-        bottom: 50px;
-    }
-
-    .landingBottom {
-        flex: 0.8;
-    }
-
+  .landingBottom {
+    flex: 0.8;
+  }
 }
-
 
 @media (min-width: 600px) and (min-height: 981px) and (max-height: 1024px) and (orientation: portrait) {
+  .landingBottomGroup {
+    bottom: 50px;
+  }
 
-    .landingBottomGroup {
-        bottom: 50px;
-    }
-
-    .landingBottom {
-        flex: 0.70;
-    }
-
+  .landingBottom {
+    flex: 0.7;
+  }
 }
 
-@media (min-width: 712px) and (max-width:799px) and (min-height: 1024px) and (max-height: 1280px) and (orientation: portrait) {
+@media (min-width: 712px) and (max-width: 799px) and (min-height: 1024px) and (max-height: 1280px) and (orientation: portrait) {
+  .landingBottomGroup {
+    bottom: 78px;
+  }
 
-    .landingBottomGroup {
-        bottom: 78px;
-    }
-
-    .landingBottom {
-        flex: 0.70;
-    }
+  .landingBottom {
+    flex: 0.7;
+  }
 }
-
 
 @media (min-width: 800px) {
+  .landingTop h1 {
+    width: 420px;
+    font-size: 48px;
+  }
 
-    .landingTop h1 {
-        width: 420px;
-        font-size: 48px;
-    }
-
-    .landingTop p {
-        font-size: 34px;
-    }
+  .landingTop p {
+    font-size: 34px;
+  }
 }
 
+@media (min-width: 800px) and (max-width: 900px) and (min-height: 1024px) and (max-height: 1280px) and (orientation: portrait) {
+  .landingBottomGroup {
+    bottom: 70px;
+  }
 
-@media (min-width: 800px) and (max-width:900px) and (min-height: 1024px) and (max-height: 1280px) and (orientation: portrait) {
-
-
-    .landingBottomGroup {
-        bottom: 70px;
-    }
-
-    .landingBottom {
-        flex: 0.6;
-    }
+  .landingBottom {
+    flex: 0.6;
+  }
 }
 
-@media (min-width: 912px) and (max-width:1023px) and (min-height: 1024px) and (max-height: 1368px) and (orientation: portrait) {
+@media (min-width: 912px) and (max-width: 1023px) and (min-height: 1024px) and (max-height: 1368px) and (orientation: portrait) {
+  .landingBottomGroup {
+    bottom: 68px;
+  }
 
-    .landingBottomGroup {
-        bottom: 68px;
-    }
-
-    .landingBottom {
-        flex: 0.5;
-    }
-
+  .landingBottom {
+    flex: 0.5;
+  }
 }
 
 @media (min-width: 1200px) {
-    .container {
+  .container {
+    overflow-y: none;
 
-        overflow-y: none;
+    background-image: url("../../public/BannerDesktop.png");
+    background-position: center -65px;
+  }
 
-        background-image: url('../../public/BannerDesktop.png');
-        background-position: center -65px;
+  .landingBottom {
+    flex: 0.3;
+  }
 
-    }
-
-    .landingBottom {
-
-        flex: 0.3;
-
-    }
-
-    .landingBottomGroup {
-        bottom: 70px;
-        flex-direction: row;
-        gap: 20px;
-    }
+  .landingBottomGroup {
+    bottom: 70px;
+    flex-direction: row;
+    gap: 20px;
+  }
 }
 
 @media (min-width: 1366px) {
-
-    .landingBottom {
-
-        flex: 0.6;
-
-    }
-
+  .landingBottom {
+    flex: 0.6;
+  }
 }
 
 @media (min-width: 1440px) {
-
-    .landingBottom {
-
-        flex: 0.5;
-
-    }
-
+  .landingBottom {
+    flex: 0.5;
+  }
 }
 
 @media (min-width: 1920px) {
+  .landingTop {
+    padding: 100px 0 0 80px;
+  }
 
-    .landingTop {
-        padding: 100px 0 0 80px;
-    }
+  .landingTop h1 {
+    font-size: 64px;
+  }
+  .landingTop p {
+    font-size: 40px;
+  }
 
-    .landingTop h1{
-        font-size: 64px;
-    }
-    .landingTop p {
-        font-size: 40px;
-
-    }
-
-
-    .landingBottom {
-
-        flex: 0.3;
-
-    }
+  .landingBottom {
+    flex: 0.3;
+  }
 }
 
 @media (min-width: 2560px) {
-
-    .landingBottom {
-
-        flex: 0.2;
-
-    }
+  .landingBottom {
+    flex: 0.2;
+  }
 }

@@ -5,7 +5,6 @@ import Table from "@mui/joy/Table";
 import Pencil from "../../../../public/Pencil.svg";
 import style from "./data-profile-table.module.css";
 
-
 type UserShape = {
   id: string;
   name: string;
@@ -18,38 +17,41 @@ type UserShape = {
 type tableProps = {
   className?: string;
   userData?: UserShape | null;
-  
+
   onSave?: (updates: Record<string, unknown>) => Promise<void> | void;
 };
 
 export default function DataProfileTable({ userData, onSave }: tableProps) {
-  
-  const initialRows = useMemo(() => (
-    userData
-      ? [
-          { key: "email", label: "Email", value: userData.email },
-          { key: "name", label: "Nombre", value: userData.name },
-          { key: "lastname", label: "Apellido", value: userData.lastname},
-          { key: "dni", label: "CUIT", value: userData.dni ?? "" },
-          { key: "phone", label: "Teléfono", value: userData.phone ?? "" },
-          { key: "password", label: "Contraseña", value: "******" }
-        ]
-      : []
-  ), [userData]);
+  const initialRows = useMemo(
+    () =>
+      userData
+        ? [
+            { key: "email", label: "Email", value: userData.email },
+            { key: "name", label: "Nombre", value: userData.name },
+            { key: "lastname", label: "Apellido", value: userData.lastname },
+            { key: "dni", label: "CUIT", value: userData.dni ?? "" },
+            { key: "phone", label: "Teléfono", value: userData.phone ?? "" },
+            { key: "password", label: "Contraseña", value: "******" },
+          ]
+        : [],
+    [userData],
+  );
 
   const [rows, setRows] = useState(initialRows);
   const [editingKey, setEditingKey] = useState<string | null>(null);
   const [editValue, setEditValue] = useState<string>("");
   const [saving, setSaving] = useState(false);
 
-  
   useEffect(() => {
     setRows(initialRows);
     setEditingKey(null);
     setEditValue("");
   }, [initialRows]);
 
-  const startEdit = (key: string, value: string | number | null | undefined) => {
+  const startEdit = (
+    key: string,
+    value: string | number | null | undefined,
+  ) => {
     setEditingKey(key);
     setEditValue(value == null ? "" : String(value));
   };
@@ -60,16 +62,16 @@ export default function DataProfileTable({ userData, onSave }: tableProps) {
   };
 
   const saveEdit = async (rowKey: string) => {
-    
-    setRows(prev => prev.map(r => r.key === rowKey ? { ...r, value: editValue } : r));
+    setRows((prev) =>
+      prev.map((r) => (r.key === rowKey ? { ...r, value: editValue } : r)),
+    );
     setEditingKey(null);
     setSaving(true);
     try {
       if (onSave && userData) {
-        
         const mapKeyToPayloadField: Record<string, string> = {
           email: "email",
-          
+
           name: "firstname",
           lastname: "lastname",
           dni: "dni",
@@ -88,12 +90,10 @@ export default function DataProfileTable({ userData, onSave }: tableProps) {
           await onSave(payload);
         }
       } else {
-        
         console.log("DataProfileTable: saved", { [rowKey]: editValue });
       }
     } catch (err) {
       console.error("Failed to save profile field", err);
-      
     } finally {
       setSaving(false);
     }
@@ -114,7 +114,7 @@ export default function DataProfileTable({ userData, onSave }: tableProps) {
         </tr>
       </thead>
       <tbody>
-        {rows.map(row => (
+        {rows.map((row) => (
           <tr key={row.key}>
             <td>
               <div className={style.cells}>
@@ -127,7 +127,7 @@ export default function DataProfileTable({ userData, onSave }: tableProps) {
                     {editingKey === row.key ? (
                       <input
                         value={editValue}
-                        onChange={e => setEditValue(e.target.value)}
+                        onChange={(e) => setEditValue(e.target.value)}
                         className={style["inline-input"]}
                         aria-label={`Editar ${row.label}`}
                       />
@@ -139,25 +139,32 @@ export default function DataProfileTable({ userData, onSave }: tableProps) {
                   <div>
                     {editingKey === row.key ? (
                       <div style={{ display: "flex", gap: 8 }}>
-                        <button onClick={() => saveEdit(row.key)} disabled={saving} title="Guardar">
+                        <button
+                          onClick={() => saveEdit(row.key)}
+                          disabled={saving}
+                          title="Guardar"
+                        >
                           Guardar
                         </button>
-                        <button onClick={cancelEdit} disabled={saving} title="Cancelar">
+                        <button
+                          onClick={cancelEdit}
+                          disabled={saving}
+                          title="Cancelar"
+                        >
                           Cancelar
                         </button>
                       </div>
+                    ) : row.key === "email" || row.key === "password" ? (
+                      <span style={{ opacity: 0.6, fontSize: 14 }}>
+                        No editable
+                      </span>
                     ) : (
-                      
-                      (row.key === 'email' || row.key === 'password') ? (
-                        <span style={{ opacity: 0.6, fontSize: 14 }}>No editable</span>
-                      ) : (
-                        <button
-                          title={`Editar ${row.label}`}
-                          onClick={() => startEdit(row.key, row.value)}
-                        >
-                          <Pencil fontSize="22" />
-                        </button>
-                      )
+                      <button
+                        title={`Editar ${row.label}`}
+                        onClick={() => startEdit(row.key, row.value)}
+                      >
+                        <Pencil fontSize="22" />
+                      </button>
                     )}
                   </div>
                 </div>

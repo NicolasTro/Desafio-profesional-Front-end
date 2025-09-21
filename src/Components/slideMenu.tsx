@@ -1,8 +1,8 @@
-"use client"
+"use client";
 import { useEffect, useState } from "react";
 import { useAppContext } from "@/Context/AppContext";
-import { useUser } from "@/hooks/useUser";
-import { usePathname } from 'next/navigation';
+import { useUser, User } from "@/hooks/useUser";
+import { usePathname } from "next/navigation";
 import Box from "@mui/joy/Box";
 import Drawer from "@mui/joy/Drawer";
 import List from "@mui/joy/List";
@@ -18,68 +18,104 @@ interface SlideMenuProps {
 
 export default function SlideMenu({ isOpen, onClose }: SlideMenuProps) {
   const router = useRouter();
-  
+
+  const [isDesktop, setIsDesktop] = useState(false);
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
+    function onResize() {
+      setIsDesktop(window.innerWidth >= 768);
+    }
+    onResize();
+    window.addEventListener("resize", onResize);
     setMounted(true);
+    return () => window.removeEventListener("resize", onResize);
   }, []);
-  const { userInfo, refreshSession, slideMenuOpen, toggleSlideMenu } = useAppContext();
+  const { userInfo, refreshSession, slideMenuOpen, toggleSlideMenu } =
+    useAppContext();
   const { data: meData } = useUser();
-  const first = (meData as { name?: string })?.name ?? userInfo?.name ?? '';
-  const last = (meData as { lastname?: string })?.lastname ?? userInfo?.lastname ?? '';
+  const first = (meData as User | null)?.name ?? userInfo?.name ?? "";
+  const last = (meData as User | null)?.lastname ?? userInfo?.lastname ?? "";
 
   const pathname = usePathname();
   // root is public; do not include "/" here
-  const authPaths = new Set(["/home", "/profile", "/personalCards", "/cardRegister"]);
+  const authPaths = new Set([
+    "/home",
+    "/profile",
+    "/personalCards",
+    "/cardRegister",
+  ]);
   const isAuthRoute = authPaths.has(pathname || "");
   const isAuthenticated = Boolean(userInfo) || isAuthRoute;
 
   if (!mounted) return null;
 
-  const drawerOpen = typeof isOpen === 'boolean' ? isOpen : !!slideMenuOpen;
+  const drawerOpen = typeof isOpen === "boolean" ? isOpen : !!slideMenuOpen;
   const handleClose = onClose ?? (() => toggleSlideMenu?.());
 
   const publicItems = ["Inicio", "Actividad"];
-  const authOnlyItems = ["Tu perfil", "Cargar dinero", "Pagar Servicios", "Tarjetas", "Cerrar sesión"];
+  const authOnlyItems = [
+    "Tu perfil",
+    "Cargar dinero",
+    "Pagar Servicios",
+    "Tarjetas",
+    "Cerrar sesión",
+  ];
   const unauthItems = ["Ingresar", "Crear cuenta"];
-  const items = isAuthenticated ? [...publicItems, ...authOnlyItems] : [...publicItems, ...unauthItems];
+  const items = isAuthenticated
+    ? [...publicItems, ...authOnlyItems]
+    : [...publicItems, ...unauthItems];
 
   const routeMap: Record<string, string> = {
-    "Inicio": "/home",
-    "Actividad": "/activity",
+    Inicio: "/home",
+    Actividad: "/activity",
     "Tu perfil": "/profile",
     "Cargar dinero": "/deposit",
     "Pagar Servicios": "/pay-services",
-    "Tarjetas": "/personalCards",
-  "Cerrar sesión": "/logout",
-  "Ingresar": "/login",
-  "Crear cuenta": "/register",
+    Tarjetas: "/personalCards",
+    "Cerrar sesión": "/logout",
+    Ingresar: "/login",
+    "Crear cuenta": "/register",
   };
 
+  // Only render the desktop aside when authenticated and on desktop viewport
+  const showDesktopAside = isDesktop && Boolean(userInfo);
   return (
     <>
-      <aside className={style["slide-body"]} aria-hidden={false}>
+      {showDesktopAside && (
+        <aside className={style["slide-body"]} aria-hidden={false}>
         <div className={style["slide-header"]}>
-          <h2>Hola,  <br /> {`${first} ${last}`.trim() || 'Hola'}</h2>
+          <h2>
+            Hola, <br /> {`${first} ${last}`.trim() || "Hola"}
+          </h2>
         </div>
         <nav>
           <List>
-            {items.map(text => {
-              const href = routeMap[text] ?? `/${text.toLowerCase().replace(/\s+/g, "-")}`;
+            {items.map((text) => {
+              const href =
+                routeMap[text] ?? `/${text.toLowerCase().replace(/\s+/g, "-")}`;
               if (text === "Cerrar sesión") {
                 return (
                   <ListItem key={text} className={style["slide-content"]}>
-                    <button onClick={async (e) => {
-                          e.preventDefault();
+                    <button
+                      onClick={async (e) => {
+                        e.preventDefault();
+                        try {
+                          await fetch("/api/logout", {
+                            method: "POST",
+                            cache: "no-store",
+                          });
                           try {
-                            await fetch('/api/logout', { method: 'POST', cache: 'no-store' });
-                            await refreshSession();
-                            router.push('/');
-                          } catch {
-                            await refreshSession();
-                            router.push('/');
-                          }
-                        }}>
+                            const { clearIsLogin } = await import("@/lib/authClient");
+                            clearIsLogin();
+                          } catch {}
+                          await refreshSession();
+                          router.push("/");
+                        } catch {
+                          await refreshSession();
+                          router.push("/");
+                        }
+                      }}
+                    >
                       <p>{text}</p>
                     </button>
                   </ListItem>
@@ -95,33 +131,51 @@ export default function SlideMenu({ isOpen, onClose }: SlideMenuProps) {
             })}
           </List>
         </nav>
-      </aside>
+        </aside>
+      )}
 
-      <Drawer open={drawerOpen} onClose={handleClose} >
-        <Box role="presentation" onClick={handleClose} onKeyDown={handleClose} className={style["drawer-body"]}>
+      <Drawer open={drawerOpen} onClose={handleClose}>
+        <Box
+          role="presentation"
+          onClick={handleClose}
+          onKeyDown={handleClose}
+          className={style["drawer-body"]}
+        >
           <div className={style["slide-header"]}>
-            <h2>Hola,  <br /> {`${first} ${last}`.trim() || 'Hola'}</h2>
+            <h2>
+              Hola, <br /> {`${first} ${last}`.trim() || "Hola"}
+            </h2>
           </div>
-          <List >
-            {items.map(text => {
-              const href = routeMap[text] ?? `/${text.toLowerCase().replace(/\s+/g, "-")}`;
+          <List>
+            {items.map((text) => {
+              const href =
+                routeMap[text] ?? `/${text.toLowerCase().replace(/\s+/g, "-")}`;
 
               if (text === "Cerrar sesión") {
                 return (
                   <ListItem key={text} className={style["slide-content"]}>
-                    <button onClick={async (e) => {
-                      e.preventDefault();
-                      try {
-                        await fetch('/api/logout', { method: 'POST', cache: 'no-store' });
-                        await refreshSession();
-                        router.push('/');
-                      } catch {
-                        await refreshSession();
-                        router.push('/');
-                      } finally {
-                        onClose?.();
-                      }
-                    }}>
+                    <button
+                      onClick={async (e) => {
+                        e.preventDefault();
+                        try {
+                          await fetch("/api/logout", {
+                            method: "POST",
+                            cache: "no-store",
+                          });
+                          try {
+                            const { clearIsLogin } = await import("@/lib/authClient");
+                            clearIsLogin();
+                          } catch {}
+                          await refreshSession();
+                          router.push("/");
+                        } catch {
+                          await refreshSession();
+                          router.push("/");
+                        } finally {
+                          onClose?.();
+                        }
+                      }}
+                    >
                       <p>{text}</p>
                     </button>
                   </ListItem>

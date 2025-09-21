@@ -24,7 +24,7 @@ export default function BasicButtons({
   className,
   onClick,
   label,
-  disabled
+  disabled,
 }: ButtonProps) {
   return (
     <Button
@@ -36,7 +36,7 @@ export default function BasicButtons({
         backgroundColor: backgroundColor || "var(--lima)",
         color: color || "black",
         fontSize: fontSize || "16px",
-        fontWeight: fontWeight || "bold"
+        fontWeight: fontWeight || "bold",
       }}
     >
       {label}

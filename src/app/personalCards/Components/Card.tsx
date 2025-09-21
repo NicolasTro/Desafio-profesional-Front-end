@@ -10,7 +10,11 @@ export default function Card() {
         <h3>Agregá tu tarjeta débito o crédito</h3>
       </div>
 
-      <div className={`${style["card-body"]}`} onClick={() => window.location.href = '/cardRegister'} style={{ cursor: 'pointer' }}>
+      <div
+        className={`${style["card-body"]}`}
+        onClick={() => (window.location.href = "/cardRegister")}
+        style={{ cursor: "pointer" }}
+      >
         <div className="flex gap-[20px]">
           <div>
             <Add_Card fontSize="34" />

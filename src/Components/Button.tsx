@@ -19,7 +19,7 @@ export default function Button({
   backgroundColor,
   border,
   textColor,
-  onClick
+  onClick,
 }: ButtonProps) {
   return (
     <button
@@ -29,7 +29,7 @@ export default function Button({
         border: border,
         color: textColor,
         height: height,
-        width: width
+        width: width,
       }}
       onClick={onClick}
     >

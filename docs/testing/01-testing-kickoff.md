@@ -88,8 +88,3 @@ Cada defecto debe documentarse con:
 - **Ejecución de pruebas**: Manual, registrando resultados en la planilla.
 
 ---
-
-
-
-
-

@@ -13,11 +13,11 @@ const tests = fs.existsSync(e2eDir)
 
 function runTest(file) {
   return new Promise((resolve, reject) => {
-  const timeoutMs = Number(process.env.E2E_TEST_TIMEOUT_MS || 120000); // default 2 minutes
-  // pass current env to child so it can access EDGE_DRIVER_PATH, E2E_BASE_URL, etc.
+    const timeoutMs = Number(process.env.E2E_TEST_TIMEOUT_MS || 120000); // default 2 minutes
+    // pass current env to child so it can access EDGE_DRIVER_PATH, E2E_BASE_URL, etc.
     const p = spawn(process.execPath, [file], {
       stdio: "inherit",
-      env: process.env
+      env: process.env,
     });
     const timer = setTimeout(() => {
       try {
@@ -34,8 +34,8 @@ function runTest(file) {
           new Error(
             `${file} exited with code ${code}${
               signal ? " signal:" + signal : ""
-            }`
-          )
+            }`,
+          ),
         );
     };
 

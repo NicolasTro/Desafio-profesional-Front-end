@@ -1,120 +1,413 @@
 .table-container {
-    overflow-x: hidden;
-    overflow-y: auto;
-    width: 100%;
-    box-sizing: border-box;
-    padding: 15px;
-
-    background-color: white;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0 20px;
+  background-color: white;
 }
 
 .table-container thead {
-    width: 100%;
+  width: 100%;
+  height: 75px;
+  border-bottom: solid var(--editGrey) 2px !important;
+
+}
+
+.table-container thead div {
+  display: flex;
+  align-items: center;
+  /* justify-content: flex-start; */
+  width: 100%;
+  height: 100%;
+  /* padding: 0 20px; */
+  border-bottom: solid var(--editGrey) 2px !important;
+  font-size: 20px;
+  font-weight: bold;
+
+}
+
+.thead-row{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 100%;
+  gap: 20px;
+  
+}
+
+.filter {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  width: 100%;
+  height: 100%;
+  color: var(--dark);
+  font-weight: 600;
+  gap: 10px;
+}
+
+.filterButton {
+  display: flex;
+  align-items: center;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-weight: 600;
+  gap: 8px;
+}
+
+.filterActive {
+  color: inherit;
+  font-weight: 700;
+}
+
+/* Modal overlay and panel */
+.modalOverlay {
+  position: fixed;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.35);
+  inset: 0;
+}
+
+.modalPanel {
+  overflow: hidden;
+  width: 360px;
+  max-width: calc(100% - 40px);
+  border-radius: 8px;
+  background: #fff; /* panel background should be white */
+  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22px 24px;
+  border-bottom: 1px solid var(--editGrey);
+}
+
+.modalTitle {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.clearFilters {
+  border: none;
+  color: var(--dark);
+  background: transparent;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.clearFilters[disabled] {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.modalBody {
+  display: flex;
+  flex-direction: column;
+  padding: 22px 24px;
+  gap: 14px;
+}
+
+.radioRow {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 10px 0;
+  color: rgba(0,0,0,0.5); /* default option color: black at 50% opacity */
+  font-size: 16px;
+  gap: 12px;
+}
+
+/* custom radio visuals */
+.radioRow input[type="radio"] {
+  position: relative;
+  order: 2;
+  width: 22px;
+  height: 22px;
+
+  /* keep input DOM-first but visually place it to the right */
+  margin-left: auto;
+  border: 2px solid rgba(0,0,0,0.5); /* unselected border: black 50% */
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.radioRow input[type="radio"]::after {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: transparent;
+  content: "";
+  transform: translate(-50%, -50%);
+}
+
+/* checked state: circle background lime, border black, inner dot black */
+.radioRow input[type="radio"]:checked {
+  border: 2px solid #000;
+  background: var(--lima);
+}
+
+.radioRow input[type="radio"]:checked::after {
+  background: #000;
+}
+
+/* ensure the label text stays on the left visually */
+.radioRow span {
+  order: 1;
+}
+
+/* when a radio is selected, make the label text black and bold */
+/* uses :has - modern browsers only */
+/* make the label text black and bold when the radio input (which is before the span) is checked */
+.radioRow input[type="radio"]:checked + span {
+  opacity: 1;
+  color: rgba(0,0,0,1);
+  font-weight: 700;
+}
+
+/* label-level rule using :has for clarity (modern browsers). Keeps styling purely CSS-based without JS.
+   We also keep the input:checked + span sibling rule above for broad compatibility. */
+.radioRow:has(input[type="radio"]:checked) span {
+  opacity: 1;
+  color: rgba(0,0,0,1);
+  font-weight: 700;
+}
+
+.fieldset {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  margin: 0;
+  border: none;
+  gap: 6px;
+}
+
+.legend {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--dark);
+  font-weight: 700;
+}
+
+.modalFooter {
+  display: flex;
+  justify-content: center;
+  padding: 22px 24px;
+}
+
+.applyButton {
+  width: 100%;
+  padding: 12px 16px;
+  border: none;
+  border-radius: 8px;
+  background: var(--lima);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  transition: transform 120ms ease, box-shadow 120ms ease;
+  font-weight: 800;
+}
+
+.applyButton:hover {
+  box-shadow: 0 16px 40px rgba(34, 197, 94, 0.32);
+  transform: translateY(-2px);
 }
 
 .table-container thead tr {
-    display: flex;
+  width: 100%;
 
-    align-items: center;
-    width: 100%;
+
 }
 
-.table-container thead th {
-    flex: 1 1 auto;
-    box-sizing: border-box;
-    padding-bottom: 10px;
-    border-bottom: 1px solid #e6e6e6;
-    text-align: left;
-    font-size: 16px;
-    font-weight: bold;
+.table-container thead tr th {
+  width: 100%;
+  box-sizing: border-box;
+  border: none !important;
+  text-align: left;
 }
+
+
 
 .table-container tbody {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: space-evenly;
+
+  /* display: table-row-group; */
+  gap: 10px;
 }
 
-.table-container tbody tr {
-    width: 100%;
-}
 
-.table-container tbody tr td {
-    width: 100%;
-    height: 100%;
+.row-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 50px;
 
-    font-size: 14px;
+  /* padding: 0 20px; */
+  border-bottom: solid var(--editGrey) 2px;
+  /* border: solid red 3px; */
+
 }
 
 
 .row {
-    width: 100%;
+  display: flex;
+  width: 100%;
+  height: 50px !important;
 }
 
+
 .cell {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    gap: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 50px !important;
+  border: none !important;
+  gap: 5px;
 }
 
 .text {
-    display: flex;
-    width: 100%;
-    height: 100%;
+  width: 100%;
+  height: 100%;
 }
 
 .title {
-    width: 100%;
-    height: 100%;
-    font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 100%;
+  border: solid gold 3px;
+  font-size: 14px;
 }
 
 .right {
-    display: flex;
-    align-items: flex-end;
-    flex: 1;
-    flex-direction: column;
-    height: 100%;
+  display: flex;
+  align-items: flex-end;
+  flex: 1;
+  flex-direction: column;
+  height: 100%;
 }
 
 .positiveAmount {
-    opacity: 0.8;
-    color: black;
+  opacity: 0.8;
+  color: black;
 }
 
 .negativeAmount {
-    opacity: 0.8;
-    color: black;
-
+  opacity: 0.8;
+  color: black;
 }
 
 .weekday {
-    opacity: 0.5;
-    color: black;
-    font-size: 12px;
+  opacity: 0.5;
+  color: black;
+  font-size: 12px;
 }
 
-
 .left {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    gap: 10px;
-
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 100%;
+  gap: 10px;
 
 }
 
 .table-container td button {
-    font-size: 14px;
-    font-weight: bold;
+  font-size: 14px;
+  font-weight: bold;
 }
 
 .dot {
-    width: 25px;
-    height: 20px;
-    border-radius: 50%;
-    background-color: var(--lima);
+  width: 25px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: var(--lima);
+}
+
+
+
+.table-container tfoot {
+  /* font-size: 16px; */
+  height: 75px;
+  box-sizing: border-box;
+  /* padding: 0 20px; */
+  border-top: solid var(--editGrey) 2px !important;
+  background-color: white !important;
+
+}
+
+.table-container tfoot td {
+  padding: 0;
+  background-color: white !important;
+}
+
+
+.table-container tfoot th {
+
+
+  background-color: white !important;
+
+}
+
+
+
+/* center pagination numbers specifically (overrides parent space-between) */
+.table-container tfoot tr .pagination {
+  justify-content: center;
+  width: 100%;
+}
+.table-container tfoot tr div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 100%;
+  padding: 0 10px;
+  font-size: 16px;
+  font-weight: bold;
+  gap: 20px;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+
+
+.pageButton {
+  padding: 6px 10px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.pageButton[disabled] {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.active {
+  background-color: var(--editGrey);
 }

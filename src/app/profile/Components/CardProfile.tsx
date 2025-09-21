@@ -1,32 +1,23 @@
 "use client";
-import React from 'react';
+import React from "react";
+import { useAppContext } from "@/Context/AppContext";
 import { Divider } from "@mui/joy";
 import style from "./card-profile.module.css";
-import Clipboard from '../../../../public/copy.svg';
-
+import Clipboard from "../../../../public/copy.svg";
 
 type CardProfileProps = {
-  data: {
-    cvu?: string | number;
-    alias?: string | number;
-    name?: string | null;
-    lastname?: string | null;
-  } | null;
   onSave?: (updates: Record<string, unknown>) => Promise<void> | void;
 };
 
+export default function CardProfile({ onSave }: CardProfileProps) {
+  const { userInfo } = useAppContext();
 
-export default function CardProfile({ data, onSave }: CardProfileProps) {
-
-
-  console.log(data);
-  
-  const cvu = data?.cvu || "No disponible";
-  const alias = data?.alias || "No disponible";
-  const firstname = data?.name || "";
-  const lastname = data?.lastname || "";
+  const cvu = userInfo?.cvu ?? "No disponible";
+  const alias = userInfo?.alias ?? "No disponible";
 
   const [editing, setEditing] = React.useState(false);
+  const firstname = userInfo?.name ?? "";
+  const lastname = userInfo?.lastname ?? "";
   const [firstValue, setFirstValue] = React.useState(firstname);
   const [lastValue, setLastValue] = React.useState(lastname);
   const [cvuCopied, setCvuCopied] = React.useState(false);
@@ -39,34 +30,41 @@ export default function CardProfile({ data, onSave }: CardProfileProps) {
 
   const copyToClipboard = async (text: string): Promise<boolean> => {
     try {
-      if (typeof navigator !== 'undefined' && navigator.clipboard && navigator.clipboard.writeText) {
+      if (
+        typeof navigator !== "undefined" &&
+        navigator.clipboard &&
+        navigator.clipboard.writeText
+      ) {
         await navigator.clipboard.writeText(text);
         return true;
       }
     } catch (e) {
-      console.debug('navigator.clipboard failed, falling back to execCommand', e);
+      console.debug(
+        "navigator.clipboard failed, falling back to execCommand",
+        e,
+      );
     }
 
     try {
-      const textarea = document.createElement('textarea');
+      const textarea = document.createElement("textarea");
       textarea.value = text;
-      textarea.style.position = 'fixed';
-      textarea.style.top = '0';
-      textarea.style.left = '0';
-      textarea.style.width = '1px';
-      textarea.style.height = '1px';
-      textarea.style.padding = '0';
-      textarea.style.border = 'none';
-      textarea.style.outline = 'none';
-      textarea.style.boxShadow = 'none';
-      textarea.style.background = 'transparent';
+      textarea.style.position = "fixed";
+      textarea.style.top = "0";
+      textarea.style.left = "0";
+      textarea.style.width = "1px";
+      textarea.style.height = "1px";
+      textarea.style.padding = "0";
+      textarea.style.border = "none";
+      textarea.style.outline = "none";
+      textarea.style.boxShadow = "none";
+      textarea.style.background = "transparent";
       document.body.appendChild(textarea);
       textarea.select();
-      const successful = document.execCommand('copy');
+      const successful = document.execCommand("copy");
       document.body.removeChild(textarea);
       return successful;
     } catch (e) {
-      console.error('execCommand copy failed', e);
+      console.error("execCommand copy failed", e);
       return false;
     }
   };
@@ -97,17 +95,26 @@ export default function CardProfile({ data, onSave }: CardProfileProps) {
                   setCvuCopied(true);
                   setTimeout(() => setCvuCopied(false), 2000);
                 } else {
-                  console.error('Copy failed');
+                  console.error("Copy failed");
                 }
               } catch (e) {
-                console.error('Copy failed', e);
+                console.error("Copy failed", e);
               }
             }}
-            style={{ background: 'transparent', border: 'none', padding: 0, cursor: 'pointer' }}
+            style={{
+              background: "transparent",
+              border: "none",
+              padding: 0,
+              cursor: "pointer",
+            }}
           >
             <Clipboard fontSize="24" />
           </button>
-          {/* {cvuCopied && <span style={{ marginLeft: 8, color: 'var(--dark)', fontSize: 12 }}>Copiado</span>} */}
+          {cvuCopied && (
+            <span style={{ marginLeft: 8, color: "var(--dark)", fontSize: 12 }}>
+              Copiado
+            </span>
+          )}
         </div>
         <div>{cvu}</div>
       </div>
@@ -117,11 +124,11 @@ export default function CardProfile({ data, onSave }: CardProfileProps) {
         sx={{
           width: "100%",
           height: "1px",
-          backgroundColor: "var(--lightGrey)"
+          backgroundColor: "var(--lightGrey)",
         }}
       />
       <br />
-      
+
       <div>
         <div className={style["cvu-container"]}>
           <p>Alias</p>
@@ -135,19 +142,74 @@ export default function CardProfile({ data, onSave }: CardProfileProps) {
                   setAliasCopied(true);
                   setTimeout(() => setAliasCopied(false), 2000);
                 } else {
-                  console.error('Copy failed');
+                  console.error("Copy failed");
                 }
               } catch (e) {
-                console.error('Copy failed', e);
+                console.error("Copy failed", e);
               }
             }}
-            style={{ background: 'transparent', border: 'none', padding: 0, cursor: 'pointer' }}
+            style={{
+              background: "transparent",
+              border: "none",
+              padding: 0,
+              cursor: "pointer",
+            }}
           >
             <Clipboard fontSize="24" />
           </button>
-          {/* {aliasCopied && <span style={{ marginLeft: 8, color: 'var(--dark)', fontSize: 12 }}>Copiado</span>} */}
+          {aliasCopied && (
+            <span style={{ marginLeft: 8, color: "var(--dark)", fontSize: 12 }}>
+              Copiado
+            </span>
+          )}
         </div>
         <div>{alias}</div>
+      </div>
+      <br />
+
+      <div style={{ marginTop: 12 }}>
+        {!editing ? (
+          <button
+            onClick={() => setEditing(true)}
+            style={{
+              background: "transparent",
+              border: "1px solid var(--lima)",
+              padding: "6px 10px",
+              borderRadius: 6,
+            }}
+          >
+            Editar nombre
+          </button>
+        ) : (
+          <div style={{ display: "flex", gap: 8 }}>
+            <button
+              onClick={saveNames}
+              style={{
+                background: "var(--lima)",
+                border: "none",
+                padding: "6px 10px",
+                borderRadius: 6,
+              }}
+            >
+              Guardar
+            </button>
+            <button
+              onClick={() => {
+                setEditing(false);
+                setFirstValue(firstname);
+                setLastValue(lastname);
+              }}
+              style={{
+                background: "#eee",
+                border: "none",
+                padding: "6px 10px",
+                borderRadius: 6,
+              }}
+            >
+              Cancelar
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

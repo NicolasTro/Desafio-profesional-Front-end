@@ -1,0 +1,12 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  background-color: var(--lightGrey);
+  gap: 20px;
+}
+
+.blocks {
+  height: 100%;
+  /* border: solid gold 4px; */
+}

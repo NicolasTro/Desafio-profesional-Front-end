@@ -1,17 +1,16 @@
-.nameTag{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 49px;
-    height: 33.5px;
-    border-radius: 10px;
-    color: black;
-    background-color: var(--lima);
-    text-align: center;
+.nameTag {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 49px;
+  height: 33.5px;
+  border-radius: 10px;
+  color: black;
+  background-color: var(--lima);
+  text-align: center;
 }
 
-.name{
-
-    font-size: 16px;
-    font-weight: bold;
+.name {
+  font-size: 16px;
+  font-weight: bold;
 }

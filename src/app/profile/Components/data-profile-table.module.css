@@ -1,52 +1,44 @@
 .table-header {
-    font-size: 20px;
+  font-size: 20px;
 }
 
 .cells {
-    display: flex;
-    align-items: flex-start;
-    flex-direction: column;
-    justify-content: flex-start;
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+  justify-content: flex-start;
 }
-
 
 .edit-container {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
 }
-
 
 .table-background {
-    overflow: hidden;
-    width: 100%;
-    height: 100%;
-    padding: 20px 20px 40px 20px;
-    border-radius: 20px !important;
-    background-color: white;
-    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  padding: 20px 20px 40px 20px;
+  border-radius: 20px !important;
+  background-color: white;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
 }
-
 
 .table-background p {
-    font-size: 20px;
-    font-weight: bold;
+  font-size: 20px;
+  font-weight: bold;
 }
 
-
-
 .header-cell-size p {
-    font-size: 16px;
-    font-weight: 600;
-
+  font-size: 16px;
+  font-weight: 600;
 }
 
 .content-value p {
-    opacity: 0.5;
-    color: black;
-    font-size: 16px;
-    font-weight: 400;
+  opacity: 0.5;
+  color: black;
+  font-size: 16px;
+  font-weight: 400;
 }
