@@ -1,8 +1,7 @@
 "use client";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import Input from "@mui/joy/Input";
-import Stack from "@mui/joy/Stack";
-import React, { useState } from "react";
+import { useState } from "react";
 
 type SearchBarProps = {
   placeholder: string;
