@@ -1,14 +1,14 @@
 "use client";
+import { useAppContext } from "@/Context/AppContext";
+import { usePathname, useRouter } from "next/navigation";
 import type { ReactElement } from "react";
-import Logo from "./Logo";
+import MenuHamb from "../../public/menuHamb.svg";
 import Button from "./Button";
 import style from "./Button.module.css";
 import headerStyle from "./Header.module.css";
-import { useRouter, usePathname } from "next/navigation";
+import Logo from "./Logo";
 import NameTag from "./nameTag";
-import MenuHamb from "../../public/menuHamb.svg";
 import styleTag from "./nameTag.module.css";
-import { useAppContext } from "@/Context/AppContext";
 
 export default function Header(): ReactElement {
   const router = useRouter();
@@ -22,7 +22,6 @@ export default function Header(): ReactElement {
       ? headerStyle["route-home"]
       : headerStyle["route-default"];
 
-  // 👇 función simple para iniciales
   const getInitials = (
     name?: string | null,
     lastname?: string | null
@@ -57,7 +56,7 @@ export default function Header(): ReactElement {
     >
       {authenticated ? (
         <div className={headerStyle.userArea}>
-          <div className={headerStyle.nameWrapper}>
+          <div className={headerStyle.nameWrapper} onClick={() => router.push("/home")}>
             <div
               className="w-8 h-8 flex items-center justify-center bg-gray-800 text-white rounded-full text-sm font-bold"
               title="Usuario Autenticado"
@@ -67,7 +66,7 @@ export default function Header(): ReactElement {
                 nameTag={getInitials(userInfo?.name, userInfo?.lastname)}
               />
             </div>
-            <div className={headerStyle.userName}>
+            <div className={headerStyle.userName} > 
               {userInfo
                 ? `Hola, ${
                     [userInfo.name, userInfo.lastname]
@@ -90,7 +89,7 @@ export default function Header(): ReactElement {
       ) : (
         <div className={headerStyle.authButtons}>
           {pathname !== "/register" ? (
-            <div>
+            <div className="flex items-center gap-4">
               <Button
                 className={style.button1}
                 label="Ingresar"

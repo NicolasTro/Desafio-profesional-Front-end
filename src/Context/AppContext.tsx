@@ -1,229 +1,232 @@
 "use client";
+
 import React, { createContext, useContext, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   getCachedProfile,
   setCachedProfile,
   clearCachedProfile,
-  CachedProfile,
-  hasAuthCookie,
+  CachedProfile
 } from "@/lib/authClient";
+import { UserData, AccountData } from "@/lib/types";
 
-// Interfaz para el token decodificado, que contiene información del usuario
-interface DecodedToken {
-  id: string;
-  user_id?: string;
-  sub?: string;
-  email: string;
-  exp: number;
-  account_id?: string;
-  cvu?: string | null;
-  alias?: string | null;
-  available_amount?: number | null;
-  phone?: string | null;
-  name?: string | null;
-  lastname?: string | null;
-}
-
-// Interfaz para el tipo de contexto de la aplicación
 interface AppContextType {
+  user: UserData | null;
+  userInfo: UserData | null;
+  account: AccountData | null;
+  exp: number | null;
+  isLoading: boolean;
+  isLoggingOut: boolean;
+  refreshSession: () => Promise<void>;
+  logout: (redirect?: () => void) => Promise<void>;
   slideMenuOpen: boolean;
   toggleSlideMenu: () => void;
-  token: string | null;
-  userInfo: DecodedToken | null;
-  isLoading: boolean;
-  refreshSession: () => Promise<void>;
+  closeSlideMenu: () => void;
 }
 
-// Creación del contexto de la aplicación
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
-// Proveedor del contexto de la aplicación
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
+  children
 }) => {
-  const [slideMenuOpen, setSlideMenuOpen] = useState(false);
-  const [token, setToken] = useState<string | null>(null);
-  const [userInfo, setUserInfo] = useState<DecodedToken | null>(() => {
-    // hydrate from sessionStorage for immediate UI render
-    try {
-      const cached = getCachedProfile();
-      if (!cached) return null;
+  const [user, setUser] = useState<UserData | null>(() => {
+    const cached = getCachedProfile();
+    if (cached) {
       return {
         id: cached.id,
-        email: cached.email ?? "",
-        exp: cached.exp ?? 0,
-        name: cached.name ?? null,
-        lastname: cached.lastname ?? null,
-        phone: cached.phone ?? null,
-      } as DecodedToken;
-    } catch {
-      return null;
+        name: cached.name || null,
+        lastname: cached.lastname || null,
+        email: cached.email || null,
+        phone: cached.phone || null,
+        exp: cached.exp || null
+      };
     }
+    return null;
   });
-  const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  const refreshSession = async (): Promise<void> => {
+  const [account, setAccount] = useState<AccountData | null>(null);
+  const [exp, setExp] = useState<number | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isLoggingOut, setIsLoggingOut] = useState<boolean>(false);
+
+  const [slideMenuOpen, setSlideMenuOpen] = useState(false);
+  const toggleSlideMenu = () => setSlideMenuOpen(prev => !prev);
+  const closeSlideMenu = () => setSlideMenuOpen(false);
+  const router = useRouter();
+
+  const refreshSession = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch("/api/session");
-      const data = await response.json();
-      if (data?.authenticated) {
-        let u = data.userInfo || null;
-        try {
-          const accountResponse = await fetch("/api/account");
-          if (accountResponse.ok) {
-            const acc = await accountResponse.json();
-            if (u) {
-              u = {
-                ...u,
-                account_id:
-                  acc?.account_id ||
-                  acc?.id ||
-                  acc?.accountId ||
-                  u.account_id ||
-                  null,
-                cvu: acc?.cvu ?? acc?.account?.cvu ?? u.cvu ?? null,
-                alias: acc?.alias ?? acc?.account?.alias ?? u.alias ?? null,
-                available_amount: (acc?.available_amount ??
-                  acc?.balance ??
-                  null) as number | null,
-              };
-            }
-            try {
-              const meResponse = await fetch("/api/me");
-              if (meResponse.ok) {
-                const me = await meResponse.json();
-                if (me && u) {
-                  const prev = u as Partial<DecodedToken> | null;
-                  u = {
-                    ...(prev ?? {}),
-                    name: me.name ?? prev?.name ?? null,
-                    lastname: me.lastname ?? prev?.lastname ?? null,
-                    email: me.email ?? prev?.email ?? null,
-                    phone: me.phone ?? prev?.phone ?? null,
-                  } as DecodedToken;
-                }
-              }
-            } catch (e) {
-              console.debug("Error al obtener /api/me en refreshSession", e);
-            }
-          }
-        } catch (e) {
-          console.debug("Error al obtener /api/account en refreshSession", e);
-        }
-        setUserInfo(u);
-        setToken(null);
-        // cache minimal profile client-side for faster subsequent renders
-        try {
-          if (u) {
-            const up = u as Partial<DecodedToken>;
-            const cached: CachedProfile = {
-              id: (up.id ?? up.user_id ?? up.sub ?? "") as string,
-              name: up.name ?? null,
-              lastname: up.lastname ?? null,
-              email: up.email ?? null,
-              phone: up.phone ?? null,
-              exp: up.exp ?? null,
-              fetchedAt: Date.now(),
-            };
-            setCachedProfile(cached);
-          }
-        } catch (err) {
-          console.debug("Could not cache profile", err);
-        }
+      const res = await fetch("/api/session");
+            
+      const data = await res.json();
+            if (data.authenticated) {
+        setUser(data.user || null);
+        setAccount(data.account || null);
+        setExp(data.exp || null);
+
+        const cached: CachedProfile = {
+          id: (data.user && data.user.id) || "",
+          name: (data.user && data.user.name) || null,
+          lastname: (data.user && data.user.lastname) || null,
+          email: (data.user && data.user.email) || null,
+          phone: (data.user && data.user.phone) || null,
+          exp: data.exp || null,
+
+          fetchedAt: Date.now()
+        };
+        setCachedProfile(cached);
       } else {
-        setUserInfo(null);
-        setToken(null);
-        // ensure the slide menu (drawer/aside) is closed when session ends
-        setSlideMenuOpen(false);
-        try {
-          if (typeof window !== "undefined") {
-            clearCachedProfile();
-            try {
-              const { clearIsLogin } = await import("@/lib/authClient");
-              clearIsLogin();
-            } catch {
-              // ignore
-            }
-            window.dispatchEvent(new CustomEvent("session:expired"));
-          }
-        } catch {
-          // ignore
-        }
+        setUser(null);
+        setAccount(null);
+        setExp(null);
+        clearCachedProfile();
       }
     } catch (err) {
-      console.error("Error al obtener la sesión", err);
-      setUserInfo(null);
-      setToken(null);
-      // close slide menu on error/failed refresh to avoid stale UI
-      setSlideMenuOpen(false);
+      console.error("Error al refrescar sesión:", err);
+      setUser(null);
+      setAccount(null);
+      setExp(null);
+      clearCachedProfile();
+      setSlideMenuOpen(false); 
     } finally {
       setIsLoading(false);
     }
   };
 
+  // 🚪 logout
+  const logout = async (redirect?: () => void) => {
+    setIsLoggingOut(true);
+    try {
+      await fetch("/api/logout", { method: "POST" });
+    } catch (err) {
+      console.error("Error en logout:", err);
+    } finally {
+      try {
+        if (typeof window !== "undefined") {
+          sessionStorage.clear();
+        }
+      } catch {
+        // ignore
+      }
+
+      setUser(null);
+      setAccount(null);
+      setExp(null);
+      clearCachedProfile();
+      setSlideMenuOpen(false);
+      setIsLoggingOut(false);
+
+      try {
+        if (typeof window !== "undefined") {
+          const Swal = (await import("sweetalert2")).default;
+          await Swal.fire({
+            icon: "success",
+            title: "Sesión cerrada",
+            text: "Has cerrado sesión correctamente.",
+            confirmButtonText: "Ir al login",
+            customClass: { popup: "swal-popup", confirmButton: "swal-confirm" },
+          });
+        }
+      } catch {
+      }
+
+      if (redirect) redirect();
+      else router.push("/login");
+    }
+  };
+
   useEffect(() => {
     void refreshSession();
-    // keep profile in sync across tabs: when another tab updates profile we should re-hydrate
+
     function onStorage(e: StorageEvent) {
       if (e.key === "dm_profile_changed") {
         const cached = getCachedProfile();
         if (cached) {
-          setUserInfo({
+          setUser({
             id: cached.id,
-            email: cached.email ?? "",
-            exp: cached.exp ?? 0,
-            name: cached.name ?? null,
-            lastname: cached.lastname ?? null,
-            phone: cached.phone ?? null,
-          } as DecodedToken);
+            name: cached.name || null,
+            lastname: cached.lastname || null,
+            email: cached.email || null,
+            phone: cached.phone || null,
+            exp: cached.exp || null
+          });
         } else {
-          setUserInfo(null);
+          setUser(null);
         }
       }
-      if (e.key === null && typeof window !== "undefined") {
-        if (!hasAuthCookie()) void refreshSession();
-      }
     }
-
     window.addEventListener("storage", onStorage);
     return () => window.removeEventListener("storage", onStorage);
   }, []);
 
   useEffect(() => {
-    try {
-      if (typeof window === "undefined") return;
-      if (userInfo) {
-        const up = userInfo as Partial<DecodedToken>;
-        const cached: CachedProfile = {
-          id: (up.id ?? up.user_id ?? up.sub ?? "") as string,
-          name: up.name ?? null,
-          lastname: up.lastname ?? null,
-          email: up.email ?? null,
-          phone: up.phone ?? null,
-          exp: up.exp ?? null,
-          fetchedAt: Date.now(),
-        };
-        setCachedProfile(cached);
-      } else {
+    const onSessionExpired = () => {
+      (async () => {
+        try {
+          if (typeof window !== "undefined") sessionStorage.clear();
+        } catch {}
+        setUser(null);
+        setAccount(null);
+        setExp(null);
         clearCachedProfile();
-      }
-    } catch (err) {
-      console.debug("Error syncing cached profile from AppContext", err);
-    }
-  }, [userInfo]);
+        setSlideMenuOpen(false);
 
-  const toggleSlideMenu = () => setSlideMenuOpen((prev) => !prev);
+        try {
+          if (typeof window !== "undefined") {
+            const Swal = (await import("sweetalert2")).default;
+            await Swal.fire({
+              icon: "warning",
+              title: "Sesión expirada",
+              text: "Tu sesión ha expirado. Serás redirigido al login.",
+              confirmButtonText: "Ir al login",
+              customClass: { popup: "swal-popup", confirmButton: "swal-confirm" },
+            });
+          }
+        } catch {
+          // ignore
+        }
+
+        try {
+          router.push("/login");
+        } catch {
+          try {
+            if (typeof window !== "undefined") window.location.href = "/login";
+          } catch {}
+        }
+      })();
+    };
+
+    window.addEventListener("session:expired", onSessionExpired as EventListener);
+    return () => window.removeEventListener("session:expired", onSessionExpired as EventListener);
+  }, [router]);
+
+useEffect(() => {
+    const isAuth = !!user;
+
+    document.body.classList.toggle("body-auth", isAuth);
+    document.body.classList.toggle("body-guest", !isAuth);
+
+    document.documentElement.classList.toggle("html-auth", isAuth);
+    document.documentElement.classList.toggle("html-guest", !isAuth);
+  }, [user]);
+
+
 
   return (
     <AppContext.Provider
       value={{
+        user,
+        userInfo: user,
+        account,
+        exp,
+        isLoading,
+        isLoggingOut,
+        refreshSession,
+        logout,
         slideMenuOpen,
         toggleSlideMenu,
-        token,
-        userInfo,
-        isLoading,
-        refreshSession,
+        closeSlideMenu
       }}
     >
       {children}
@@ -232,8 +235,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
 };
 
 export const useAppContext = (): AppContextType => {
-  const context = useContext(AppContext);
-  if (!context)
-    throw new Error("useAppContext debe usarse dentro de un AppProvider");
-  return context;
+  const ctx = useContext(AppContext);
+  if (!ctx) throw new Error("useAppContext debe usarse dentro de AppProvider");
+  return ctx;
 };

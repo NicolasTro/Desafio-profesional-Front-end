@@ -1,4 +1,3 @@
-/* Simple layout for activity page */
 .container {
   display: flex;
   align-items: flex-start;
@@ -6,13 +5,11 @@
   justify-content: flex-start;
   height: 100%;
   padding: 20px;
-  border: solid red 3px;
   background-color: var(--lightGrey);
   gap: 20px;
 }
 
 .content {
-
   display: flex;
   align-items: center;
   flex-direction: column;
@@ -21,8 +18,30 @@
 }
 
 .searchWrapper {
-  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   width: 100%;
   height: 64px;
+  gap: 20px;
 }
 
+.content-button {
+  display: none;
+}
+
+@media (min-width: 768px) {
+
+  .content-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 172px;
+    height: 64px;
+    border-radius: 10px;
+    background-color: var(--lima);
+    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+    font-weight: bold;
+    gap: 20px;
+  }
+}

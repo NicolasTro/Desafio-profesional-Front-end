@@ -3,7 +3,7 @@
   align-items: center;
   justify-content: center;
   min-width: 100vw;
-  min-height: 64px;
+  min-height: 74px;
   color: var(--lima);
   background-color: var(--lightDark);
   font-size: clamp(10px, 3vw, 14px);

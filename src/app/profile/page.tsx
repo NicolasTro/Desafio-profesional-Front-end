@@ -3,6 +3,7 @@ import Button from "@/Components/Button";
 import { useAppContext } from "@/Context/AppContext";
 import { useEffect, useMemo, useCallback } from "react";
 import PageHeader from "@/Components/PageHeader";
+import { useRouter } from "next/navigation";
 import Arrow from "./../../../public/arrow.svg";
 import CardProfile from "./Components/CardProfile";
 import DataProfileTable from "./Components/DataProfileTable";
@@ -24,6 +25,7 @@ interface UserData {
 
 export default function ProfilePage() {
   const { userInfo, refreshSession } = useAppContext();
+  const router = useRouter();
   const { data: meData, isLoading: isLoadingMe, refetch: refetchMe } = useUser();
 
   useEffect(() => {
@@ -58,14 +60,13 @@ export default function ProfilePage() {
         body: JSON.stringify(updates),
       });
 
-      console.log("ressss", res);
+      
 
       if (!res.ok) {
         const text = await res.text().catch(() => "");
         throw new Error(text || `HTTP ${res.status}`);
       }
 
-  // re-fetch user data after profile update and refresh session
   await refetchMe();
   refreshSession();
     },
@@ -89,6 +90,7 @@ export default function ProfilePage() {
             backgroundColor="var(--lima)"
             width="80%"
             height="67px"
+            onClick={() => router.push('/personalCards')}
           />
           <Arrow />
         </div>

@@ -50,7 +50,6 @@ export async function POST(
       if (process.env.LOG_API === "true" || process.env.NODE_ENV !== "test") {
         console.log("Upstream POST /deposits error:", upstream.status, text);
       }
-      // Forward upstream body (as text) and status to client
       return NextResponse.json({ error: text }, { status: upstream.status });
     }
 
@@ -59,7 +58,6 @@ export async function POST(
       ? await upstream.json()
       : await upstream.text();
 
-    // Typically a creation returns 201 but forward actual status from upstream
     return NextResponse.json(payload, { status: upstream.status || 201 });
   } catch (error: unknown) {
     if (process.env.LOG_API === "true" || process.env.NODE_ENV !== "test") {

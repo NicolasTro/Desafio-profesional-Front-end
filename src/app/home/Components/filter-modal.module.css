@@ -1,0 +1,143 @@
+.overlay {
+  position: fixed; 
+  z-index: 2000;
+  display: flex;
+  align-items: center; 
+  justify-content: center;
+  padding: 20px;
+  background: rgba(0,0,0,0.35);
+  inset: 0; 
+}
+
+.modal {
+  overflow: auto;
+  width: min(354px, calc(100% - 40px));
+  height: min(428px, 90vh);
+  padding: 18px;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.title {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.clear {
+  border: none;
+  color: #8a8a8a;
+  background: transparent;
+  font-size: 14px;
+}
+
+.list {
+  display: flex;
+  overflow: auto;
+  flex-direction: column;
+  max-height: 60vh;
+  padding: 8px 0 18px 0;
+  gap: 12px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  gap: 12px;
+}
+
+.row input[type="radio"] {
+  position: relative;
+  display: inline-block;
+  width: 22px;
+  height: 22px;
+  border: 2px solid #9b9b9b;
+  border-radius: 50%; 
+  background: transparent;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+.row input[type="radio"]::after {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 12px; 
+  height: 12px;
+  border-radius: 50%;
+  background: transparent;
+  content: "";
+  transform: translate(-50%, -50%);
+}
+
+.row input[type="radio"]:checked {
+  border-color: rgba(0,0,0,0.85); 
+  background: var(--lima, #dff400);
+}
+
+.row input[type="radio"]:checked::after { 
+  width: 12px;
+  height: 12px;
+  background: var(--lima-dark, #101010);
+}
+
+.row span {
+  flex: 1;
+  order: 1;
+  text-align: left;
+}
+.row input[type="radio"] {
+  order: 2;
+  margin-left: 12px;
+}
+
+.row input[type="radio"]:checked + span,
+.row input[type="radio"]:checked ~ span {
+  font-weight: 700;
+}
+
+.row input[type="radio"]:focus {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(223,244,0,0.12);
+}
+
+.footer {
+  display: flex; 
+  align-items: center;
+  justify-content: center;
+  padding-top: 8px;
+}
+
+.apply {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 37px; 
+  padding: 0 16px; 
+  border: none;
+  border-radius: 12px;
+  background: var(--lima, #dff400);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.18);
+  cursor: pointer;
+  font-weight: 700; 
+}
+
+@media (min-width: 768px) {
+  .footer {
+    justify-content: flex-end; 
+  }
+  .apply {
+    width: 141px; 
+  }
+}

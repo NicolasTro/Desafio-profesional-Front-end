@@ -1,10 +1,7 @@
-import Footer from "@/Components/Footer";
-import "./globals.css";
-import Header from "@/Components/Header";
-import SlideMenu from "@/Components/slideMenu";
-import { getTokenFromCookie } from "@/lib/auth";
+import ClientLayoutWithAuth from "@/Components/ClientLayoutWithAuth";
 import { AppProvider } from "@/Context/AppContext";
 import { Open_Sans } from "next/font/google";
+import "./globals.css";
 
 const openSans = Open_Sans({
   subsets: ["latin"],
@@ -12,25 +9,20 @@ const openSans = Open_Sans({
   weight: ["300", "400", "500", "600", "700"]
 });
 
+
+
 export default async function RootLayout({
   children
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
-  const token = await getTokenFromCookie();
+}: Readonly<{ children: React.ReactNode }>) {
+
 
   return (
-    <html lang="en" className={openSans.className} suppressHydrationWarning>
+    <html lang="en" className={`${openSans.className}`} suppressHydrationWarning>
       <body>
         <AppProvider>
-          <div className={`app-grid ${token ? "with-aside" : ""}`}>
-            <Header />
-            <SlideMenu isOpen={undefined} />
-            <main>
-              {children}
-            </main>
-            <Footer />
-          </div>
+          <ClientLayoutWithAuth>
+            {children}
+          </ClientLayoutWithAuth>
         </AppProvider>
       </body>
     </html>

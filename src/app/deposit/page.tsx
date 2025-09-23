@@ -11,9 +11,11 @@ export default function DepositPage() {
   const router = useRouter();
 
   return (
-    <main className={styles.container}>
-      <PageHeader nombre="Cargar dinero" />
+    <section className={styles.container}>
+      <div className={styles.title}>
+        <PageHeader nombre="Cargar dinero" />
 
+      </div>
       <div className={styles["deposit-blocks"]}>
         <div
           className={styles.block}
@@ -38,6 +40,6 @@ export default function DepositPage() {
           <Arrow color={"var(--lima)"} fontSize={22} />
         </div>
       </div>
-    </main>
+    </section>
   );
 }

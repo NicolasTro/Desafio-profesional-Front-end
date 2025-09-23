@@ -48,7 +48,6 @@ export async function GET(
           text,
         );
       }
-      // Forward upstream body and status to client for easier debugging
       return NextResponse.json({ error: text }, { status: response.status });
     }
 
@@ -72,7 +71,7 @@ export async function POST(
   try {
     const token = await getTokenFromCookie();
     if (process.env.LOG_API === "true" || process.env.NODE_ENV !== "test") {
-      console.log("Token from cookie:", !!token); // Log si existe
+      console.log("Token from cookie:", !!token); 
     }
 
     if (!token) {

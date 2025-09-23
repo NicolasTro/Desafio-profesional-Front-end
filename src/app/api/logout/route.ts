@@ -1,10 +1,8 @@
-import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { DIGITALMONEY_API_BASE } from "@/lib/env";
 import { getTokenFromCookie } from "@/lib/auth";
 
 export async function POST() {
-  const jar = await cookies();
   try {
     const token = await getTokenFromCookie();
     if (!token) {
@@ -31,11 +29,18 @@ export async function POST() {
       );
     }
 
-    return NextResponse.json({ ok: true }, { status: 202 });
+    // Respuesta OK + borrado de cookie
+    const res = NextResponse.json({ ok: true }, { status: 202 });
+    res.cookies.set("dm_token", "", {
+      httpOnly: true,
+      secure: true,
+      sameSite: "lax",
+      path: "/",
+      expires: new Date(0), // expirada
+    });
+    return res;
   } catch (e: unknown) {
     const message = e instanceof Error ? e.message : "Logout failed";
     return NextResponse.json({ ok: false, error: message }, { status: 500 });
-  } finally {
-    jar.set("dm_token", "", { httpOnly: true, maxAge: 0, path: "/" });
   }
 }

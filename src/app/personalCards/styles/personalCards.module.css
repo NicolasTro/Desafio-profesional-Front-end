@@ -1,6 +1,6 @@
 .container-personal-card {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   flex: 1;
   flex-direction: column;
   justify-content: flex-start;

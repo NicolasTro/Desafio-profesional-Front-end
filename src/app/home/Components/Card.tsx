@@ -4,8 +4,8 @@ import style from "./card.module.css";
 import { useAppContext } from "@/Context/AppContext";
 
 export default function Card() {
-  const { userInfo } = useAppContext();
-  const amount = userInfo?.available_amount ?? 0;
+  const { account } = useAppContext();
+  const amount = account?.available_amount ?? 0;
 
   const formatted = new Intl.NumberFormat("es-AR", {
     style: "currency",

@@ -9,9 +9,7 @@ type SearchBarProps = {
   width?: number | string;
   height?: number | string;
   className?: string;
-  // called when user presses Enter with the current input value
   onSearch?: (q: string) => void;
-  // optional initial value
   defaultValue?: string;
 };
 
@@ -19,7 +17,6 @@ export default function SearchBar(props: SearchBarProps) {
   const [value, setValue] = useState(String(props.defaultValue || ""));
 
   return (
-    <Stack spacing={1.5}>
       <Input
         className={props.className}
         placeholder={props.placeholder}
@@ -33,11 +30,12 @@ export default function SearchBar(props: SearchBarProps) {
         sx={{
           width: props.width || "100%",
           height: props.height || "64px",
+          border: "solid var(--input--border--color) 1px",
+          boxShadow: "0 4px 4px rgba(0, 0, 0, 0.25)",
         }}
         startDecorator={
           <i className="fas fa-search" style={{ color: "gray" }}></i>
         }
       />
-    </Stack>
   );
 }

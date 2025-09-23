@@ -2,7 +2,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { fetchMe } from "../lib/fetchers";
 
-// Minimal user shape used across the app. Add fields here if backend returns more.
 export type User = {
   id?: string;
   name?: string;

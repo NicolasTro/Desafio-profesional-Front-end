@@ -1,14 +1,13 @@
 "use client";
-import React, { useEffect, useState } from "react";
 import { useAppContext } from "@/Context/AppContext";
 import Table from "@mui/joy/Table";
-
+import { useEffect, useState } from "react";
 import style from "./table-card.module.css";
 
 export default function DataProfileTable() {
-  const { userInfo, token } = useAppContext();
-  const accountId =
-    userInfo && (userInfo as { account_id?: string }).account_id;
+  const { account } = useAppContext();
+
+  const accountId = account?.account_id;
 
   type Card = {
     id: number;
@@ -20,6 +19,7 @@ export default function DataProfileTable() {
   };
 
   const [cards, setCards] = useState<Card[]>([]);
+  const [removingIds, setRemovingIds] = useState<Set<number>>(new Set());
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -31,14 +31,9 @@ export default function DataProfileTable() {
       setLoading(true);
       setError(null);
       try {
-        const headers: Record<string, string> = {
-          Accept: "application/json",
-        };
-        if (token) headers["Authorization"] = token as string;
-
         const res = await fetch(`/api/accounts/${accountId}/cards`, {
           method: "GET",
-          headers,
+          headers: { Accept: "application/json" },
         });
 
         if (!mounted) return;
@@ -54,11 +49,7 @@ export default function DataProfileTable() {
         if (Array.isArray(data)) setCards(data);
         else setCards([]);
       } catch (e) {
-        if (e instanceof Error) {
-          setError(e.message);
-        } else {
-          setError(String(e));
-        }
+        setError(e instanceof Error ? e.message : String(e));
         setCards([]);
       } finally {
         setLoading(false);
@@ -66,11 +57,10 @@ export default function DataProfileTable() {
     };
 
     fetchCards();
-
     return () => {
       mounted = false;
     };
-  }, [accountId, token]);
+  }, [accountId]);
 
   const last4 = (n: number | string) => {
     const s = String(n || "");
@@ -79,31 +69,76 @@ export default function DataProfileTable() {
 
   const handleDelete = async (cardId: number) => {
     if (!accountId) return;
-    const previous = cards;
-    setCards((prev) => prev.filter((c) => c.id !== cardId));
 
     try {
-      const headers: Record<string, string> = {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      };
-      if (token) headers["Authorization"] = token as string;
-
-      const res = await fetch(`/api/accounts/${accountId}/cards/${cardId}`, {
-        method: "DELETE",
-        headers,
+      const Swal = (await import("sweetalert2")).default;
+      const confirmation = await Swal.fire({
+        title: "¿Estás seguro?",
+        text: "Esta acción eliminará la tarjeta de tu cuenta.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Eliminar",
+        cancelButtonText: "Cancelar",
+        customClass: {
+          popup: "swal-popup",
+          confirmButton: "swal-confirm",
+        },
       });
 
-      if (!res.ok) {
-        setCards(previous);
-        console.error(
-          "Failed to delete card",
-          await res.text().catch(() => ""),
-        );
-      }
-    } catch (e) {
-      setCards(previous);
-      console.error("Error deleting card", e);
+      if (!confirmation.isConfirmed) return;
+
+      setRemovingIds((s) => new Set(s).add(cardId));
+
+      const DELAY = 300;
+      setTimeout(async () => {
+        const previous = cards;
+        setCards((prev) => prev.filter((c) => c.id !== cardId));
+        setRemovingIds((s) => {
+          const copy = new Set(s);
+          copy.delete(cardId);
+          return copy;
+        });
+
+        const res = await fetch(`/api/accounts/${accountId}/cards/${cardId}`, {
+          method: "DELETE",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!res.ok) {
+          setCards(previous);
+          const text = await res.text().catch(() => "");
+          console.error("Failed to delete card", text);
+          try {
+            await Swal.fire({
+              icon: "error",
+              title: "No se pudo eliminar",
+              text: `${res.status} - ${text}`,
+              confirmButtonText: "Cerrar",
+              customClass: { confirmButton: "swal-confirm", popup: "swal-popup" },
+            });
+          } catch {
+            // ignore
+          }
+        } else {
+          try {
+            await Swal.fire({
+              icon: "success",
+              title: "Tarjeta eliminada",
+              toast: true,
+              position: "top-end",
+              showConfirmButton: false,
+              timer: 1800,
+            });
+          } catch {
+            // ignore
+          }
+        }
+      }, DELAY);
+    } catch (err) {
+      console.error("Error deleting card", err);
     }
   };
 
@@ -123,7 +158,7 @@ export default function DataProfileTable() {
           </tr>
         )}
 
-        {!loading && error && (!cards || cards.length === 0) && (
+        {!loading && error && cards.length === 0 && (
           <tr className={style.row}>
             <td colSpan={1} className={style.placeholder}>
               {error}
@@ -131,7 +166,7 @@ export default function DataProfileTable() {
           </tr>
         )}
 
-        {!loading && !error && (!cards || cards.length === 0) && (
+        {!loading && !error && cards.length === 0 && (
           <tr className={style.row}>
             <td colSpan={1} className={style.placeholder}>
               No hay tarjetas registradas.
@@ -139,33 +174,38 @@ export default function DataProfileTable() {
           </tr>
         )}
 
-        {cards.map((card) => (
-          <tr key={card.id} className={style.row}>
-            <td className={style.cell}>
-              <div className={style.left}>
-                <span className={style.dot} aria-hidden />
-                <div className={style.text}>
-                  <span className={style.title}>
-                    Terminada en {last4(card.number_id)}
-                  </span>
-                </div>
-              </div>
+        {cards.map((card) => {
+          const isRemoving = removingIds.has(card.id);
+          const trClass = `${style.row} ${style['row-item']} ${
+            isRemoving ? style.removing : ""
+          }`.trim();
 
-              <div className={style.actions}>
-                <button
-                  className={style.delete}
-                  onClick={() => handleDelete(card.id)}
-                  aria-label={`Eliminar tarjeta termina en ${last4(
-                    card.number_id,
-                  )}`}
-                >
-                  Eliminar
-                </button>
-              </div>
-            </td>
-          </tr>
-        ))}
-        <tr></tr>
+          return (
+            <tr key={card.id} className={trClass}>
+              <td className={style.cell}>
+                <div className={style.left}>
+                  <span className={style.dot} aria-hidden />
+                  <div className={style.text}>
+                    <span className={style.title}>
+                      Terminada en {last4(card.number_id)}
+                    </span>
+                  </div>
+                </div>
+                <div className={style.actions}>
+                  <button
+                    className={style.delete}
+                    onClick={() => handleDelete(card.id)}
+                    aria-label={`Eliminar tarjeta termina en ${last4(
+                      card.number_id
+                    )}`}
+                  >
+                    Eliminar
+                  </button>
+                </div>
+              </td>
+            </tr>
+          );
+        })}
       </tbody>
     </Table>
   );

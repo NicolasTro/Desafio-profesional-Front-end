@@ -22,13 +22,11 @@ export async function GET() {
       console.log("No token found");
       return NextResponse.json({ error: "No token found" }, { status: 401 });
     }
-    console.log("Token found: true");
 
     // Decodificar el JWT
     let decoded: DecodedToken | null = null;
     try {
       decoded = jwt.decode(token) as DecodedToken | null;
-      console.log("Decoded JWT:", decoded);
     } catch (error) {
       console.log("Error decoding JWT:", error);
       return NextResponse.json({ error: "Invalid token" }, { status: 401 });
@@ -44,11 +42,9 @@ export async function GET() {
         { status: 401 },
       );
     }
-    console.log("Extracted user ID:", userId, "from field: username");
 
     // Llamar a la API externa
     const externalUrl = `${DIGITALMONEY_API_BASE}/api/account`;
-    console.log("Calling external API:", externalUrl);
 
     const response = await fetch(externalUrl, {
       method: "GET",
@@ -59,7 +55,6 @@ export async function GET() {
       cache: "no-store",
     });
 
-    console.log("External API response status:", response.status);
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -71,7 +66,6 @@ export async function GET() {
     }
 
     const accountData = await response.json();
-    console.log("api/account:", accountData);
 
     // Devolver los datos de la cuenta
     return NextResponse.json(accountData);

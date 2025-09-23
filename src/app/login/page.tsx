@@ -1,5 +1,5 @@
 "use client";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import BasicButtons from "./Components/buttonLogin";
 import BasicInput from "../../Components/input";
 import style from "./styles/login.module.css";
@@ -14,7 +14,9 @@ const errorMessage = {
 
 export default function Login() {
   const router = useRouter();
-  const { refreshSession } = useAppContext();
+  const { refreshSession, userInfo, isLoading } = useAppContext();
+  const [loginSuccess, setLoginSuccess] = useState(false);
+  const hasRedirected = useRef(false);
   const [step, setStep] = useState<1 | 2>(1);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -67,27 +69,14 @@ export default function Login() {
           "error" in payload &&
           typeof (payload as { error?: unknown }).error === "string"
         ) {
-          message = (payload as { error?: string }).error ?? message;
+          message = (payload as { error: string }).error;
         }
         setError(message);
         return;
       }
 
-      refreshSession();
-      try {
-        // save default theme to sessionStorage so other pages can read it
-        const { setSavedTheme } = await import("@/lib/authClient");
-        setSavedTheme("dark");
-      } catch {
-        // ignore theme write errors
-      }
-      try {
-        const { setIsLogin } = await import("@/lib/authClient");
-        setIsLogin(true);
-      } catch {
-        // ignore
-      }
-      router.push("/home");
+      await refreshSession();
+      setLoginSuccess(true); 
     } catch (e) {
       const msg = e instanceof Error ? e.message : "Error de login";
       setError(msg);
@@ -95,6 +84,13 @@ export default function Login() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (loginSuccess && userInfo && !isLoading && !hasRedirected.current) {
+      hasRedirected.current = true;
+      router.push("/home");
+    }
+  }, [loginSuccess, userInfo, isLoading, router]);
 
   return (
     <section className={style["main-section"]}>

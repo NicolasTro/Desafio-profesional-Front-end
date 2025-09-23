@@ -1,5 +1,5 @@
 export async function fetchMe() {
-  const res = await fetch("/api/me", {
+  const res = await fetch("/api/session", {
     method: "GET",
     headers: { Accept: "application/json" },
     credentials: "include",
@@ -8,5 +8,7 @@ export async function fetchMe() {
     const text = await res.text().catch(() => "");
     throw new Error(text || `HTTP ${res.status}`);
   }
-  return res.json();
+  const payload = await res.json();
+  if (!payload || !payload.authenticated) return null;
+  return payload.user ?? null;
 }

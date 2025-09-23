@@ -18,7 +18,6 @@ export default function Register() {
 
   const handleSubmit = async () => {
     const newErrors: string[] = [];
-    // Required fields
     if (
       !name ||
       !surname ||
@@ -30,7 +29,6 @@ export default function Register() {
     ) {
       newErrors.push("Completa los campos requeridos");
     }
-    // Format validations
     if (dni && !/^\d+$/.test(dni)) newErrors.push("DNI: solo números");
     if (telefono && !/^\d+$/.test(telefono))
       newErrors.push("Teléfono: solo números");

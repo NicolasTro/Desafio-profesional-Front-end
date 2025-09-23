@@ -3,12 +3,9 @@
   flex-direction: column;
   justify-content: space-evenly;
   width: 100%;
-  min-width: 280px;
+  /* min-width: 280px; */
   height: 160px;
   padding: 10px 20px;
-
-  /* margin: 0px 10px; */
-  /* border: solid green 3px; */
   color: white;
   background-color: var(--dark);
 }
@@ -42,7 +39,6 @@
   width: fit-content;
   padding: 8px 20px;
   border: solid var(--lima) 1px;
-
   border-radius: 50px;
   font-size: 24px;
   font-weight: bold;

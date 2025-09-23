@@ -31,6 +31,21 @@
   font-size: 14px;
 }
 
+.row-item {
+  overflow: hidden;
+  width: 100%;
+  height: 60px;
+  opacity: 1;
+  transition: opacity 260ms ease, height 260ms ease, margin 260ms ease, padding 260ms ease;
+}
+
+.removing {
+  height: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  opacity: 0;
+}
+
 .left {
   display: flex;
   width: 100%;

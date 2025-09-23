@@ -31,27 +31,27 @@ export default function SlideMenu({ isOpen, onClose }: SlideMenuProps) {
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
+
   if (!mounted) return null;
+  if (!userInfo || !userInfo.id) {
+    return null;
+  }
 
   const drawerOpen = typeof isOpen === "boolean" ? isOpen : !!slideMenuOpen;
   const handleClose = onClose ?? (() => toggleSlideMenu?.());
 
-  const isAuthenticated = Boolean(userInfo);
   const first = userInfo?.name ?? "";
   const last = userInfo?.lastname ?? "";
 
-  const publicItems = ["Inicio", "Actividad"];
-  const authOnlyItems = [
+  const items = [
+    "Inicio",
+    "Actividad",
     "Tu perfil",
     "Cargar dinero",
     "Pagar Servicios",
     "Tarjetas",
     "Cerrar sesión",
   ];
-  const unauthItems = ["Ingresar", "Crear cuenta"];
-  const items = isAuthenticated
-    ? [...publicItems, ...authOnlyItems]
-    : [...publicItems, ...unauthItems];
 
   const routeMap: Record<string, string> = {
     Inicio: "/home",
@@ -61,8 +61,6 @@ export default function SlideMenu({ isOpen, onClose }: SlideMenuProps) {
     "Pagar Servicios": "/pay-services",
     Tarjetas: "/personalCards",
     "Cerrar sesión": "/logout",
-    Ingresar: "/login",
-    "Crear cuenta": "/register",
   };
 
   const renderItems = () => (
@@ -77,8 +75,7 @@ export default function SlideMenu({ isOpen, onClose }: SlideMenuProps) {
               <button
                 onClick={async (e) => {
                   e.preventDefault();
-                  await logout();
-                  router.push("/");
+                  await logout(() => router.push("/"));
                   onClose?.();
                 }}
               >
@@ -99,12 +96,10 @@ export default function SlideMenu({ isOpen, onClose }: SlideMenuProps) {
     </List>
   );
 
-  const showDesktopAside = isDesktop && isAuthenticated;
-
   return (
-    <>
-      {showDesktopAside && (
-        <aside className={style["slide-body"]} aria-hidden={false}>
+    <div className="slide-content">
+      {isDesktop && (
+        <aside className={`${style["slide-body"]} `} aria-hidden={false}>
           <div className={style["slide-header"]}>
             <h2>
               Hola, <br /> {`${first} ${last}`.trim() || "Hola"}
@@ -119,7 +114,7 @@ export default function SlideMenu({ isOpen, onClose }: SlideMenuProps) {
           role="presentation"
           onClick={handleClose}
           onKeyDown={handleClose}
-          className={style["drawer-body"]}
+          className={`${style["drawer-body"]}`}
         >
           <div className={style["slide-header"]}>
             <h2>
@@ -129,6 +124,6 @@ export default function SlideMenu({ isOpen, onClose }: SlideMenuProps) {
           {renderItems()}
         </Box>
       </Drawer>
-    </>
+    </div>
   );
 }

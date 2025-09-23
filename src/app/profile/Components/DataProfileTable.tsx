@@ -41,6 +41,8 @@ export default function DataProfileTable({ userData, onSave }: tableProps) {
   const [editingKey, setEditingKey] = useState<string | null>(null);
   const [editValue, setEditValue] = useState<string>("");
   const [saving, setSaving] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
     setRows(initialRows);
@@ -62,13 +64,13 @@ export default function DataProfileTable({ userData, onSave }: tableProps) {
   };
 
   const saveEdit = async (rowKey: string) => {
-    setRows((prev) =>
-      prev.map((r) => (r.key === rowKey ? { ...r, value: editValue } : r)),
-    );
+    const previousRows = rows;
+    setRows((prev) => prev.map((r) => (r.key === rowKey ? { ...r, value: editValue } : r)));
     setEditingKey(null);
     setSaving(true);
+    setErrorMessage(null);
     try {
-      if (onSave && userData) {
+      if (onSave) {
         const mapKeyToPayloadField: Record<string, string> = {
           email: "email",
 
@@ -88,12 +90,20 @@ export default function DataProfileTable({ userData, onSave }: tableProps) {
             payload[payloadField] = editValue;
           }
           await onSave(payload);
+          setMessage("Guardado");
+          setTimeout(() => setMessage(null), 2000);
         }
       } else {
         console.log("DataProfileTable: saved", { [rowKey]: editValue });
+        setMessage("Guardado (local)");
+        setTimeout(() => setMessage(null), 2000);
       }
-    } catch (err) {
+    } catch (err: unknown) {
       console.error("Failed to save profile field", err);
+      setRows(previousRows);
+      const msg = err instanceof Error ? err.message : String(err);
+      setErrorMessage(msg || "Error al guardar");
+      setTimeout(() => setErrorMessage(null), 5000);
     } finally {
       setSaving(false);
     }
@@ -114,6 +124,20 @@ export default function DataProfileTable({ userData, onSave }: tableProps) {
         </tr>
       </thead>
       <tbody>
+        {message && (
+          <tr>
+            <td>
+              <div style={{ padding: 8, color: "var(--dark)" }}>{message}</div>
+            </td>
+          </tr>
+        )}
+        {errorMessage && (
+          <tr>
+            <td>
+              <div style={{ padding: 8, color: "#b91c1c" }}>{errorMessage}</div>
+            </td>
+          </tr>
+        )}
         {rows.map((row) => (
           <tr key={row.key}>
             <td>

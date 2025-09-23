@@ -15,14 +15,13 @@ type Card = {
 
 export default function CardsSelector({
   onSelect,
-  selectedId
+  selectedId,
 }: {
   onSelect?: (card: Card | null) => void;
   selectedId?: number | null;
 }) {
-  const { userInfo, token } = useAppContext();
-  const accountId =
-    userInfo && (userInfo as { account_id?: string }).account_id;
+  const { account } = useAppContext();   
+  const accountId = account?.account_id;
 
   const [cards, setCards] = useState<Card[]>([]);
   const [loading, setLoading] = useState(false);
@@ -32,62 +31,51 @@ export default function CardsSelector({
     selectedId == null ? null : selectedId
   );
 
-  useEffect(
-    () => {
-      if (!accountId) return;
-      let mounted = true;
+  useEffect(() => {
+    if (!accountId) return;
+    let mounted = true;
 
-      const fetchCards = async () => {
-        setLoading(true);
-        setError(null);
-        try {
-          const headers: Record<string, string> = {
-            Accept: "application/json"
-          };
-          if (token) headers["Authorization"] = token as string;
+    const fetchCards = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const res = await fetch(`/api/accounts/${accountId}/cards`, {
+          method: "GET",
+          headers: { Accept: "application/json" },
+        });
 
-          const res = await fetch(`/api/accounts/${accountId}/cards`, {
-            method: "GET",
-            headers
-          });
+        if (!mounted) return;
 
-          if (!mounted) return;
-
-          if (!res.ok) {
-            const txt = await res.text().catch(() => "");
-            setError(`Error al obtener tarjetas: ${res.status} ${txt}`);
-            setCards([]);
-            return;
-          }
-
-          const data = await res.json();
-          if (Array.isArray(data)) setCards(data);
-          else setCards([]);
-        } catch (e) {
-          if (e instanceof Error) setError(e.message);
-          else setError(String(e));
+        if (!res.ok) {
+          const txt = await res.text().catch(() => "");
+          setError(`Error al obtener tarjetas: ${res.status} ${txt}`);
           setCards([]);
-        } finally {
-          setLoading(false);
-          setFetched(true);
+          return;
         }
-      };
 
-      void fetchCards();
+        const data = await res.json();
+        if (Array.isArray(data)) setCards(data);
+        else setCards([]);
+      } catch (e) {
+        if (e instanceof Error) setError(e.message);
+        else setError(String(e));
+        setCards([]);
+      } finally {
+        setLoading(false);
+        setFetched(true);
+      }
+    };
 
-      return () => {
-        mounted = false;
-      };
-    },
-    [accountId, token]
-  );
+    void fetchCards();
 
-  useEffect(
-    () => {
-      setSelected(selectedId == null ? null : selectedId);
-    },
-    [selectedId]
-  );
+    return () => {
+      mounted = false;
+    };
+  }, [accountId]);
+
+  useEffect(() => {
+    setSelected(selectedId == null ? null : selectedId);
+  }, [selectedId]);
 
   const last4 = (n: number | string) => {
     const s = String(n || "");
@@ -100,65 +88,67 @@ export default function CardsSelector({
   };
 
   return (
-    <Table className={style.table}>
-      <thead>
-        <tr>
-          <th colSpan={1}>Tus tarjetas</th>
+  <Table className={style.table}>
+    <thead>
+      <tr>
+        <th colSpan={1}>Tus tarjetas</th>
+      </tr>
+    </thead>
+    <tbody>
+      {loading && (
+        <tr className={style.row}>
+          <td colSpan={1} className={style.placeholder}>
+            Cargando tarjetas...
+          </td>
         </tr>
-      </thead>
-      <tbody>
-        {loading &&
-          <tr className={style.row}>
-            <td colSpan={1} className={style.placeholder}>
-              Cargando tarjetas...
-            </td>
-          </tr>}
+      )}
 
-        {!loading && error && (
-          <tr className={style.row}>
-            <td colSpan={1} className={style.placeholder}>
-              {error}
-            </td>
-          </tr>
-        )}
+      {!loading && error && (
+        <tr className={style.row}>
+          <td colSpan={1} className={style.placeholder}>
+            {error}
+          </td>
+        </tr>
+      )}
 
-        {!loading && fetched && !error && (!cards || cards.length === 0) && (
-          <tr className={style.row}>
-            <td colSpan={1} className={style.placeholder}>
-              No hay tarjetas registradas.
-            </td>
-          </tr>
-        )}
+      {!loading && fetched && !error && (!cards || cards.length === 0) && (
+        <tr className={style.row}>
+          <td colSpan={1} className={style.placeholder}>
+            No hay tarjetas registradas.
+          </td>
+        </tr>
+      )}
 
-        {cards.map(card =>
-          <tr key={card.id} className={style.row}>
-            <td className={style.cell}>
-              <div className={style.left}>
-                <div className={style.text}>
-                  <div className={style["card-info"]}>
-                    <span className={style.dot} />
-
-                    <div className={style.title}>
-                      Terminada en {last4(card.number_id)}
-                    </div>
+      {cards.map((card) => (
+        <tr
+          key={card.id}
+          className={style.row}
+          onClick={() => handleSelect(card)}
+          style={{ cursor: "pointer" }}
+        >
+          <td className={style.cell}>
+            <div className={style.left}>
+              <div className={style.text}>
+                <div className={style["card-info"]}>
+                  <span className={style.dot} />
+                  <div className={style.title}>
+                    Terminada en {last4(card.number_id)}
                   </div>
-
-                  <input
-                    type="radio"
-                    name="selectedCard"
-                    className={`${style.radioLarge} ${style.radioCustom}`}
-                    checked={selected === card.id}
-                    onChange={() => handleSelect(card)}
-                    aria-label={`Seleccionar tarjeta termina en ${last4(
-                      card.number_id
-                    )}`}
-                  />
                 </div>
+                <input
+                  type="radio"
+                  name="selectedCard"
+                  className={`${style.radioLarge} ${style.radioCustom}`}
+                  checked={selected === card.id}
+                  aria-label={`Seleccionar tarjeta termina en ${last4(card.number_id)}`}
+                  onChange={() => {}}
+                />
               </div>
-            </td>
-          </tr>
-        )}
-      </tbody>
-    </Table>
+            </div>
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </Table>
   );
 }

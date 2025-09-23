@@ -1,45 +1,37 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { getTokenFromCookie } from "@/lib/auth";
-import jwt from "jsonwebtoken";
+import {jwtDecode} from "jwt-decode";
 
-export async function middleware(request: NextRequest) {
-  const token = await getTokenFromCookie();
-  const { pathname } = request.nextUrl;
+export function middleware(req: NextRequest) {
+  const token = req.cookies.get("dm_token")?.value;
+  const { pathname } = req.nextUrl;
 
   // Rutas públicas que no requieren autenticación
   const publicPaths = ["/", "/login", "/register", "/register/success"];
-
-  // Si es una ruta pública, permite el acceso
   if (publicPaths.includes(pathname) || pathname.startsWith("/api/")) {
     return NextResponse.next();
   }
 
-  // Si no hay token, redirige a login
+  // Si no hay token → redirigir a login
   if (!token) {
-    return NextResponse.redirect(new URL("/login", request.url));
+    return NextResponse.redirect(new URL("/login", req.url));
   }
 
-  // Verificar si el token ha expirado
+  // Validar expiración
   try {
-    const decoded = jwt.decode(token) as { exp?: number };
-    if (decoded?.exp) {
-      const now = Math.floor(Date.now() / 1000);
-      if (decoded.exp <= now) {
-        // Token expirado, redirige a login
-        return NextResponse.redirect(new URL("/login", request.url));
-      }
+    const decoded = jwtDecode<{ exp?: number }>(token);
+    if (decoded.exp && decoded.exp <= Date.now() / 1000) {
+      return NextResponse.redirect(new URL("/login", req.url));
     }
-  } catch (error) {
-    console.error("Error decoding token in middleware:", error);
-    // Si hay error en decodificación, redirige por seguridad
-    return NextResponse.redirect(new URL("/login", request.url));
+  } catch {
+    return NextResponse.redirect(new URL("/login", req.url));
   }
 
-  // Si hay token válido y no expirado, permite el acceso
+  // Si todo bien, seguir
   return NextResponse.next();
 }
 
+// Configuración: aplica a todo salvo estáticos, imágenes y favicon
 export const config = {
   matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
 };

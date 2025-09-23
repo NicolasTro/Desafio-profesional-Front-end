@@ -22,7 +22,6 @@ export async function PATCH(
     const body = await req.json();
 
     const upstreamUrl = `${DIGITALMONEY_API_BASE}/api/account/${accountId}`;
-    // debug logs to help diagnose 404s
     try {
       console.log("[api/account PATCH] accountId=", accountId);
       console.log(

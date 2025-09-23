@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useAppContext } from "@/Context/AppContext";
+import { useRouter } from "next/navigation";
 import Cards from "react-credit-cards-2";
 import "react-credit-cards-2/dist/es/styles-compiled.css";
 import InputCard from "./InputCard";
@@ -15,15 +16,15 @@ export default function CardForm() {
     focus: "",
   });
 
-  const { userInfo, refreshSession } = useAppContext();
+  const { userInfo, account, refreshSession } = useAppContext();
+  const router = useRouter();
   const [cardsCount, setCardsCount] = useState<number | null>(null);
 
-  // fetch existing cards count on mount/user change
   useEffect(() => {
     let mounted = true;
     (async () => {
-      if (!userInfo) return;
-      const accountId = userInfo.account_id || userInfo.id;
+      if (!userInfo && !account) return;
+        const accountId = account?.account_id || userInfo?.id;
       if (!accountId) return;
       try {
         const res = await fetch(`/api/accounts/${accountId}/cards`, {
@@ -42,7 +43,7 @@ export default function CardForm() {
     return () => {
       mounted = false;
     };
-  }, [userInfo]);
+  }, [userInfo, account]);
 
   // ===== helpers
   const onlyDigits = (s: string) => (s || "").replace(/\D/g, "");
@@ -54,10 +55,10 @@ export default function CardForm() {
   };
 
   const formatExpiry = (value: string) => {
-    const v = onlyDigits(value).slice(0, 4); // MMYY
+    const v = onlyDigits(value).slice(0, 4); 
     if (!v) return "";
-    if (v.length <= 2) return v; // MM
-    return `${v.slice(0, 2)}/${v.slice(2, 4)}`; // MM/YY
+    if (v.length <= 2) return v; 
+    return `${v.slice(0, 2)}/${v.slice(2, 4)}`; 
   };
 
   const formatCvc = (value: string) => onlyDigits(value).slice(0, 4);
@@ -77,7 +78,7 @@ export default function CardForm() {
   // ===== Validaciones
   const luhnValid = (num: string) => {
     const n = onlyDigits(num);
-    if (n.length < 12) return false; // mínimo razonable
+    if (n.length < 12) return false; 
     let sum = 0,
       dbl = false;
     for (let i = n.length - 1; i >= 0; i--) {
@@ -98,7 +99,6 @@ export default function CardForm() {
     const [, MM, YY] = m;
     const month = parseInt(MM, 10);
     if (month < 1 || month > 12) return false;
-    // Asumimos 20YY (funciona hasta 2099)
     const year = 2000 + parseInt(YY, 10);
     const now = new Date();
     const endOfMonth = new Date(year, month, 0, 23, 59, 59);
@@ -127,16 +127,16 @@ export default function CardForm() {
 
     console.log("userInfo from context:", userInfo);
 
-    let accountId = userInfo ? userInfo.account_id || userInfo.id : undefined;
+  let accountId = account?.account_id || (userInfo ? userInfo.id : undefined);
 
     if (!accountId) {
       try {
-        refreshSession();
+          await refreshSession();
         if (userInfo) {
           accountId = userInfo.id;
         }
-      } catch (err) {
-        console.debug("refreshSession failed", err);
+      } catch {
+        console.debug("refreshSession failed");
       }
     }
 
@@ -158,14 +158,12 @@ export default function CardForm() {
       return;
     }
 
-    // number_id expected by upstream as an int
     const numberIdDigits = form.number.replace(/\s/g, "");
     const numberIdInt = numberIdDigits ? parseInt(numberIdDigits, 10) : NaN;
     if (Number.isNaN(numberIdInt)) {
       window.alert("Número de tarjeta inválido");
       return;
     }
-    // optional: guard for extremely large numbers
     if (!Number.isSafeInteger(numberIdInt)) {
       window.alert("Número de tarjeta demasiado largo");
       return;
@@ -193,13 +191,45 @@ export default function CardForm() {
       if (!response.ok) {
         const text = await response.text().catch(() => "<no response body>");
         console.error("Upstream response error:", response.status, text);
-        window.alert(`Error al crear la tarjeta: ${response.status} - ${text}`);
+          try {
+            const Swal = (await import("sweetalert2")).default;
+            await Swal.fire({
+              icon: "error",
+              title: "Error al crear la tarjeta",
+              text: `${response.status} - ${text}`,
+              confirmButtonText: "Cerrar",
+            });
+          } catch {
+            window.alert(`Error al crear la tarjeta: ${response.status} - ${text}`);
+          }
         return;
       }
 
       const data = await response.json();
       console.log("Éxito:", data);
-      window.alert("Tarjeta creada correctamente");
+      try {
+        const Swal = (await import("sweetalert2")).default;
+        await Swal.fire({
+          icon: "success",
+          title: "Tarjeta registrada",
+          text: "Tu tarjeta fue registrada correctamente.",
+          confirmButtonText: "Ver tarjetas",
+          customClass: {
+            popup: "swal-popup",
+            title: "swal-title",
+            htmlContainer: "swal-html",
+            confirmButton: "swal-confirm",
+          },
+        });
+      } catch {
+        window.alert("Tarjeta creada correctamente");
+      }
+      try {
+        await refreshSession();
+      } catch {
+        // ignore refresh errors
+      }
+  router.push("/personalCards");
     } catch (error) {
       console.error("Error creando tarjeta:", error);
       window.alert(

@@ -47,7 +47,6 @@ export async function GET(
       return NextResponse.json({ error: text }, { status: response.status });
     }
 
-    // Forward upstream payload as-is (no server-side filtering/pagination here)
     const payload = await response.json();
     return NextResponse.json(payload, { status: 200 });
   } catch (error: unknown) {

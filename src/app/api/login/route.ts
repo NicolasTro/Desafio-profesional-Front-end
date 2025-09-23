@@ -12,9 +12,7 @@ type LoginResponse = {
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    // avoid noisy logs during tests; enable with LOG_API=true
     if (process.env.LOG_API === "true" || process.env.NODE_ENV !== "test") {
-      console.log("Request body:", body);
     }
 
     const upstream = await fetch(`${DIGITALMONEY_API_BASE}/api/login`, {
@@ -40,33 +38,32 @@ export async function POST(req: Request) {
     }
 
     const data = payload as LoginResponse;
-
     const token = data.token || data.accessToken;
 
     if (token) {
-      // Decodificar el token para obtener la expiración real
-      let maxAge = 60 * 60 * 24; // Default: 1 día
+      // Calcular expiración desde el JWT
+      let maxAge = 60 * 60 * 24; // default 1 día
       try {
         const decoded = jwt.decode(token) as { exp?: number };
         if (decoded?.exp) {
           const now = Math.floor(Date.now() / 1000);
           maxAge = decoded.exp - now;
-          if (maxAge <= 0) maxAge = 60 * 60 * 24; // Si ya expiró, usa default
+          if (maxAge <= 0) maxAge = 60 * 60 * 24;
         }
       } catch (error) {
-        if (process.env.LOG_API === "true" || process.env.NODE_ENV !== "test") {
-          console.error("Error decoding token for maxAge:", error);
-        }
+        console.error("Error decoding token for maxAge:", error);
       }
 
-      const jar = await cookies();
-      jar.set("dm_token", token, {
+      // Crear la respuesta y setear la cookie
+      const res = NextResponse.json(data, { status: upstream.status });
+      res.cookies.set("dm_token", token, {
         httpOnly: true,
         sameSite: "lax",
         secure: process.env.NODE_ENV === "production",
         path: "/",
-        maxAge: maxAge,
+        maxAge,
       });
+      return res;
     }
 
     return NextResponse.json(data, { status: upstream.status });

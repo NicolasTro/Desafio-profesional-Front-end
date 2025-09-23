@@ -7,7 +7,6 @@ export default function BankTransfer() {
   return (
     <main className={banktrasfer.container}>
       <PageHeader nombre="Cargar dinearo" />
-
       <div className={banktrasfer.blocks}>
         <CardProfile />
       </div>

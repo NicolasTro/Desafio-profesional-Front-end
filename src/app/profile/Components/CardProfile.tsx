@@ -10,10 +10,10 @@ type CardProfileProps = {
 };
 
 export default function CardProfile({ onSave }: CardProfileProps) {
-  const { userInfo } = useAppContext();
+  const { userInfo, account } = useAppContext();
 
-  const cvu = userInfo?.cvu ?? "No disponible";
-  const alias = userInfo?.alias ?? "No disponible";
+  const cvu = account?.cvu ?? "No disponible";
+  const alias = account?.alias ?? "No disponible";
 
   const [editing, setEditing] = React.useState(false);
   const firstname = userInfo?.name ?? "";
@@ -167,50 +167,7 @@ export default function CardProfile({ onSave }: CardProfileProps) {
       </div>
       <br />
 
-      <div style={{ marginTop: 12 }}>
-        {!editing ? (
-          <button
-            onClick={() => setEditing(true)}
-            style={{
-              background: "transparent",
-              border: "1px solid var(--lima)",
-              padding: "6px 10px",
-              borderRadius: 6,
-            }}
-          >
-            Editar nombre
-          </button>
-        ) : (
-          <div style={{ display: "flex", gap: 8 }}>
-            <button
-              onClick={saveNames}
-              style={{
-                background: "var(--lima)",
-                border: "none",
-                padding: "6px 10px",
-                borderRadius: 6,
-              }}
-            >
-              Guardar
-            </button>
-            <button
-              onClick={() => {
-                setEditing(false);
-                setFirstValue(firstname);
-                setLastValue(lastname);
-              }}
-              style={{
-                background: "#eee",
-                border: "none",
-                padding: "6px 10px",
-                borderRadius: 6,
-              }}
-            >
-              Cancelar
-            </button>
-          </div>
-        )}
-      </div>
+    
     </div>
   );
 }

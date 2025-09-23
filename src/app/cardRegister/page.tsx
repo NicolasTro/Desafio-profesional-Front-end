@@ -10,7 +10,6 @@ export default function CardRegisterPage() {
         <div className={style.flex}>
           <PageHeader nombre="Tarjetas" />
         </div>
-
         <Card />
       </div>
     </div>

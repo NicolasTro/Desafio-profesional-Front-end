@@ -1,13 +1,14 @@
-export default function NameTag({
-  name,
-  className,
-}: {
-  name: string;
+type NameTagProps = {
+  nameTag?: string | null | undefined;
   className?: string;
-}) {
+};
+
+export default function NameTag({ nameTag, className }: NameTagProps) {
   return (
-    <div className={`${className ?? ""}`}>
-      <span className="name">{name}</span>
+    <div className={`${className || ""}`}>
+      <span className="name">
+        {nameTag || ""}
+      </span>
     </div>
   );
 }
