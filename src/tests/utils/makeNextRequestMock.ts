@@ -19,6 +19,16 @@ export function makeNextRequestMock(init?: {
   (req as unknown as { cookies?: () => { get: () => undefined } }).cookies =
     () => ({ get: () => undefined });
 
+  // provide json() and text() helpers so route handlers can read the body
+  (req as unknown as { json?: () => Promise<unknown>; text?: () => Promise<string> }).json = async () => {
+    if (body === undefined) return {};
+    return body;
+  };
+  (req as unknown as { json?: () => Promise<unknown>; text?: () => Promise<string> }).text = async () => {
+    if (body === undefined) return "";
+    return typeof body === "string" ? body : JSON.stringify(body);
+  };
+
   // The runtime handlers expect NextRequest; cast the Request to NextRequest for tests.
   return req as unknown as NextRequest;
 }

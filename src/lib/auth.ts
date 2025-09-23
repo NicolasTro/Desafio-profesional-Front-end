@@ -1,5 +1,5 @@
 import { cookies } from "next/headers";
-import { jwtDecode } from "jwt-decode";
+import jwt from "jsonwebtoken";
 
 export interface DecodedToken {
   user_id?: string;
@@ -22,7 +22,8 @@ export async function getDecodedTokenFromCookie(): Promise<{ id?: string; email?
   if (!token) return null;
 
   try {
-    const decoded = jwtDecode<DecodedToken>(token);
+    const decoded = jwt.decode(token) as DecodedToken | null;
+    if (!decoded) return null;
     return {
       id: decoded.user_id || decoded.id || decoded.sub || decoded.username,
       email: decoded.email || decoded.username,
