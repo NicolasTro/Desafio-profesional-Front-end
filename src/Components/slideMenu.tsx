@@ -20,6 +20,7 @@ export default function SlideMenu({ isOpen, onClose }: SlideMenuProps) {
 
   const [isDesktop, setIsDesktop] = useState(false);
   const [mounted, setMounted] = useState(false);
+  
 
   useEffect(() => {
     function onResize() {
@@ -58,7 +59,7 @@ export default function SlideMenu({ isOpen, onClose }: SlideMenuProps) {
     Actividad: "/activity",
     "Tu perfil": "/profile",
     "Cargar dinero": "/deposit",
-    "Pagar Servicios": "/pay-services",
+    "Pagar Servicios": "/services",
     Tarjetas: "/personalCards",
     "Cerrar sesión": "/logout",
   };
@@ -97,19 +98,21 @@ export default function SlideMenu({ isOpen, onClose }: SlideMenuProps) {
   );
 
   return (
-    <div className="slide-content">
+
+
+    <div className={style["slide-container"]}>
       {isDesktop && (
-        <aside className={`${style["slide-body"]} `} aria-hidden={false}>
+        <section className={style["slide-body"]}>
           <div className={style["slide-header"]}>
             <h2>
               Hola, <br /> {`${first} ${last}`.trim() || "Hola"}
             </h2>
           </div>
           <nav>{renderItems()}</nav>
-        </aside>
+        </section>
       )}
 
-      <Drawer open={drawerOpen} onClose={handleClose}>
+      <Drawer open={drawerOpen} onClose={handleClose} className={style["drawer-container"]}>
         <Box
           role="presentation"
           onClick={handleClose}
