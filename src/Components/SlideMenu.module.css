@@ -18,10 +18,8 @@
 }
 
 .slide-content {
-
   display: flex;
   width: 100%;
-
   color: black;
 }
 
@@ -43,9 +41,6 @@
   background-color: var(--lima);
 }
 
-
-
-
 @media (max-width: 767px) {
 
   .slide-body {
@@ -62,10 +57,10 @@
     padding-left: 30px !important;
   }
 
-
+  .drawer-content {
+    padding-left: 30px;
+  }
 }
-
-
 
 @media (min-width: 768px) {
   .drawer-body {
@@ -76,16 +71,11 @@
   .slide-header {
     display: none;
   }
-
-
 }
 
 @media (min-width: 1000px) {
 
   .slide-body {
     width: 276px;
-
   }
-
-
 }
