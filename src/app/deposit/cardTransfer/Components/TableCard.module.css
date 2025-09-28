@@ -12,7 +12,7 @@
 }
 
 .row {
-  height: 60px;
+  height: 80px;
   font-size: 14px;
 }
 
@@ -25,9 +25,26 @@
 
 .card-info {
   display: flex;
-  align-items: center;
-  justify-content: flex-start;
+  align-items: flex-end;
+  flex-direction: column;
+  justify-content: flex-end;
   gap: 10px;
+}
+
+.card-status{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+ 
+}
+
+
+.balance{
+
+  opacity: 0.6;
+  color: black;
+font-size: 14px;
 }
 
 .text {
@@ -69,4 +86,7 @@
   content: "";
   transform: translate(-50%, -50%);
 }
+
+
+
 

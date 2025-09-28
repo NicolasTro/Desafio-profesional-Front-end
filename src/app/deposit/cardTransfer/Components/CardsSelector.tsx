@@ -16,11 +16,15 @@ type Card = {
 export default function CardsSelector({
   onSelect,
   selectedId,
+  showWalletOption,
+  selectedWallet,
 }: {
-  onSelect?: (card: Card | null) => void;
+  onSelect?: (card: Card | null, wallet?: boolean) => void;
   selectedId?: number | null;
+  showWalletOption?: boolean;
+  selectedWallet?: boolean;
 }) {
-  const { account } = useAppContext();   
+  const { account } = useAppContext();
   const accountId = account?.account_id;
 
   const [cards, setCards] = useState<Card[]>([]);
@@ -30,6 +34,7 @@ export default function CardsSelector({
   const [selected, setSelected] = useState<number | null>(
     selectedId == null ? null : selectedId
   );
+  const [walletSelected, setWalletSelected] = useState<boolean>(!!selectedWallet);
 
   useEffect(() => {
     if (!accountId) return;
@@ -77,6 +82,10 @@ export default function CardsSelector({
     setSelected(selectedId == null ? null : selectedId);
   }, [selectedId]);
 
+  useEffect(() => {
+    setWalletSelected(!!selectedWallet);
+  }, [selectedWallet]);
+
   const last4 = (n: number | string) => {
     const s = String(n || "");
     return s.slice(-4);
@@ -84,71 +93,113 @@ export default function CardsSelector({
 
   const handleSelect = (card: Card) => {
     setSelected(card.id);
-    if (onSelect) onSelect(card);
+    setWalletSelected(false);
+    if (onSelect) onSelect(card, false);
+  };
+
+  const handleWalletSelect = () => {
+    setSelected(null);
+    setWalletSelected(true);
+    if (onSelect) onSelect(null, true);
   };
 
   return (
-  <Table className={style.table}>
-    <thead>
-      <tr>
-        <th colSpan={1}>Tus tarjetas</th>
-      </tr>
-    </thead>
-    <tbody>
-      {loading && (
-        <tr className={style.row}>
-          <td colSpan={1} className={style.placeholder}>
-            Cargando tarjetas...
-          </td>
+    <Table className={style.table}>
+      <thead>
+        <tr>
+          <th colSpan={1}>Tus tarjetas</th>
         </tr>
-      )}
+      </thead>
+      <tbody>
+        {loading && (
+          <tr className={style.row}>
+            <td colSpan={1} className={style.placeholder}>
+              Cargando tarjetas...
+            </td>
+          </tr>
+        )}
 
-      {!loading && error && (
-        <tr className={style.row}>
-          <td colSpan={1} className={style.placeholder}>
-            {error}
-          </td>
-        </tr>
-      )}
+        {!loading && error && (
+          <tr className={style.row}>
+            <td colSpan={1} className={style.placeholder}>
+              {error}
+            </td>
+          </tr>
+        )}
 
-      {!loading && fetched && !error && (!cards || cards.length === 0) && (
-        <tr className={style.row}>
-          <td colSpan={1} className={style.placeholder}>
-            No hay tarjetas registradas.
-          </td>
-        </tr>
-      )}
+        {!loading && fetched && !error && (!cards) && (
+          <tr className={style.row}>
+            <td colSpan={1} className={style.placeholder}>
+              No hay tarjetas registradas.
+            </td>
+          </tr>
+        )}
 
-      {cards.map((card) => (
-        <tr
-          key={card.id}
-          className={style.row}
-          onClick={() => handleSelect(card)}
-          style={{ cursor: "pointer" }}
-        >
-          <td className={style.cell}>
-            <div className={style.left}>
-              <div className={style.text}>
-                <div className={style["card-info"]}>
-                  <span className={style.dot} />
-                  <div className={style.title}>
-                    Terminada en {last4(card.number_id)}
+        {cards.map((card) => (
+          <tr
+            key={card.id}
+            className={style.row}
+            onClick={() => handleSelect(card)}
+            style={{ cursor: "pointer" }}
+          >
+            <td className={style.cell}>
+              <div className={style.left}>
+                <div className={style.text}>
+                  <div className={style["card-info"]}>
+                    <div className={style["card-status"]}>
+                      <span className={style.dot} />
+                      <div className={style.title}>
+                        Terminada en {last4(card.number_id)}
+                      </div>
+                    </div>
                   </div>
+
+                  <input
+                    type="radio"
+                    name="selectedCard"
+                    className={`${style.radioLarge} ${style.radioCustom}`}
+                    checked={selected === card.id}
+                    aria-label={`Seleccionar tarjeta termina en ${last4(card.number_id)}`}
+                  />
                 </div>
-                <input
-                  type="radio"
-                  name="selectedCard"
-                  className={`${style.radioLarge} ${style.radioCustom}`}
-                  checked={selected === card.id}
-                  aria-label={`Seleccionar tarjeta termina en ${last4(card.number_id)}`}
-                  onChange={() => {}}
-                />
               </div>
-            </div>
-          </td>
-        </tr>
-      ))}
-    </tbody>
-  </Table>
+            </td>
+          </tr>
+        ))}
+
+        {showWalletOption && (
+          <tr
+            key="wallet-option"
+            className={style.row}
+            onClick={() => handleWalletSelect()}
+            style={{ cursor: "pointer" }}
+          >
+            <td className={style.cell}>
+              <div className={style.left}>
+                <div className={style.text}>
+                  <div className={style["card-info"]}>
+                    <div className={style["card-status"]}>
+                      <span className={style.dot} />
+                      <div className={style.title}>Billetera virtual</div>
+                    </div>
+                    <div className={style.balance}>{`Saldo: ${new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(Number(account?.available_amount ?? 0))}`}</div>
+                  </div>
+
+                  <input
+                    type="radio"
+                    name="selectedCard"
+                    className={`${style.radioLarge} ${style.radioCustom}`}
+                    checked={walletSelected}
+                    aria-label={`Seleccionar Billetera virtual`}
+                  />
+                </div>
+              </div>
+            </td>
+          </tr>
+        )}
+
+
+      </tbody>
+    </Table>
   );
 }

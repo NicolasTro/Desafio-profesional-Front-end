@@ -4,14 +4,14 @@ import { useAppContext } from "@/Context/AppContext";
 import { useRouter } from "next/navigation";
 import React from "react";
 import AddCard from "../../../../public/addCard.svg";
-import TransferModule from "../Components/TransferModule";
+import TransferModule from "@/Components/TransferModule";
 import CardsSelector from "./Components/CardsSelector";
 import styles from "./styles/CardTransfer.module.css";
 import ConfirmCard from "./Components/ConfirmCard";
 import Success from "../../../../public/Success.svg";
 
 export default function CardTransfer() {
-  const { userInfo, account } = useAppContext();
+  const { userInfo, account, refreshSession } = useAppContext();
 
   // Steps: 0 = select card, 1 = enter amount, 2 = confirm, 3 = success
   const [step, setStep] = React.useState<number>(0);
@@ -58,12 +58,44 @@ export default function CardTransfer() {
     console.log("handleConfirm called", { accountId, numericAmount, selectedCard });
 
     if (!accountId) {
-      alert("No se encontró la cuenta. Intenta recargar la sesión.");
+      try {
+        const Swal = (await import("sweetalert2")).default;
+        await Swal.fire({
+          icon: "warning",
+          title: "Cuenta no encontrada",
+          text: "No se encontró la cuenta. Intenta recargar la sesión.",
+          confirmButtonText: "Cerrar",
+          customClass: {
+            popup: "swal-popup",
+            title: "swal-title",
+            htmlContainer: "swal-html",
+            confirmButton: "swal-confirm",
+          },
+        });
+      } catch (err) {
+        console.warn("Swal failed to load for account not found:", err);
+      }
       return;
     }
 
     if (numericAmount <= 0) {
-      alert("Ingresa un monto mayor a 0 para continuar.");
+      try {
+        const Swal = (await import("sweetalert2")).default;
+        await Swal.fire({
+          icon: "warning",
+          title: "Monto inválido",
+          text: "Ingresa un monto mayor a 0 para continuar.",
+          confirmButtonText: "Cerrar",
+          customClass: {
+            popup: "swal-popup",
+            title: "swal-title",
+            htmlContainer: "swal-html",
+            confirmButton: "swal-confirm",
+          },
+        });
+      } catch (err) {
+        console.warn("Swal failed to load for invalid amount:", err);
+      }
       return;
     }
 
@@ -86,6 +118,12 @@ export default function CardTransfer() {
       }
       const data = (await res.json().catch(() => null)) as Transaction | null;
       setTransaction(data);
+      // refresh the session so AppContext.account is updated with the new balance
+      try {
+        if (typeof refreshSession === "function") await refreshSession();
+      } catch (e) {
+        console.warn("refreshSession failed after deposit", e);
+      }
       setStep(3);
     } catch (e) {
       console.error("Error posting deposit", e);
@@ -120,38 +158,46 @@ export default function CardTransfer() {
                   selectedId={selectedCard ? selectedCard.id : null}
                 />
               </div>
-              <div
-                className={styles["add-card"]}
-                onClick={() => router.push("/cardRegister")}
-              >
-                <AddCard fontSize={40} />
-                <h2>Nueva tarjeta</h2>
-              </div>
 
-              <div
-                className={
-                  step < 3
-                    ? `${styles["button-select"]} ${"w-full"} ${styles["button-step"]}`
-                    : styles["button-select"]
-                }
-              >
-                <button
-                  disabled={!canContinueFromSelect}
-                  onClick={() => goNext()}
-                  value="Continuar"
-                  className={!canContinueFromSelect ? styles["btn-disabled"] : styles["btn-enabled"]}
+              <div className={styles["new-card"]}>
+                <div
+                  className={styles["add-card"]}
+                  onClick={() => router.push("/cardRegister")}
                 >
-                  Continuar
-                </button>
+                  <AddCard fontSize={40} />
+                  <h2>Nueva tarjeta</h2>
+                </div>
+
+
+
+                <div
+                  className={
+                    step < 3
+                      ? `${styles["button-select"]} ${"w-full"} ${styles["button-step"]}`
+                      : styles["button-select"]
+                  }
+                >
+                  <button
+                    disabled={!canContinueFromSelect}
+                    onClick={() => goNext()}
+                    value="Continuar"
+                    className={!canContinueFromSelect ? styles["btn-disabled"] : styles["btn-enabled"]}
+                  >
+                    Continuar
+                  </button>
+                </div>
               </div>
             </div>
           ) : step === 1 ? (
             <div className={styles.step1}>
+
               <h2 className={styles["font-size"]}>
                 ¿Cuánto querés <br className={styles.br} /> ingresar a la
                 cuenta?
               </h2>
+
               <div className={`${styles["amount-input"]}`}>
+
                 <span>$</span>
                 <input
                   className={`${styles["input-inside"]} ${styles["font-size"]}`}
@@ -162,14 +208,16 @@ export default function CardTransfer() {
                   onChange={(e) => handleAmountChange(e.target.value)}
                   placeholder="0"
                 />
+
               </div>
 
-              <div
-                className={
-                  step < 3
-                    ? `${styles["button-select"]} ${"w-full"} ${styles["button-step"]}`
-                    : styles["button-select"]
-                }
+
+              <div className={
+                step < 3
+                  ? `${styles["button-select"]} ${"w-full"} ${styles["button-step"]}`
+                  : styles["button-select"]
+              }
+              
               >
                 <button
                   disabled={!canContinueFromAmount}
@@ -180,7 +228,9 @@ export default function CardTransfer() {
                   Continuar
                 </button>
               </div>
+
             </div>
+
           ) : step === 2 ? (
             <ConfirmCard amount={numericAmount} cvu={cvu} variant="confirm" onConfirm={handleConfirm} onBack={() => setStep(1)} isSubmitting={isSubmitting} />
           ) : (
@@ -190,6 +240,8 @@ export default function CardTransfer() {
               variant="success"
               dated={transaction?.dated ?? ""}
               isSubmitting={isSubmitting}
+              description={transaction?.description ?? ""}
+
             />
           )
         }
@@ -206,7 +258,7 @@ export default function CardTransfer() {
                 disabled={!canContinueFromSelect}
                 onClick={() => goNext()}
                 value="Continuar"
-                className={!canContinueFromSelect ? styles["btn-disabled"] : styles["btn-enabled"]}
+                className={!canContinueFromSelect ? `${styles["button-hide"]} ${styles["btn-disabled"]}` : `${styles["button-hide"]} ${styles["btn-enabled"]}`}
               >
                 Continuar
               </button>
