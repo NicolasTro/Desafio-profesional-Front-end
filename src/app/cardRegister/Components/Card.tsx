@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Cards from "react-credit-cards-2";
 import "react-credit-cards-2/dist/es/styles-compiled.css";
 import InputCard from "./InputCard";
-import style from "./Card.module.css";
+import style from "./card.module.css";
 
 export default function CardForm() {
   const [cardForm, setCardForm] = useState({

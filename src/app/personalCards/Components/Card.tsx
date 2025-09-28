@@ -1,5 +1,5 @@
 "use client";
-import style from "./Card.module.css";
+import style from "./card.module.css";
 import Add_Card from "../../../../public/addCard.svg";
 import Arrow from "../../../../public/arrow.svg";
 import { useRouter } from "next/navigation";
