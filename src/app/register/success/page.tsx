@@ -1,8 +1,9 @@
 "use client";
 import Button from "@/Components/Button";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import style from "./success.module.css";
+import SuccessIcon from "../../../../public/Success.svg"
+
 
 export default function Success() {
   const router = useRouter();
@@ -12,12 +13,7 @@ export default function Success() {
         <h1 className="text-white text-[34px] font-semibold">
           Registro Exitoso
         </h1>
-        <Image
-          src="/Success.png"
-          alt="Registro Exitoso"
-          width={96}
-          height={96}
-        />
+        <SuccessIcon fontSize={96} color="var(--lima)" />
         <p className="text-white text-[12px] w-[210px] text-center">
           Hemos enviado un correo de confirmación para validar tu email, por
           favor revísalo para iniciar sesión.
