@@ -2,7 +2,7 @@
   display: flex;
   align-items: center;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-start;
   height: 147px;
   padding: 20px 10px 40px 10px;
   border-radius: 10px;
@@ -17,6 +17,8 @@
 }
 
 .card-top {
+  width: 100%;
+  padding: 0 20px;
   color: white;
 }
 
@@ -26,11 +28,42 @@
   justify-content: space-between;
   width: 100%;
   padding: 0 20px;
-
   color: var(--lima);
+}
+
+.card-body:hover {
+  transform: scale(0.98);
 }
 
 .card-body p {
   font-size: 20px;
   font-weight: bold;
+}
+
+@media (min-width: 768px) {
+
+  .card-top {
+    display: none;
+  }
+
+  .card-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 157px;
+  }
+}
+
+@media (min-width: 1024px) {
+
+  .card-top {
+    display: flex;
+  }
+
+  .card-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 157px;
+  }
 }

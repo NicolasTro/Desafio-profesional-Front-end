@@ -1,7 +1,7 @@
 .table {
   overflow-y: scroll;
   width: 100%;
-  height: 100%;
+  height: 700px;
   padding: 15px;
   border-radius: 20px;
   background-color: white;
@@ -67,3 +67,17 @@
   border-radius: 50%;
   background-color: var(--lima);
 }
+
+
+.delete:hover{
+  color: var(--dark) !important;
+  background-color: transparent !important;
+  cursor: pointer;
+}
+
+
+.delete:active{
+  transform: scale(0.90);
+}
+
+  

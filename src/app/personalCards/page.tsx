@@ -2,7 +2,7 @@
 import Card from "./Components/Card";
 import PageHeader from "@/Components/PageHeader";
 import TableCards from "./Components/TableCards";
-import styles from "./styles/personalCards.module.css";
+import styles from "./styles/PersonalCards.module.css";
 
 export default function PersonalCards() {
   return (

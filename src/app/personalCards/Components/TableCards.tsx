@@ -2,7 +2,7 @@
 import { useAppContext } from "@/Context/AppContext";
 import Table from "@mui/joy/Table";
 import { useEffect, useState } from "react";
-import style from "./table-card.module.css";
+import style from "./TableCard.module.css";
 
 export default function DataProfileTable() {
   const { account } = useAppContext();
@@ -133,7 +133,6 @@ export default function DataProfileTable() {
               timer: 1800,
             });
           } catch {
-            // ignore
           }
         }
       }, DELAY);
