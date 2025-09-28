@@ -1,0 +1,21 @@
+.container {
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+    justify-content: flex-start;
+    height: 100%;
+    padding: 20px;
+    gap: 20px;
+}
+
+.table-container {
+    overflow: hidden;
+    border-radius: 10px;
+    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.2);
+}
+
+.search-bar {
+    border: solid black 1px;
+}
+
+
