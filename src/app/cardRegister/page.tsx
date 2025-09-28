@@ -1,6 +1,6 @@
 "use client";
 import Card from "./Components/Card";
-import style from "./styles/card-register.module.css";
+import style from "./styles/CardRegister.module.css";
 import PageHeader from "@/Components/PageHeader";
 
 export default function CardRegisterPage() {

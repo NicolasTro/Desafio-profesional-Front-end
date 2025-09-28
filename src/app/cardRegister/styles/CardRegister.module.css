@@ -5,7 +5,6 @@
   flex-direction: column;
   justify-content: center;
   width: 100%;
-  /* height: calc(100dvh - 148px); */
   height: 700px;
   background-color: var(--lightGrey);
 }
@@ -18,7 +17,6 @@
   flex-direction: column;
   justify-content: center;
   width: 100%;
-  /* height: calc(100dvh - 148px); */
   height: 1000px;
   padding: 20px 20px 60px 20px;
   gap: 10px;
@@ -37,6 +35,16 @@
 }
 
 @media (min-width: 768px) {
+
+
+  .container {
+
+    height: 950px;
+
+
+  }
+  
+  
   .content {
     justify-content: flex-start;
   }
@@ -47,7 +55,21 @@
 }
 
 @media (min-width: 1024px) {
+
+  .container {
+
+    height: 1024px;
+
+
+  }
+
+
+
   .content {
     justify-content: center;
   }
+
+
+
+
 }
