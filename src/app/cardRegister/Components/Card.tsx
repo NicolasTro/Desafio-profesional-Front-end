@@ -5,10 +5,10 @@ import { useRouter } from "next/navigation";
 import Cards from "react-credit-cards-2";
 import "react-credit-cards-2/dist/es/styles-compiled.css";
 import InputCard from "./InputCard";
-import style from "./card.module.css";
+import style from "./Card.module.css";
 
 export default function CardForm() {
-  const [form, setForm] = useState({
+  const [cardForm, setCardForm] = useState({
     number: "",
     name: "",
     expiry: "",
@@ -18,7 +18,7 @@ export default function CardForm() {
 
   const { userInfo, account, refreshSession } = useAppContext();
   const router = useRouter();
-  const [cardsCount, setCardsCount] = useState<number | null>(null);
+  const [existingCardsCount, setExistingCardsCount] = useState<number | null>(null);
 
   useEffect(() => {
     let mounted = true;
@@ -33,11 +33,11 @@ export default function CardForm() {
         if (!res.ok) return;
         const data = await res.json();
         if (!mounted) return;
-        if (Array.isArray(data)) setCardsCount(data.length);
+        if (Array.isArray(data)) setExistingCardsCount(data.length);
         else if (data?.cards && Array.isArray(data.cards))
-          setCardsCount(data.cards.length);
+          setExistingCardsCount(data.cards.length);
       } catch {
-        // ignore fetch errors; leave cardsCount null
+        
       }
     })();
     return () => {
@@ -45,7 +45,8 @@ export default function CardForm() {
     };
   }, [userInfo, account]);
 
-  // ===== helpers
+  // Devuelve sólo los caracteres numéricos de una cadena.
+  // Útil para normalizar inputs que pueden contener espacios o guiones.
   const onlyDigits = (s: string) => (s || "").replace(/\D/g, "");
 
   const formatCardNumber = (value: string) => {
@@ -53,6 +54,7 @@ export default function CardForm() {
     const groups = v.match(/.{1,4}/g);
     return groups ? groups.join(" ") : "";
   };
+  // Formatea el número de tarjeta en grupos de 4 dígitos para mostrar en el input.
 
   const formatExpiry = (value: string) => {
     const v = onlyDigits(value).slice(0, 4); 
@@ -60,7 +62,9 @@ export default function CardForm() {
     if (v.length <= 2) return v; 
     return `${v.slice(0, 2)}/${v.slice(2, 4)}`; 
   };
+  // Convierte una cadena de dígitos a formato MM/YY mientras el usuario escribe.
 
+  // Normaliza el CVC (3 o 4 dígitos) y recorta caracteres extra.
   const formatCvc = (value: string) => onlyDigits(value).slice(0, 4);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -69,30 +73,44 @@ export default function CardForm() {
     if (name === "number") next = formatCardNumber(value);
     if (name === "expiry") next = formatExpiry(value);
     if (name === "cvc") next = formatCvc(value);
-    setForm((s) => ({ ...s, [name]: next }));
+    setCardForm((s) => ({ ...s, [name]: next }));
   };
 
   const handleInputFocus = (e: React.FocusEvent<HTMLInputElement>) =>
-    setForm((s) => ({ ...s, focus: e.target.name }));
+    setCardForm((s) => ({ ...s, focus: e.target.name }));
 
-  // ===== Validaciones
-  const luhnValid = (num: string) => {
-    const n = onlyDigits(num);
-    if (n.length < 12) return false; 
-    let sum = 0,
-      dbl = false;
-    for (let i = n.length - 1; i >= 0; i--) {
-      let d = parseInt(n[i], 10);
-      if (dbl) {
-        d *= 2;
-        if (d > 9) d -= 9;
+  // handleInputChange: actualiza el estado del formulario aplicando
+  // el formateo correspondiente según el campo (número, expiry, cvc).
+  // handleInputFocus: guarda el nombre del campo en foco para que la
+  // librería de preview muestre el foco correctamente.
+
+  
+  // Valida el número de tarjeta usando el algoritmo de Luhn.
+  // Recorre los dígitos de derecha a izquierda, duplica cada segundo
+  // dígito y suma los dígitos resultantes. Si la suma total es múltiplo
+  // de 10, el número es válido.
+  const luhnValid = (cardNumber: string) => {
+    const digitsOnly = onlyDigits(cardNumber);
+    if (digitsOnly.length < 12) return false;
+
+    let total = 0;
+    let shouldDouble = false; 
+
+    for (let index = digitsOnly.length - 1; index >= 0; index--) {
+      let digit = parseInt(digitsOnly[index], 10);
+      if (shouldDouble) {
+        digit = digit * 2;
+        if (digit > 9) digit -= 9;
       }
-      sum += d;
-      dbl = !dbl;
+      total += digit;
+      shouldDouble = !shouldDouble; 
     }
-    return sum % 10 === 0;
+
+    return total % 10 === 0;
   };
 
+  // Valida que el expiry esté en formato MM/YY y que no corresponda
+  // a una fecha pasada.
   const expiryValid = (exp: string) => {
     const m = exp.match(/^(\d{2})\/(\d{2})$/);
     if (!m) return false;
@@ -105,27 +123,46 @@ export default function CardForm() {
     return endOfMonth >= now;
   };
 
+  // Nombre del titular: se considera válido si tiene al menos 3 caracteres.
   const nameValid = (name: string) => name.trim().length >= 3;
+  // CVC: 3 o 4 dígitos.
   const cvcValid = (c: string) => /^(\d{3,4})$/.test(c);
 
-  const isFormValid =
-    luhnValid(form.number) &&
-    expiryValid(form.expiry) &&
-    cvcValid(onlyDigits(form.cvc)) &&
-    nameValid(form.name);
+  const isCardFormValid =
+    luhnValid(cardForm.number) &&
+    expiryValid(cardForm.expiry) &&
+    cvcValid(onlyDigits(cardForm.cvc)) &&
+    nameValid(cardForm.name);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (!isFormValid) return;
+  // Control del evento submit: prevenir comportamiento por defecto
+  // y validar el formulario antes de intentar crear la tarjeta.
+  e.preventDefault();
+  if (!isCardFormValid) return;
 
-    if (cardsCount !== null && cardsCount >= 10) {
-      window.alert(
-        "Has alcanzado el límite de 10 tarjetas. No puedes registrar más.",
-      );
+  // Si el usuario ya tiene 10 tarjetas registradas, evitar envío.
+  if (existingCardsCount !== null && existingCardsCount >= 10) {
+      try {
+        const Swal = (await import("sweetalert2")).default;
+        await Swal.fire({
+          icon: "warning",
+          title: "Límite de tarjetas",
+          text: "Has alcanzado el límite de 10 tarjetas. No puedes registrar más.",
+          confirmButtonText: "Cerrar",
+          customClass: {
+            popup: "swal-popup",
+            title: "swal-title",
+            htmlContainer: "swal-html",
+            confirmButton: "swal-confirm",
+          },
+        });
+      } catch (err) {
+        console.warn("Swal failed to load for limit warning:", err);
+      }
       return;
     }
 
-    console.log("userInfo from context:", userInfo);
+    
 
   let accountId = account?.account_id || (userInfo ? userInfo.id : undefined);
 
@@ -145,38 +182,87 @@ export default function CardForm() {
       return;
     }
 
-    const expiryParts = form.expiry.split("/");
+    const expiryParts = cardForm.expiry.split("/");
     const expiration_date =
       expiryParts.length === 2
         ? `${expiryParts[0]}/20${expiryParts[1]}`
-        : form.expiry;
+        : cardForm.expiry;
 
-    const codDigits = onlyDigits(form.cvc);
+    const codDigits = onlyDigits(cardForm.cvc);
     const codNumber = codDigits ? parseInt(codDigits, 10) : NaN;
     if (Number.isNaN(codNumber)) {
-      window.alert("Código de seguridad inválido");
+      try {
+        const Swal = (await import("sweetalert2")).default;
+        await Swal.fire({
+          icon: "error",
+          title: "Código inválido",
+          text: "Código de seguridad inválido",
+          confirmButtonText: "Cerrar",
+          customClass: {
+            popup: "swal-popup",
+            title: "swal-title",
+            htmlContainer: "swal-html",
+            confirmButton: "swal-confirm",
+          },
+        });
+      } catch (err) {
+        console.warn("Swal failed to load for code invalid:", err);
+      }
       return;
     }
 
-    const numberIdDigits = form.number.replace(/\s/g, "");
+  const numberIdDigits = cardForm.number.replace(/\s/g, "");
     const numberIdInt = numberIdDigits ? parseInt(numberIdDigits, 10) : NaN;
     if (Number.isNaN(numberIdInt)) {
-      window.alert("Número de tarjeta inválido");
+      try {
+        const Swal = (await import("sweetalert2")).default;
+        await Swal.fire({
+          icon: "error",
+          title: "Número inválido",
+          text: "Número de tarjeta inválido",
+          confirmButtonText: "Cerrar",
+          customClass: {
+            popup: "swal-popup",
+            title: "swal-title",
+            htmlContainer: "swal-html",
+            confirmButton: "swal-confirm",
+          },
+        });
+      } catch (err) {
+        console.warn("Swal failed to load for number invalid:", err);
+      }
       return;
     }
     if (!Number.isSafeInteger(numberIdInt)) {
-      window.alert("Número de tarjeta demasiado largo");
+      try {
+        const Swal = (await import("sweetalert2")).default;
+        await Swal.fire({
+          icon: "error",
+          title: "Número inválido",
+          text: "Número de tarjeta demasiado largo",
+          confirmButtonText: "Cerrar",
+          customClass: {
+            popup: "swal-popup",
+            title: "swal-title",
+            htmlContainer: "swal-html",
+            confirmButton: "swal-confirm",
+          },
+        });
+      } catch (err) {
+        console.warn("Swal failed to load for number too long:", err);
+      }
       return;
     }
 
+    // Construcción del payload que el backend espera para crear la tarjeta.
     const payload = {
       cod: codNumber,
       expiration_date,
-      first_last_name: form.name,
+      first_last_name: cardForm.name,
       number_id: numberIdInt,
     };
 
-    console.debug("Posting card payload to proxy", { accountId, payload });
+    
 
     try {
       const response = await fetch(`/api/accounts/${accountId}/cards`, {
@@ -200,14 +286,13 @@ export default function CardForm() {
               confirmButtonText: "Cerrar",
             });
           } catch {
-            window.alert(`Error al crear la tarjeta: ${response.status} - ${text}`);
           }
         return;
       }
 
-      const data = await response.json();
-      console.log("Éxito:", data);
+      
       try {
+        // Feedback visual al usuario: éxito en el registro de tarjeta.
         const Swal = (await import("sweetalert2")).default;
         await Swal.fire({
           icon: "success",
@@ -222,42 +307,55 @@ export default function CardForm() {
           },
         });
       } catch {
-        window.alert("Tarjeta creada correctamente");
+        // No interrumpir flujo si la librería de alertas falla.
       }
       try {
         await refreshSession();
       } catch {
-        // ignore refresh errors
       }
   router.push("/personalCards");
     } catch (error) {
       console.error("Error creando tarjeta:", error);
-      window.alert(
-        "Error al crear la tarjeta. Revisa la consola para más detalles.",
-      );
+      try {
+        const Swal = (await import("sweetalert2")).default;
+        await Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Ocurrió un error al crear la tarjeta. Intenta nuevamente.",
+          confirmButtonText: "Cerrar",
+          customClass: {
+            popup: "swal-popup",
+            title: "swal-title",
+            htmlContainer: "swal-html",
+            confirmButton: "swal-confirm",
+          },
+        });
+      } catch {
+      }
     }
   };
 
   return (
     <div className={style["card-container"]}>
       <form className={style["card-form-container"]} onSubmit={handleSubmit}>
-        {cardsCount !== null && cardsCount >= 10 && (
+        {/* Banner que avisa si el usuario ya alcanzó el límite de tarjetas */}
+        {existingCardsCount !== null && existingCardsCount >= 10 && (
           <div className={style["limit-banner"]} role="status">
             Has alcanzado el límite de 10 tarjetas. No puedes registrar más.
           </div>
         )}
         <div className={style["card-preview"]}>
           <Cards
-            number={form.number}
-            name={form.name}
-            expiry={form.expiry}
-            cvc={form.cvc}
+            number={cardForm.number}
+            name={cardForm.name}
+            expiry={cardForm.expiry}
+            cvc={cardForm.cvc}
             locale={{ valid: "VENCE" }}
             placeholders={{ name: "NOMBRE DEL TITULAR" }}
           />
 
           <div className={style["row-inputs1"]}>
-            <InputCard
+                <InputCard
               data={{
                 type: "tel",
                 inputMode: "numeric",
@@ -265,14 +363,14 @@ export default function CardForm() {
                 placeholder1: "Número de la tarjeta*",
                 placeholder2: "",
                 autoComplete: "cc-number",
-                value: form.number,
+                value: cardForm.number,
                 className: `${style["input-card"]} ${style["placeholder"]}`,
                 handleInputChange,
                 handleInputFocus,
               }}
             />
 
-            <InputCard
+                <InputCard
               data={{
                 type: "text",
                 inputMode: "text",
@@ -280,7 +378,7 @@ export default function CardForm() {
                 placeholder1: "Nombre y apellido*",
                 placeholder2: "",
                 autoComplete: "cc-name",
-                value: form.name,
+                value: cardForm.name,
                 className: `${style["input-card"]}`,
                 handleInputChange,
                 handleInputFocus,
@@ -288,7 +386,7 @@ export default function CardForm() {
             />
           </div>
           <div className={style["row-inputs2"]}>
-            <InputCard
+                <InputCard
               data={{
                 type: "text",
                 inputMode: "text",
@@ -296,14 +394,14 @@ export default function CardForm() {
                 placeholder1: "Fecha de",
                 placeholder2: "vencimiento (MM/YY)",
                 autoComplete: "cc-exp",
-                value: form.expiry,
+                value: cardForm.expiry,
                 className: `${style["input-card"]}`,
                 handleInputChange,
                 handleInputFocus,
               }}
             />
 
-            <InputCard
+                <InputCard
               data={{
                 type: "tel",
                 inputMode: "numeric",
@@ -311,7 +409,7 @@ export default function CardForm() {
                 placeholder1: "Código de ",
                 placeholder2: "seguridad*",
                 autoComplete: "cc-csc",
-                value: form.cvc,
+                value: cardForm.cvc,
                 className: `${style["input-card"]}`,
                 handleInputChange,
                 handleInputFocus,
@@ -322,13 +420,15 @@ export default function CardForm() {
           <div className={style["button-container"]}>
             <div className={style["button-content"]}>
               <div className={style["card-left"]}></div>
+              {/* Botón de envío: deshabilitado si el formulario no es válido
+                  o si el usuario ya tiene 10 tarjetas registradas. */}
               <button
                 type="submit"
                 disabled={
-                  !isFormValid || (cardsCount !== null && cardsCount >= 10)
+                  !isCardFormValid || (existingCardsCount !== null && existingCardsCount >= 10)
                 }
                 className={`w-full rounded-xl px-4 py-3 font-semibold shadow-md transition-all ${
-                  isFormValid && !(cardsCount !== null && cardsCount >= 10)
+                  isCardFormValid && !(existingCardsCount !== null && existingCardsCount >= 10)
                     ? "bg-lime-400 hover:bg-lime-300 active:scale-[0.99]"
                     : "bg-gray-300 text-gray-600 cursor-not-allowed"
                 }`}
