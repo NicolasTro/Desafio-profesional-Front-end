@@ -44,7 +44,7 @@ dotenv.config({ path: ".env.local" }); // Cargar variables de entorno desde .env
       until.elementLocated(By.id("login-button")),
       5000,
     );
-    await passwordField.sendKeys("Colmillo27!");
+    await passwordField.sendKeys("Colmillo27@");
     await loginButton.click();
 
     // Esperar a que el path sea '/dashboard'

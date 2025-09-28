@@ -2,9 +2,11 @@
 
 
 ## Índice rápido
-- `FRONT-UI-01` a `FRONT-UI-07` — Tests de componentes (UI)
-- `FRONT-LIB-01` a `FRONT-LIB-04` — Tests de librerías (no-UI)
-- `FRONT-API-01` a `FRONT-API-02` — Tests de rutas API (server)
+ - `FRONT-UI-01` a `FRONT-UI-07` — Tests de componentes (UI)
+ - `FRONT-UI-08` a `FRONT-UI-12` — Variantes / cobertura (UI)
+ - `FRONT-HOOK-01` — Tests de hooks
+ - `FRONT-LIB-01` a `FRONT-LIB-05` — Tests de librerías (no-UI)
+ - `FRONT-API-01` a `FRONT-API-13` — Tests de rutas API (server)
 
 ---
 
@@ -146,26 +148,6 @@
   - Fecha de ejecución: 2025-09-23
   - Estado de ejecución: PASADO
 
-- ID: FRONT-LIB-04
-  - Título: http.apiFetch (existente)
-  - Descripción: `apiFetch` probado por suite existente (se conserva)
-  - Precondición: Ninguna
-  - Pasos: Ejecutar tests existentes
-  - Resultado esperado: Conformidad con contratos
-  - Tipo: Funcional
-  - Nivel: unit (lib)
-  - Estado de diseño: Existente (`src/lib/__tests__/http.test.ts`)
-  - Entorno: test
-  - Fecha de ejecución: 2025-09-23
-  - Estado de ejecución: PASADO
-
-- ID: FRONT-LIB-05
-  - Título: auth.getTokenFromCookie (existente)
-  - Descripción: Test existente que valida obtención del token desde cookie
-  - Estado de diseño: Existente (`src/lib/__tests__/auth.test.ts`)
-  - Entorno: test
-  - Fecha de ejecución: 2025-09-23
-  - Estado de ejecución: PASADO
 
 ---
 
@@ -193,6 +175,244 @@
   - Tipo: Funcional
   - Nivel: unit (route handler)
   - Estado de diseño: Automatizado (`src/app/api/accounts/__tests__/route.test.ts`)
+  - Entorno: test
+  - Fecha de ejecución: 2025-09-23
+  - Estado de ejecución: PASADO
+
+-- ID: FRONT-HOOK-01
+  - Título: useUser (hook) - carga y estado
+  - Descripción: Verifica que el hook `useUser` devuelve el estado esperado según mocks de contexto y fetch
+  - Precondición: Polyfills y mock de fetch/context aplicados por el test
+  - #Paso: 1
+  - Pasos: Ejecutar `renderHook` con provider y mocks; comprobar valor inicial y después de resolución
+  - Resultado esperado: Estado de usuario cargado; errores manejados según mocks
+  - Tipo: Funcional
+  - Nivel: unit (hook)
+  - Estado de diseño: Automatizado (`src/hooks/__tests__/useUser.test.tsx`)
+  - Entorno: test
+  - Fecha de ejecución: 2025-09-23
+  - Estado de ejecución: PASADO
+
+-- ID: FRONT-UI-08
+  - Título: SlideMenu - ramas / condiciones (branches)
+  - Descripción: Pruebas extra de `SlideMenu` que ejercitan ramas alternativas (items condicionales y estados límite)
+  - Precondición: Ninguna
+  - #Paso: 1
+  - Pasos: Renderizar `SlideMenu` con props que disparan ramas alternativas; validar renderizado y callbacks
+  - Resultado esperado: Comportamiento correcto en ramas; items condicionales visibles/ocultos según props
+  - Tipo: Funcional
+  - Nivel: unit (componente)
+  - Estado de diseño: Automatizado (`src/Components/__tests__/SlideMenu.branches.test.tsx`)
+  - Entorno: test
+  - Fecha de ejecución: 2025-09-23
+  - Estado de ejecución: PASADO
+
+-- ID: FRONT-UI-09
+  - Título: SlideMenu - pruebas extra (edge / extra)
+  - Descripción: Casos adicionales para `SlideMenu` (flujos alternativos y inputs inválidos)
+  - Precondición: Ninguna
+  - #Paso: 1
+  - Pasos: Ejecutar tests que simulan inputs/estados no estándar y comprobar resiliencia
+  - Resultado esperado: No hay crashes; manejo de estados no estándar verificado
+  - Tipo: Funcional
+  - Nivel: unit (componente)
+  - Estado de diseño: Automatizado (`src/Components/__tests__/SlideMenu.branches.extra.test.tsx`)
+  - Entorno: test
+  - Fecha de ejecución: 2025-09-23
+  - Estado de ejecución: PASADO
+
+-- ID: FRONT-UI-10
+  - Título: Header - pruebas extra
+  - Descripción: Tests adicionales de `Header` que cubren variantes y states auxiliares
+  - Precondición: Ninguna
+  - #Paso: 1
+  - Pasos: Renderizar `Header` en diferentes condiciones (usuario logueado/no) y revisar nodos
+  - Resultado esperado: Links y controles correctos según estado
+  - Tipo: Funcional
+  - Nivel: unit (componente)
+  - Estado de diseño: Automatizado (`src/Components/__tests__/Header.extra.test.tsx`)
+  - Entorno: test
+  - Fecha de ejecución: 2025-09-23
+  - Estado de ejecución: PASADO
+
+-- ID: FRONT-UI-11
+  - Título: Header - coverage helpers
+  - Descripción: Pruebas auxiliares para aumentar cobertura en `Header` (scaffold de casos raros)
+  - Precondición: Ninguna
+  - #Paso: 1
+  - Pasos: Ejecutar casos adicionales que no forman parte de la funcionalidad principal
+  - Resultado esperado: Sin errores; cobertura incrementada
+  - Tipo: No-funcional (cobertura)
+  - Nivel: unit (componente)
+  - Estado de diseño: Automatizado (`src/Components/__tests__/Header.coverage.test.tsx`)
+  - Entorno: test
+  - Fecha de ejecución: 2025-09-23
+  - Estado de ejecución: PASADO
+
+-- ID: FRONT-UI-12
+  - Título: Header - ramas (branches)
+  - Descripción: Tests que ejercitan ramas y condicionales en `Header`
+  - Precondición: Ninguna
+  - #Paso: 1
+  - Pasos: Renderizar con múltiples combinaciones de props/estado y verificar salida
+  - Resultado esperado: Comportamiento consistente por rama
+  - Tipo: Funcional
+  - Nivel: unit (componente)
+  - Estado de diseño: Automatizado (`src/Components/__tests__/Header.branches.test.tsx`)
+  - Entorno: test
+  - Fecha de ejecución: 2025-09-23
+  - Estado de ejecución: PASADO
+
+-- ID: FRONT-API-03
+  - Título: session - GET/POST handlers
+  - Descripción: Validar handlers en `src/app/api/session/route.ts` (login/session management) sobre OK y fallos
+  - Precondición: Polyfills y mocks de fetch/cookies aplicados por los tests
+  - #Paso: 1
+  - Pasos: Invocar handlers con Requests mockeadas para distintos verbos y payloads; simular upstream
+  - Resultado esperado: Devuelve 200/201 en OK; maneja errores y estados inválidos
+  - Tipo: Funcional
+  - Nivel: unit (route handler)
+  - Estado de diseño: Automatizado (`src/app/api/session/__tests__/route.test.ts`)
+  - Entorno: test
+  - Fecha de ejecución: 2025-09-23
+  - Estado de ejecución: PASADO
+
+-- ID: FRONT-API-04
+  - Título: logout - POST handler
+  - Descripción: Validar `src/app/api/logout/route.ts` que cierra sesión y limpia cookies
+  - Precondición: Polyfills y mocks de cookies
+  - #Paso: 1
+  - Pasos: Invocar handler con request simulada y comprobar headers/cookies devueltos
+  - Resultado esperado: Cookies borradas; status 200 o redirect según implementación
+  - Tipo: Funcional
+  - Nivel: unit (route handler)
+  - Estado de diseño: Automatizado (`src/app/api/logout/__tests__/route.test.ts`)
+  - Entorno: test
+  - Fecha de ejecución: 2025-09-23
+  - Estado de ejecución: PASADO
+
+-- ID: FRONT-API-05
+  - Título: session - tests extra / coverage
+  - Descripción: Tests auxiliares para `session` (casos límite / coverage)
+  - Precondición: Polyfills y mocks
+  - #Paso: 1
+  - Pasos: Ejecutar casos adicionales (inputs inválidos, timeouts mockeados)
+  - Resultado esperado: Manejo de errores y cobertura aumentada
+  - Tipo: No-funcional (cobertura)
+  - Nivel: unit (route handler)
+  - Estado de diseño: Automatizado (`src/app/api/session/__tests__/route.extra.test.ts`)
+  - Entorno: test
+  - Fecha de ejecución: 2025-09-23
+  - Estado de ejecución: PASADO
+
+-- ID: FRONT-API-06
+  - Título: session - coverage helpers
+  - Descripción: Pruebas para aumentar cobertura en `session`
+  - Precondición: Polyfills y mocks
+  - #Paso: 1
+  - Pasos: Ejecutar helpers y ramas poco frecuentes
+  - Resultado esperado: Sin errores; cobertura incrementada
+  - Tipo: No-funcional (cobertura)
+  - Nivel: unit (route handler)
+  - Estado de diseño: Automatizado (`src/app/api/session/__tests__/route.coverage.test.ts`)
+  - Entorno: test
+  - Fecha de ejecución: 2025-09-23
+  - Estado de ejecución: PASADO
+
+-- ID: FRONT-API-07
+  - Título: ping - GET handler
+  - Descripción: Validar `src/app/api/ping/route.ts` responde OK (sanity)
+  - Precondición: Polyfills de Request/Response
+  - #Paso: 1
+  - Pasos: Invocar GET y comprobar status/texto de respuesta
+  - Resultado esperado: 200 con payload de health
+  - Tipo: Funcional
+  - Nivel: unit (route handler)
+  - Estado de diseño: Automatizado (`src/app/api/ping/__tests__/route.test.ts`)
+  - Entorno: test
+  - Fecha de ejecución: 2025-09-23
+  - Estado de ejecución: PASADO
+
+-- ID: FRONT-API-08
+  - Título: login - handlers y variantes
+  - Descripción: Validar `src/app/api/login/route.ts` para login correcto, credenciales inválidas y errores upstream
+  - Precondición: Polyfills y mocks
+  - #Paso: 1
+  - Pasos: Invocar POST con payload válido/inválido; mockear upstream y cookies
+  - Resultado esperado: 200 con token en OK; errores manejados y status apropiados en fallo
+  - Tipo: Funcional
+  - Nivel: unit (route handler)
+  - Estado de diseño: Automatizado (`src/app/api/login/__tests__/route.test.ts`)
+  - Entorno: test
+  - Fecha de ejecución: 2025-09-23
+  - Estado de ejecución: PASADO
+
+-- ID: FRONT-API-09
+  - Título: login - pruebas extra / branches
+  - Descripción: Variantes y ramas de `login` para cubrir condiciones límite
+  - Precondición: Polyfills y mocks
+  - #Paso: 1
+  - Pasos: Ejecutar tests extra para ramas alternativas y errores raros
+  - Resultado esperado: Manejo de errores verificado; cobertura mejorada
+  - Tipo: Funcional / cobertura
+  - Nivel: unit (route handler)
+  - Estado de diseño: Automatizado (`src/app/api/login/__tests__/route.extra.test.ts`, `src/app/api/login/__tests__/route.branches.test.ts`)
+  - Entorno: test
+  - Fecha de ejecución: 2025-09-23
+  - Estado de ejecución: PASADO
+
+-- ID: FRONT-API-10
+  - Título: account - GET/PUT handlers
+  - Descripción: Validar `src/app/api/account/route.ts` (detalle de account) ante id válido y errores upstream
+  - Precondición: Polyfills y mocks
+  - #Paso: 1
+  - Pasos: Invocar handlers con Requests mockeadas y comprobar respuestas
+  - Resultado esperado: 200 con perfil/200 al actualizar; errores manejados
+  - Tipo: Funcional
+  - Nivel: unit (route handler)
+  - Estado de diseño: Automatizado (`src/app/api/account/__tests__/route.test.ts`)
+  - Entorno: test
+  - Fecha de ejecución: 2025-09-23
+  - Estado de ejecución: PASADO
+
+-- ID: FRONT-API-11
+  - Título: account - tests extra
+  - Descripción: Tests auxiliares para `account` que ejercitan paths alternativos
+  - Precondición: Polyfills y mocks
+  - #Paso: 1
+  - Pasos: Ejecutar casos extra y verificar manejo de errores
+  - Resultado esperado: Sin crashes; manejo adecuado de estados
+  - Tipo: No-funcional (cobertura)
+  - Nivel: unit (route handler)
+  - Estado de diseño: Automatizado (`src/app/api/account/__tests__/route.extra.test.ts`)
+  - Entorno: test
+  - Fecha de ejecución: 2025-09-23
+  - Estado de ejecución: PASADO
+
+-- ID: FRONT-API-12
+  - Título: register - POST handler
+  - Descripción: Validar `src/app/api/register/route.ts` que crea usuarios; manejar validaciones y errores upstream
+  - Precondición: Polyfills y mocks
+  - #Paso: 1
+  - Pasos: Invocar POST con payload válido/inválido; comprobar respuesta y side-effects
+  - Resultado esperado: 201 en creación; errores con status apropiado
+  - Tipo: Funcional
+  - Nivel: unit (route handler)
+  - Estado de diseño: Automatizado (`src/app/api/register/__tests__/route.test.ts`)
+  - Entorno: test
+  - Fecha de ejecución: 2025-09-23
+  - Estado de ejecución: PASADO
+
+-- ID: FRONT-API-13
+  - Título: accounts/[account_id]/cards - list / card handlers
+  - Descripción: Validar endpoints de tarjetas (`cards`) y ruta singular de tarjeta bajo `accounts/[account_id]`
+  - Precondición: Polyfills y mocks de fetch/cookies
+  - #Paso: 1
+  - Pasos: Invocar GET/POST para listado y GET/DELETE/PUT para tarjeta singular; mockear upstream
+  - Resultado esperado: 200/201 en OK; manejo de errores en fallo
+  - Tipo: Funcional
+  - Nivel: unit (route handlers)
+  - Estado de diseño: Automatizado (`src/app/api/accounts/[account_id]/cards/__tests__/route.test.ts`, `src/app/api/accounts/[account_id]/cards/__tests__/route.extra.test.ts`, `src/app/api/accounts/[account_id]/cards/[card_id]/__tests__/route.test.ts`)
   - Entorno: test
   - Fecha de ejecución: 2025-09-23
   - Estado de ejecución: PASADO
@@ -277,6 +497,159 @@ A continuación se registra, por cada caso FRONT-*, los campos: Fecha de ejecuci
   - Ejecutor: Nicolas Troupkos
   - Observaciones: Ninguna
 
+- ID: FRONT-HOOK-01
+  - Fecha de ejecución: 2025-09-23
+  - Estado de ejecución: PASADO
+  - Resultado obtenido: `useUser` devuelve estado inicial y luego estado con usuario cargado según mocks; errores manejados en escenarios de fallback.
+  - Suite: `src/hooks/__tests__/useUser.test.tsx`
+  - Entorno: test (Jest + react-hooks testing library)
+  - Ejecutor: Nicolas Troupkos
+  - Observaciones: Mocks de fetch y providers aplicados por el test; salida contiene logs controlados.
+
+- ID: FRONT-UI-08
+  - Fecha de ejecución: 2025-09-23
+  - Estado de ejecución: PASADO
+  - Resultado obtenido: `SlideMenu` ejecutó correctamente las ramas condicionales y mostró/ocultó items según props.
+  - Suite: `src/Components/__tests__/SlideMenu.branches.test.tsx`
+  - Entorno: test
+  - Ejecutor: Nicolas Troupkos
+  - Observaciones: Ninguna
+
+- ID: FRONT-UI-09
+  - Fecha de ejecución: 2025-09-23
+  - Estado de ejecución: PASADO
+  - Resultado obtenido: `SlideMenu` manejó inputs no estándar sin fallos; comportamientos esperados verificados.
+  - Suite: `src/Components/__tests__/SlideMenu.branches.extra.test.tsx`
+  - Entorno: test
+  - Ejecutor: Nicolas Troupkos
+  - Observaciones: Ninguna
+
+- ID: FRONT-UI-10
+  - Fecha de ejecución: 2025-09-23
+  - Estado de ejecución: PASADO
+  - Resultado obtenido: `Header` en variantes (usuario logueado/no) muestra controles adecuados.
+  - Suite: `src/Components/__tests__/Header.extra.test.tsx`
+  - Entorno: test
+  - Ejecutor: Nicolas Troupkos
+  - Observaciones: Ninguna
+
+- ID: FRONT-UI-11
+  - Fecha de ejecución: 2025-09-23
+  - Estado de ejecución: PASADO
+  - Resultado obtenido: Tests auxiliares completados; cobertura incrementada en componentes seleccionados.
+  - Suite: `src/Components/__tests__/Header.coverage.test.tsx`
+  - Entorno: test
+  - Ejecutor: Nicolas Troupkos
+  - Observaciones: Diseñado para aumentar cobertura, genera logs controlados.
+
+- ID: FRONT-UI-12
+  - Fecha de ejecución: 2025-09-23
+  - Estado de ejecución: PASADO
+  - Resultado obtenido: Ramas del `Header` ejercitadas; salida conforme a aserciones.
+  - Suite: `src/Components/__tests__/Header.branches.test.tsx`
+  - Entorno: test
+  - Ejecutor: Nicolas Troupkos
+  - Observaciones: Ninguna
+
+- ID: FRONT-API-03
+  - Fecha de ejecución: 2025-09-23
+  - Estado de ejecución: PASADO
+  - Resultado obtenido: Handlers de `session` responden OK en escenarios felices y manejan fallos según aserciones.
+  - Suite: `src/app/api/session/__tests__/route.test.ts`
+  - Entorno: test
+  - Ejecutor: Nicolas Troupkos
+  - Observaciones: Polyfills y mocks aplicados.
+
+- ID: FRONT-API-04
+  - Fecha de ejecución: 2025-09-23
+  - Estado de ejecución: PASADO
+  - Resultado obtenido: `logout` limpia cookies y devuelve respuesta conforme a la implementación esperada.
+  - Suite: `src/app/api/logout/__tests__/route.test.ts`
+  - Entorno: test
+  - Ejecutor: Nicolas Troupkos
+  - Observaciones: Ninguna
+
+- ID: FRONT-API-05
+  - Fecha de ejecución: 2025-09-23
+  - Estado de ejecución: PASADO
+  - Resultado obtenido: Tests extra de `session` completados; manejo de inputs inválidos verificado.
+  - Suite: `src/app/api/session/__tests__/route.extra.test.ts`
+  - Entorno: test
+  - Ejecutor: Nicolas Troupkos
+  - Observaciones: Ninguna
+
+- ID: FRONT-API-06
+  - Fecha de ejecución: 2025-09-23
+  - Estado de ejecución: PASADO
+  - Resultado obtenido: Coverage helpers ejecutados; sin errores.
+  - Suite: `src/app/api/session/__tests__/route.coverage.test.ts`
+  - Entorno: test
+  - Ejecutor: Nicolas Troupkos
+  - Observaciones: Ninguna
+
+- ID: FRONT-API-07
+  - Fecha de ejecución: 2025-09-23
+  - Estado de ejecución: PASADO
+  - Resultado obtenido: `ping` devolvió status 200 y payload esperado.
+  - Suite: `src/app/api/ping/__tests__/route.test.ts`
+  - Entorno: test
+  - Ejecutor: Nicolas Troupkos
+  - Observaciones: Ninguna
+
+- ID: FRONT-API-08
+  - Fecha de ejecución: 2025-09-23
+  - Estado de ejecución: PASADO
+  - Resultado obtenido: `login` handler responde 200 con token en escenario OK; credenciales inválidas y errores upstream manejados.
+  - Suite: `src/app/api/login/__tests__/route.test.ts`
+  - Entorno: test
+  - Ejecutor: Nicolas Troupkos
+  - Observaciones: Ninguna
+
+- ID: FRONT-API-09
+  - Fecha de ejecución: 2025-09-23
+  - Estado de ejecución: PASADO
+  - Resultado obtenido: Tests extra de `login` (branches) completados; errores raros simulados y validados.
+  - Suite: `src/app/api/login/__tests__/route.extra.test.ts`, `src/app/api/login/__tests__/route.branches.test.ts`
+  - Entorno: test
+  - Ejecutor: Nicolas Troupkos
+  - Observaciones: Ninguna
+
+- ID: FRONT-API-10
+  - Fecha de ejecución: 2025-09-23
+  - Estado de ejecución: PASADO
+  - Resultado obtenido: `account` handlers pasaron las aserciones para GET/PUT; errores upstream manejados.
+  - Suite: `src/app/api/account/__tests__/route.test.ts`
+  - Entorno: test
+  - Ejecutor: Nicolas Troupkos
+  - Observaciones: Ninguna
+
+- ID: FRONT-API-11
+  - Fecha de ejecución: 2025-09-23
+  - Estado de ejecución: PASADO
+  - Resultado obtenido: Tests extra de `account` completados; manejo de paths alternativos verificado.
+  - Suite: `src/app/api/account/__tests__/route.extra.test.ts`
+  - Entorno: test
+  - Ejecutor: Nicolas Troupkos
+  - Observaciones: Ninguna
+
+- ID: FRONT-API-12
+  - Fecha de ejecución: 2025-09-23
+  - Estado de ejecución: PASADO
+  - Resultado obtenido: `register` crea usuario en escenario OK (201) y gestiona validaciones/errores en fallos.
+  - Suite: `src/app/api/register/__tests__/route.test.ts`
+  - Entorno: test
+  - Ejecutor: Nicolas Troupkos
+  - Observaciones: Ninguna
+
+- ID: FRONT-API-13
+  - Fecha de ejecución: 2025-09-23
+  - Estado de ejecución: PASADO
+  - Resultado obtenido: Endpoints de `accounts/[account_id]/cards` (listado y card singular) pasaron las aserciones; manejo de errores verificado.
+  - Suite: `src/app/api/accounts/[account_id]/cards/__tests__/route.test.ts`, `src/app/api/accounts/[account_id]/cards/__tests__/route.extra.test.ts`, `src/app/api/accounts/[account_id]/cards/[card_id]/__tests__/route.test.ts`
+  - Entorno: test
+  - Ejecutor: Nicolas Troupkos
+  - Observaciones: Ninguna
+
 - ID: FRONT-LIB-01
   - Fecha de ejecución: 2025-09-23
   - Estado de ejecución: PASADO
@@ -300,24 +673,6 @@ A continuación se registra, por cada caso FRONT-*, los campos: Fecha de ejecuci
   - Estado de ejecución: PASADO
   - Resultado obtenido: `authClient` cachea y recupera perfil correctamente; `hasAuthCookie` detecta presencia según mocks.
   - Suite: `src/lib/__tests__/authClient.test.ts`
-  - Entorno: test
-  - Ejecutor: Nicolas Troupkos
-  - Observaciones: Ninguna
-
-- ID: FRONT-LIB-04
-  - Fecha de ejecución: 2025-09-23
-  - Estado de ejecución: PASADO
-  - Resultado obtenido: `apiFetch` (test existente) pasa todas las aserciones.
-  - Suite: `src/lib/__tests__/http.test.ts`
-  - Entorno: test
-  - Ejecutor: Nicolas Troupkos
-  - Observaciones: Ninguna
-
-- ID: FRONT-LIB-05
-  - Fecha de ejecución: 2025-09-23
-  - Estado de ejecución: PASADO
-  - Resultado obtenido: `getTokenFromCookie()` devuelve token esperado desde cookies mockeadas.
-  - Suite: `src/lib/__tests__/auth.test.ts`
   - Entorno: test
   - Ejecutor: Nicolas Troupkos
   - Observaciones: Ninguna

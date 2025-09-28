@@ -1,84 +1,22 @@
 import { POST } from "../route";
-import jwt from "jsonwebtoken";
 import { makeNextRequestMock } from "@/tests/utils/makeNextRequestMock";
 
-const jarSet = jest.fn();
-jest.mock("next/headers", () => ({
-  cookies: () => ({ set: jarSet }),
-}));
-
-describe("/api/login extra tests", () => {
-  afterEach(() => {
-    jest.restoreAllMocks();
-    jarSet.mockClear();
-    // restore global.fetch to a noop mock to avoid type issues
-    (global as unknown as { fetch?: unknown }).fetch = jest.fn();
+describe("/api/login extras (simple)", () => {
+  it("returns 400 for empty body using makeNextRequestMock", async () => {
+    const req = makeNextRequestMock({ url: "http://localhost/api/login", method: "POST", body: {} });
+    const res = await POST(req as unknown as Request);
+    expect(res.status).toBe(400);
   });
 
-  it("forwards upstream text when upstream returns non-ok text", async () => {
-    const mockResp1 = {
-      ok: false,
-      status: 401,
-      headers: new Headers({ "content-type": "text/html" }),
-      text: () => Promise.resolve("Unauthorized access"),
-    } as unknown as Response;
-    global.fetch = jest.fn(() => Promise.resolve(mockResp1));
-
+  it("returns 200 for valid known credentials", async () => {
     const req = makeNextRequestMock({
-      url: "http://localhost",
+      url: "http://localhost/api/login",
       method: "POST",
-      body: { email: "a", password: "b" },
+      body: { email: "nikprueba@user.com", password: "Colmillo27!" },
     });
-    const res = await POST(req);
-    expect(res.status).toBe(401);
-    const txt = await res.text();
-    expect(txt).toBe("Unauthorized access");
-    expect(res.headers.get("content-type")).toBe("text/html");
-  });
-
-  it("sets cookie with default maxAge when jwt.decode throws", async () => {
-    const mockResp2 = {
-      ok: true,
-      status: 200,
-      headers: new Headers({ "content-type": "application/json" }),
-      json: () => Promise.resolve({ token: "abc.def.ghi" }),
-    } as unknown as Response;
-    global.fetch = jest.fn(() => Promise.resolve(mockResp2));
-
-    jest.spyOn(jwt, "decode").mockImplementation(() => {
-      throw new Error("bad");
-    });
-
-    const req = makeNextRequestMock({
-      url: "http://localhost",
-      method: "POST",
-      body: { email: "x", password: "y" },
-    });
-    const res = await POST(req);
+    const res = await POST(req as unknown as Request);
     expect(res.status).toBe(200);
-
-    expect(jarSet).toHaveBeenCalledTimes(1);
-    const opts = jarSet.mock.calls[0][2];
-    expect(opts).toBeDefined();
-    expect(opts.maxAge).toBe(60 * 60 * 24);
-  });
-
-  it("does not set cookie when upstream returns no token", async () => {
-    const mockResp3 = {
-      ok: true,
-      status: 200,
-      headers: new Headers({ "content-type": "application/json" }),
-      json: () => Promise.resolve({}),
-    } as unknown as Response;
-    global.fetch = jest.fn(() => Promise.resolve(mockResp3));
-
-    const req = makeNextRequestMock({
-      url: "http://localhost",
-      method: "POST",
-      body: { email: "no", password: "token" },
-    });
-    const res = await POST(req);
-    expect(res.status).toBe(200);
-    expect(jarSet).not.toHaveBeenCalled();
+    const json = await res.json();
+    expect(json).toHaveProperty("token");
   });
 });

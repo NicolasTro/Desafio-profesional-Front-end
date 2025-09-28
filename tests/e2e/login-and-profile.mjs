@@ -48,7 +48,7 @@ dotenv.config({ path: ".env.local" });
       elemTimeout,
     );
     await passwordField.sendKeys(
-      process.env.E2E_TEST_PASSWORD || "Colmillo27!",
+      process.env.E2E_TEST_PASSWORD || "Colmillo27@",
     );
     await loginButton.click();
 
