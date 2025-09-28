@@ -9,12 +9,9 @@ const openSans = Open_Sans({
   weight: ["300", "400", "500", "600", "700"]
 });
 
-
-
 export default async function RootLayout({
   children
 }: Readonly<{ children: React.ReactNode }>) {
-
 
   return (
     <html lang="en" className={`${openSans.className}`} suppressHydrationWarning>
