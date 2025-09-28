@@ -2,7 +2,6 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 100dvw;
   height: 74px;
   padding: 0 25px;
   background-color: var(--dark);
@@ -51,8 +50,6 @@
   font-size: 14px;
 }
 
-
-
 .hamburgerWrapper {
   display: flex;
   align-items: center;
@@ -63,14 +60,6 @@
   display: flex;
   align-items: center;
   gap: 40px;
-}
-
-
-
-@media (min-width: 600px) {
-  /* .logo img {
-        margin-left: 20px;
-    } */
 }
 
 @media (min-width: 768px) {

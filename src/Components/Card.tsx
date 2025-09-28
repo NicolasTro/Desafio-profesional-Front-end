@@ -5,6 +5,7 @@ type CardProps = {
   content: string;
 };
 
+
 export default function Card({ title, content }: CardProps) {
   return (
     <div className={style.card}>

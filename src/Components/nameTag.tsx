@@ -1,3 +1,4 @@
+"use client";
 type NameTagProps = {
   nameTag?: string | null | undefined;
   className?: string;

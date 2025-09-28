@@ -9,6 +9,14 @@
   font-weight: bold;
 }
 
+.slide-header {
+  cursor: pointer;
+}
+
+.slide-header:hover {
+  opacity: 0.95;
+}
+
 
 .drawer-body {
   height: 100%;
@@ -21,6 +29,7 @@
   display: flex;
   width: 100%;
   color: black;
+  cursor: pointer;
 }
 
 .slide-content:hover {

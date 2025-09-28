@@ -11,15 +11,11 @@ export default function ClientLayoutWithAuth({ children }: { children: React.Rea
 
     <div className="global-content">
       <Header />
-
       <div className="main-content">
         {userInfo && !isLoggingOut && <SlideMenu />}
         <main>{children}</main>
-
       </div>
-
       <Footer />
- 
     </div>
   );
 }

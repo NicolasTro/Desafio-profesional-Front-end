@@ -7,6 +7,7 @@ import style from "./input.module.css";
 type InputProps = {
   id?: string;
   border?: string;
+  error?: boolean;
   placeholder?: string;
   value?: string;
   type?: string;
@@ -27,6 +28,7 @@ export default function BasicInput({
   onChange,
   className,
   border,
+  error,
   onKeyDown,
 }: InputProps) {
   return (
@@ -38,7 +40,7 @@ export default function BasicInput({
       name={name}
       onChange={(e) => onChange?.(e.target.value)}
       onKeyDown={onKeyDown}
-      className={`${style.input} ${className || ""}`}
+      className={`${style.input} ${className || ""} ${error ? style.error : ""}`}
       sx={{
         border: border,
       }}

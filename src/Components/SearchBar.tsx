@@ -20,7 +20,11 @@ export default function SearchBar(props: SearchBarProps) {
         className={props.className}
         placeholder={props.placeholder}
         value={value}
-        onChange={(e) => setValue(String((e.target as HTMLInputElement).value))}
+        onChange={(e) => {
+          const v = String((e.target as HTMLInputElement).value);
+          setValue(v);
+          props.onSearch?.(v); // real-time
+        }}
         onKeyDown={(e) => {
           if (e.key === "Enter") {
             props.onSearch?.(value);

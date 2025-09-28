@@ -110,8 +110,8 @@ export default function Header(): ReactElement {
           ) : (
             <Button
               className={`${style.button1} flex justify-center items-center`}
-              height="31px"
-              width="122px"
+              height="40px"
+              width="133px"
               label="Iniciar sesión"
               backgroundColor="#3B3A3F"
               border="solid var(--lima) 1px"

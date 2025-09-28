@@ -9,6 +9,7 @@ type ButtonProps = {
   border?: string;
   textColor?: string;
   onClick?: () => void;
+  disabled?: boolean;
 };
 
 export default function Button({
@@ -20,6 +21,7 @@ export default function Button({
   border,
   textColor,
   onClick,
+  disabled,
 }: ButtonProps) {
   return (
     <button
@@ -32,6 +34,7 @@ export default function Button({
         width: width,
       }}
       onClick={onClick}
+      disabled={disabled}
     >
       {label}
     </button>
