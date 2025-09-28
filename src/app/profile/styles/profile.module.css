@@ -40,6 +40,22 @@
   font-weight: bold;
 }
 
+.button-container:hover {
+  background-color: var(--button-back);
+  cursor: pointer;
+}
+
+.button-container:hover button, .button-container:hover .arrow {
+  color: var(--lima) !important;
+  background-color: var(--button-back) !important;
+  cursor: pointer !important;
+}
+
+.button-container:active{
+  transform: scale(0.98);
+}
+
+
 .card-profile {
   width: 100%;
 }

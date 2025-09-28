@@ -17,7 +17,6 @@ interface UserData {
   email: string;
   dni?: string | number;
   phone?: string;
-
   available_amount?: number | 0;
   cvu: string | 0;
   alias?: string | 0;
@@ -60,8 +59,6 @@ export default function ProfilePage() {
         body: JSON.stringify(updates),
       });
 
-      
-
       if (!res.ok) {
         const text = await res.text().catch(() => "");
         throw new Error(text || `HTTP ${res.status}`);
@@ -73,7 +70,6 @@ export default function ProfilePage() {
     [userData, meData, refetchMe, refreshSession],
   );
 
-  if (loading) return <div>Cargando...</div>;
 
   return (
     <div className={style.container}>
@@ -82,7 +78,7 @@ export default function ProfilePage() {
           <PageHeader nombre="Perfil" />
         </div>
         <div className="">
-          <DataProfileTable userData={userData} onSave={handleSave} />
+          <DataProfileTable userData={userData} onSave={handleSave} isLoading={loading} />
         </div>
         <div className={style["button-container"]}>
           <Button
@@ -92,11 +88,11 @@ export default function ProfilePage() {
             height="67px"
             onClick={() => router.push('/personalCards')}
           />
-          <Arrow />
+          <Arrow className={style.arrow} />
         </div>
 
         <div className={style["card-profile"]}>
-          <CardProfile onSave={handleSave} />
+          <CardProfile />
         </div>
       </div>
     </div>

@@ -42,3 +42,36 @@
   font-size: 16px;
   font-weight: 400;
 }
+
+.pencil {
+  opacity: 0.3;
+  color: var(--dark);
+}
+
+.pencil:hover {
+  border: none;
+  opacity: 1;
+  color: var(--dark) !important;
+  background-color: white !important;
+  cursor: pointer;
+}
+
+.pencil:active {
+  transform: scale(0.98);
+}
+
+
+.edit-button:hover{
+color: var(--dark) !important;
+background-color: white !important;
+cursor: pointer;
+font-weight: bold;
+  
+}
+
+.loading {
+  padding: 20px;
+  text-align: center;
+  color: var(--dark);
+  font-weight: 600;
+}

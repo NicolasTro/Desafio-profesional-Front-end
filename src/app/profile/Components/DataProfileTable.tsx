@@ -3,7 +3,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import Table from "@mui/joy/Table";
 
 import Pencil from "../../../../public/Pencil.svg";
-import style from "./data-profile-table.module.css";
+import style from "./DataProfileTable.module.css";
 
 type UserShape = {
   id: string;
@@ -17,22 +17,22 @@ type UserShape = {
 type tableProps = {
   className?: string;
   userData?: UserShape | null;
-
   onSave?: (updates: Record<string, unknown>) => Promise<void> | void;
+  isLoading?: boolean;
 };
 
-export default function DataProfileTable({ userData, onSave }: tableProps) {
+export default function DataProfileTable({ userData, onSave, isLoading }: tableProps) {
   const initialRows = useMemo(
     () =>
       userData
         ? [
-            { key: "email", label: "Email", value: userData.email },
-            { key: "name", label: "Nombre", value: userData.name },
-            { key: "lastname", label: "Apellido", value: userData.lastname },
-            { key: "dni", label: "CUIT", value: userData.dni ?? "" },
-            { key: "phone", label: "Teléfono", value: userData.phone ?? "" },
-            { key: "password", label: "Contraseña", value: "******" },
-          ]
+          { key: "email", label: "Email", value: userData.email },
+          { key: "name", label: "Nombre", value: userData.name },
+          { key: "lastname", label: "Apellido", value: userData.lastname },
+          { key: "dni", label: "CUIT", value: userData.dni ?? "" },
+          { key: "phone", label: "Teléfono", value: userData.phone ?? "" },
+          { key: "password", label: "Contraseña", value: "******" },
+        ]
         : [],
     [userData],
   );
@@ -73,7 +73,6 @@ export default function DataProfileTable({ userData, onSave }: tableProps) {
       if (onSave) {
         const mapKeyToPayloadField: Record<string, string> = {
           email: "email",
-
           name: "firstname",
           lastname: "lastname",
           dni: "dni",
@@ -94,7 +93,6 @@ export default function DataProfileTable({ userData, onSave }: tableProps) {
           setTimeout(() => setMessage(null), 2000);
         }
       } else {
-        console.log("DataProfileTable: saved", { [rowKey]: editValue });
         setMessage("Guardado (local)");
         setTimeout(() => setMessage(null), 2000);
       }
@@ -138,7 +136,13 @@ export default function DataProfileTable({ userData, onSave }: tableProps) {
             </td>
           </tr>
         )}
-        {rows.map((row) => (
+        {isLoading ? (
+          <tr>
+            <td>
+              <div className={style.loading}>Cargando...</div>
+            </td>
+          </tr>
+        ) : rows.map((row) => (
           <tr key={row.key}>
             <td>
               <div className={style.cells}>
@@ -164,6 +168,7 @@ export default function DataProfileTable({ userData, onSave }: tableProps) {
                     {editingKey === row.key ? (
                       <div style={{ display: "flex", gap: 8 }}>
                         <button
+                          className={style["edit-button"]}
                           onClick={() => saveEdit(row.key)}
                           disabled={saving}
                           title="Guardar"
@@ -171,6 +176,7 @@ export default function DataProfileTable({ userData, onSave }: tableProps) {
                           Guardar
                         </button>
                         <button
+                          className={style["edit-button"]}
                           onClick={cancelEdit}
                           disabled={saving}
                           title="Cancelar"
@@ -178,16 +184,17 @@ export default function DataProfileTable({ userData, onSave }: tableProps) {
                           Cancelar
                         </button>
                       </div>
-                    ) : row.key === "email" || row.key === "password" ? (
+                    ) : row.key === "email" || row.key === "dni" ? (
                       <span style={{ opacity: 0.6, fontSize: 14 }}>
                         No editable
                       </span>
                     ) : (
                       <button
                         title={`Editar ${row.label}`}
+                        className={style["edit-pencil"]}
                         onClick={() => startEdit(row.key, row.value)}
                       >
-                        <Pencil fontSize="22" />
+                        <Pencil fontSize="22" className={style.pencil} />
                       </button>
                     )}
                   </div>

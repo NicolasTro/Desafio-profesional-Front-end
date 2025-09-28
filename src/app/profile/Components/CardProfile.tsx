@@ -2,31 +2,17 @@
 import React from "react";
 import { useAppContext } from "@/Context/AppContext";
 import { Divider } from "@mui/joy";
-import style from "./card-profile.module.css";
+import style from "./CardProfile.module.css";
 import Clipboard from "../../../../public/copy.svg";
+import SnackBar from "@/Components/SnackBar";
 
-type CardProfileProps = {
-  onSave?: (updates: Record<string, unknown>) => Promise<void> | void;
-};
-
-export default function CardProfile({ onSave }: CardProfileProps) {
-  const { userInfo, account } = useAppContext();
-
+export default function CardProfile() {
+  const { account } = useAppContext();
   const cvu = account?.cvu ?? "No disponible";
   const alias = account?.alias ?? "No disponible";
 
-  const [editing, setEditing] = React.useState(false);
-  const firstname = userInfo?.name ?? "";
-  const lastname = userInfo?.lastname ?? "";
-  const [firstValue, setFirstValue] = React.useState(firstname);
-  const [lastValue, setLastValue] = React.useState(lastname);
-  const [cvuCopied, setCvuCopied] = React.useState(false);
-  const [aliasCopied, setAliasCopied] = React.useState(false);
-
-  React.useEffect(() => {
-    setFirstValue(firstname);
-    setLastValue(lastname);
-  }, [firstname, lastname]);
+  const [snackOpen, setSnackOpen] = React.useState(false);
+  const [snackMessage, setSnackMessage] = React.useState("");
 
   const copyToClipboard = async (text: string): Promise<boolean> => {
     try {
@@ -69,13 +55,6 @@ export default function CardProfile({ onSave }: CardProfileProps) {
     }
   };
 
-  const saveNames = async () => {
-    if (onSave) {
-      await onSave({ firstname: firstValue, lastname: lastValue });
-    }
-    setEditing(false);
-  };
-
   return (
     <div className={style.container}>
       <h2>
@@ -88,12 +67,13 @@ export default function CardProfile({ onSave }: CardProfileProps) {
           <button
             title="Copiar CVU"
             aria-label="Copiar CVU"
+            className={style.clipboard}
             onClick={async () => {
               try {
                 const ok = await copyToClipboard(String(cvu));
                 if (ok) {
-                  setCvuCopied(true);
-                  setTimeout(() => setCvuCopied(false), 2000);
+                  setSnackMessage("CVU copiado");
+                  setSnackOpen(true);
                 } else {
                   console.error("Copy failed");
                 }
@@ -110,11 +90,6 @@ export default function CardProfile({ onSave }: CardProfileProps) {
           >
             <Clipboard fontSize="24" />
           </button>
-          {cvuCopied && (
-            <span style={{ marginLeft: 8, color: "var(--dark)", fontSize: 12 }}>
-              Copiado
-            </span>
-          )}
         </div>
         <div>{cvu}</div>
       </div>
@@ -135,12 +110,13 @@ export default function CardProfile({ onSave }: CardProfileProps) {
           <button
             title="Copiar Alias"
             aria-label="Copiar Alias"
+            className={style.clipboard}
             onClick={async () => {
               try {
                 const ok = await copyToClipboard(String(alias));
                 if (ok) {
-                  setAliasCopied(true);
-                  setTimeout(() => setAliasCopied(false), 2000);
+                  setSnackMessage("Alias copiado");
+                  setSnackOpen(true);
                 } else {
                   console.error("Copy failed");
                 }
@@ -148,26 +124,22 @@ export default function CardProfile({ onSave }: CardProfileProps) {
                 console.error("Copy failed", e);
               }
             }}
-            style={{
-              background: "transparent",
-              border: "none",
-              padding: 0,
-              cursor: "pointer",
-            }}
           >
             <Clipboard fontSize="24" />
           </button>
-          {aliasCopied && (
-            <span style={{ marginLeft: 8, color: "var(--dark)", fontSize: 12 }}>
-              Copiado
-            </span>
-          )}
+
         </div>
         <div>{alias}</div>
       </div>
       <br />
 
-    
+      <SnackBar
+        open={snackOpen}
+        setOpen={() => setSnackOpen(false)}
+        message={snackMessage}
+        width={"20px"}
+        height={"50px"}
+      />
     </div>
   );
 }

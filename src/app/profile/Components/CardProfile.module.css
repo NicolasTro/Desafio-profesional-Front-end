@@ -29,3 +29,21 @@
   font-size: 20px;
   font-weight: bold;
 }
+
+
+.clipboard:hover {
+  background-color: transparent !important;
+  cursor: pointer;
+}
+
+.clipboard:active {
+  transform: scale(0.98);
+}
+
+.headerRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 12px;
+}
