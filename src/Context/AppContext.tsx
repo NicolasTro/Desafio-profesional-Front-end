@@ -10,6 +10,9 @@ import {
 } from "@/lib/authClient";
 import { UserData, AccountData } from "@/lib/types";
 
+// Definición de lo que expone el contexto de la app. Aquí están los datos
+// del usuario, cuenta, estado de carga, y funciones para refrescar sesión
+// y cerrar sesión. También controla el estado del slide menu.
 interface AppContextType {
   user: UserData | null;
   userInfo: UserData | null;
@@ -26,9 +29,14 @@ interface AppContextType {
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
+// Provider que envuelve la app y mantiene el estado global de autenticación
+// y UI global (ej. slide menu). Usa `useState` para almacenar user/account
+// y `useEffect` para inicializar y sincronizar con otras pestañas.
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
   children
 }) => {
+  // Inicializamos `user` leyendo el perfil cacheado (si existe) para evitar
+  // flash de UI mientras se hace la primera llamada al servidor.
   const [user, setUser] = useState<UserData | null>(() => {
     const cached = getCachedProfile();
     if (cached) {
@@ -54,6 +62,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
   const closeSlideMenu = () => setSlideMenuOpen(false);
   const router = useRouter();
 
+  // Refresca la sesión (llamada a /api/session). Actualiza estados y
+  // sincroniza el perfil en sessionStorage/localStorage para otras pestañas.
   const refreshSession = async () => {
     setIsLoading(true);
     try {
@@ -75,14 +85,17 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
 
           fetchedAt: Date.now()
         };
+        // Guardamos el perfil cacheado y notificamos a otras pestañas
         setCachedProfile(cached);
       } else {
+        // Si no está autenticado limpiamos el estado local y la caché
         setUser(null);
         setAccount(null);
         setExp(null);
         clearCachedProfile();
       }
     } catch (err) {
+      // En caso de error tratamos como sesión no válida para mantener UI consistente
       console.error("Error al refrescar sesión:", err);
       setUser(null);
       setAccount(null);
@@ -94,7 +107,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
-  // 🚪 logout
+  // Función para cerrar sesión: llama a /api/logout y limpia estado local.
+  // Muestra un alert usando sweetalert2 y redirige al login.
   const logout = async (redirect?: () => void) => {
     setIsLoggingOut(true);
     try {
@@ -118,6 +132,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       setIsLoggingOut(false);
 
       try {
+        // Import dinámico para evitar cargar sweetalert2 en el bundle inicial
         if (typeof window !== "undefined") {
           const Swal = (await import("sweetalert2")).default;
           await Swal.fire({
@@ -129,6 +144,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
           });
         }
       } catch {
+        // Si falla el modal, seguimos igualmente con la redirección
       }
 
       if (redirect) redirect();
@@ -136,6 +152,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
+  // Efecto inicial: intenta refrescar la sesión y registra un listener de
+  // storage para sincronizar el perfil entre pestañas cuando `dm_profile_changed`
+  // cambia (setCachedProfile/clearCachedProfile lo actualizan).
   useEffect(() => {
     void refreshSession();
 
@@ -160,6 +179,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     return () => window.removeEventListener("storage", onStorage);
   }, []);
 
+  // Efecto que escucha un evento custom `session:expired` para forzar logout
+  // (limpieza y redirección). Esto permite que otras partes de la app disparen
+  // el evento para forzar el cierre de sesión en todas las pestañas.
   useEffect(() => {
     const onSessionExpired = () => {
       (async () => {
@@ -201,6 +223,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     return () => window.removeEventListener("session:expired", onSessionExpired as EventListener);
   }, [router]);
 
+  // Efecto que aplica clases CSS a <body> y <html> según si el usuario está
+  // autenticado, útil para estilos globales condicionados por el estado auth.
 useEffect(() => {
     const isAuth = !!user;
 
@@ -234,6 +258,8 @@ useEffect(() => {
   );
 };
 
+// Hook para usar el contexto desde componentes. Lanza error si se usa fuera
+// del provider para ayudar a detectar integraciones incorrectas.
 export const useAppContext = (): AppContextType => {
   const ctx = useContext(AppContext);
   if (!ctx) throw new Error("useAppContext debe usarse dentro de AppProvider");
