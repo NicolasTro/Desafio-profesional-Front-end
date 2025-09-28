@@ -7,9 +7,7 @@ export default function ActivityPage() {
   return (
     <div className={styles.container}>
       <PageHeader nombre="Tu actividad" />
-      <React.Suspense fallback={<div />}> 
         <ClientActivity />
-      </React.Suspense>
     </div>
   );
 }

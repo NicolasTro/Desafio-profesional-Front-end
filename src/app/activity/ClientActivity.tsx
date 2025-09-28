@@ -49,10 +49,10 @@ export default function ClientActivity() {
           }}
         >
           <button aria-label="Abrir filtros de actividad">{filterApplied ? "Filtrado" : "Filtrar"}</button>
-          <Filter />
+          <Filter className={styles["filter-icon"]} />
         </div>
       </div>
-      <div className={styles.tableWrapper}>
+      <div className={styles["table-wrapper"]}>
         <TableActivity showControls={true} searchQuery={searchQuery} />
       </div>
     </div>

@@ -30,6 +30,11 @@
   display: none;
 }
 
+.table-wrapper {
+  overflow-y: hidden;
+  border-radius: 12px;
+}
+
 @media (min-width: 768px) {
 
   .content-button {
@@ -44,4 +49,18 @@
     font-weight: bold;
     gap: 20px;
   }
+
+
+  .filter-icon:hover {
+    color: var(--lima);
+
+  }
+
+
+  .content-button:hover {
+    color: var(--lima);
+    background-color: var(--button-back);
+  }
+
+
 }
