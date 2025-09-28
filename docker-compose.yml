@@ -1,0 +1,27 @@
+version: '3.8'
+services:
+  web:
+    build: .
+    image: desafio-front:web
+    ports:
+      - '3000:3000'
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped
+
+  # Optional development service (mounts code for fast feedback)
+  dev:
+    build:
+      context: .
+      target: builder
+    image: desafio-front:dev
+    command: npm run dev
+    volumes:
+      - ./:/app:cached
+      - /app/node_modules
+    ports:
+      - '3000:3000'
+    environment:
+      - NODE_ENV=development
+    stdin_open: true
+    tty: true

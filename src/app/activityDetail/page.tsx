@@ -1,13 +1,14 @@
-import React from "react";
+import React, { Suspense } from "react";
 import styles from "./styles/ActivityDetail.module.css";
 import ClientActivityDetail from "./ClientActivityDetail";
+import Spinner from "@/Components/Spinner";
 
 export default function ActivityDetailPage() {
   return (
     <div className={styles.page}>
-      {/* <React.Suspense fallback={<div />}>  */}
+      <Suspense fallback={<Spinner />}>
         <ClientActivityDetail />
-      {/* </React.Suspense> */}
+      </Suspense>
     </div>
   );
 }

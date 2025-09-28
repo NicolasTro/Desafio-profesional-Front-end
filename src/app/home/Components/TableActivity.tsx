@@ -28,14 +28,14 @@ export default function TableActivity({
   searchQuery
 }: TableActivityProps) {
   const router = useRouter();
-  const { userInfo, account } = useAppContext();
+  const { account } = useAppContext();
 
   const accountId = account?.account_id;
 
   const [activityItems, setActivityItems] = useState<ActivityRow[]>([]);
   const [allItems, setAllItems] = useState<ActivityRow[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [fetchError, setFetchError] = useState<string | null>(null);
+  // const [isLoading, setIsLoading] = useState<boolean>(true);
+  // const [fetchError, setFetchError] = useState<string | null>(null);
   const [page, setPage] = useState<number>(1);
   const perPage = 10;
   const [totalPages, setTotalPages] = useState<number>(0);
@@ -91,12 +91,12 @@ export default function TableActivity({
     if (!accountId) {
       setAllItems([]);
       setActivityItems([]);
-      setIsLoading(false);
+      // setIsLoading(false);
       return;
     }
 
-    setIsLoading(true);
-    setFetchError(null);
+    // setIsLoading(true);
+    // setFetchError(null);
 
     const apiUrl = `/api/accounts/${accountId}/activity`;
 
@@ -215,12 +215,15 @@ export default function TableActivity({
         setActivityItems(mapped.slice(0, perPage));
       })
       .catch((err) => {
+        // keep the error visible during development and satisfy lint rules
+        // (err is intentionally logged and can be used to set UI state)
+        console.error("Error fetching activity:", err);
         if (!mounted) return;
-        setFetchError(String(err.message || err));
+        // setFetchError(String(err.message || err));
       })
       .finally(() => {
         if (!mounted) return;
-        setIsLoading(false);
+        // setIsLoading(false);
       });
 
     return () => {
