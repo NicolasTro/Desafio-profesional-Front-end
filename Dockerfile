@@ -17,7 +17,9 @@ COPY . .
 RUN npm run build
 
 # Remove devDependencies to keep only production deps for the final image
-RUN npm prune --production
+# On some npm versions `npm prune --production` can fail due to peer dependency
+# resolution during prune. Reinstalling only production deps is more robust:
+RUN rm -rf node_modules \&\& npm ci --omit=dev
 
 # Production stage
 FROM node:18-alpine AS runner
