@@ -71,7 +71,9 @@ export async function POST(req: Request) {
         } as MinimalResponse;
       }
     } else {
-      upstream = await (fetchFn as Function)(`${DIGITALMONEY_API_BASE}/api/login`, {
+      // Call fetchFn with an explicit function signature to avoid `Function` usage
+      const realFetch = fetchFn as (input: RequestInfo, init?: RequestInit) => Promise<Response>;
+      upstream = await realFetch(`${DIGITALMONEY_API_BASE}/api/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
