@@ -1,0 +1,56 @@
+.table {
+    overflow-y: auto;
+    height: auto;
+    padding: 20px;
+    background-color: white;
+}
+
+.table tr th {
+    background-color: white;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.table tbody {
+    color: var(--dark);
+}
+
+.row-content {
+    height: 70px;
+}
+
+.table tbody tr td {
+
+    vertical-align: middle;
+}
+
+.cell-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    height: 70px;
+}
+
+.right {
+    font-weight: bold;
+}
+
+.selectButton {
+    border: none;
+    color: inherit;
+    background: transparent;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.select-button:hover {
+    color: black !important;
+    background-color: white !important;
+    cursor: pointer;
+    font-weight: bolder;
+}
+
+.select-button:active{
+    transform: scale(0.98);
+}
