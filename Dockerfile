@@ -36,5 +36,8 @@ COPY --from=builder /app/next.config.ts ./next.config.ts
 ENV NODE_ENV=production
 EXPOSE 3000
 
+# Ensure TypeScript is present at runtime to avoid Next auto-installing it when a next.config.ts is present
+RUN npm install --no-audit --no-fund --legacy-peer-deps typescript@latest --no-save || true
+
 # Use the start script from package.json
 CMD [ "npm", "start" ]
