@@ -20,7 +20,7 @@ RUN npm run build
 # On some npm versions `npm prune --production` can fail due to peer dependency
 # resolution during prune. Reinstalling only production deps is more robust:
 RUN rm -rf node_modules
-RUN npm ci --omit=dev
+RUN npm ci --omit=dev --legacy-peer-deps || npm install --omit=dev --legacy-peer-deps
 
 # Production stage
 FROM node:18-alpine AS runner
