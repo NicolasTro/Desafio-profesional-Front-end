@@ -2,13 +2,13 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Table from "@mui/joy/Table";
-import style from "./table-activity.module.css";
+import style from "./TableActivity.module.css";
 import { useAppContext } from "@/Context/AppContext";
 import Sheet from "@mui/joy/Sheet";
 import Arrow from "../../../../public/arrow.svg";
 import Link from "next/link";
 import Filter from "../../../../public/Filter.svg";
-import modalStyle from "./filter-modal.module.css";
+import modalStyle from "./FilterModal.module.css";
 
 type TableActivityProps = {
   showControls?: boolean;
@@ -20,7 +20,7 @@ type ActivityRow = {
   label: string;
   amount: number;
   weekday: string;
-  dated?: number | null; 
+  dated?: number | null;
 };
 
 export default function TableActivity({
@@ -112,10 +112,13 @@ export default function TableActivity({
         if (!mounted) return;
 
         const responseItems = Array.isArray(data)
+
+
           ? (data as unknown[])
           : Array.isArray((data as { items?: unknown[] }).items)
             ? (data as { items?: unknown[] }).items!
             : [];
+        console.log(responseItems);
 
         type ApiTransaction = {
           id?: number | string;
@@ -130,17 +133,51 @@ export default function TableActivity({
         const normalizeLabel = (tx: ApiTransaction) => {
           const raw = (tx.description || tx.title || tx.type || "").toString().trim();
           if (!raw) return "(sin descripción)";
+
           const s = raw.toLowerCase();
-          if (s.includes("deposit") || s.includes("depósito") || s.includes("dinheiro"))
+
+          // Deposit
+          if (s.includes("deposit") || s.includes("depósito") || s.includes("dinheiro")) {
             return "Ingresaste dinero";
-          if (s.includes("transfer") || s.includes("transferiste") || s.includes("transferido") || s.includes("transf"))
+          }
+
+          // Transfer: try to extract recipient name from description
+          // Examples: 'Transferiu para Fulano', 'Transferiu para MENGANO', 'Transfer to Alice'
+          if (s.includes("transfer") || s.includes("transferiste") || s.includes("transferido") || s.includes("transf")) {
+            // attempt to match common patterns like 'para NAME' or 'to NAME'
+            const mPara = raw.match(/para\s+([\wÀ-ÿ'’\-\s]+)/i);
+            if (mPara && mPara[1]) {
+              const name = mPara[1].trim();
+              return `Transferencia para ${name}`;
+            }
+            const mTo = raw.match(/to\s+([\wÀ-ÿ'’\-\s]+)/i);
+            if (mTo && mTo[1]) {
+              const name = mTo[1].trim();
+              return `Transferencia para ${name}`;
+            }
+            // fallback if name not found
             return "Transferencia";
-          if (s.includes("pagar") || s.includes("pago") || s.includes("payment") || s.includes("servicio"))
-            return "Pago";
-          if (s.includes("ingres") || s.includes("recib") || s.includes("receive") || s.includes("credited"))
+          }
+
+          // Payment: preserve description (capitalized)
+          if (s.includes("pagar") || s.includes("pago") || s.includes("payment") || s.includes("servicio") || s.includes("pagado") || s.includes("pago")) {
+            return raw
+              .split(/\s+/)
+              .map((w) => (w.length ? w[0].toUpperCase() + w.slice(1) : w))
+              .join(" ");
+          }
+
+          // Ingress / credited
+          if (s.includes("ingres") || s.includes("recib") || s.includes("receive") || s.includes("credited")) {
             return "Ingreso";
-          if (s.includes("retiro") || s.includes("retirada") || s.includes("withdraw"))
+          }
+
+          // Withdraw
+          if (s.includes("retiro") || s.includes("retirada") || s.includes("withdraw")) {
             return "Retiro";
+          }
+
+          // Default: return capitalized original
           return raw
             .split(/\s+/)
             .map((w) => (w.length ? w[0].toUpperCase() + w.slice(1) : w))
