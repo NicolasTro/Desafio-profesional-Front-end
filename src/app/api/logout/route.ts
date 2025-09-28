@@ -25,11 +25,11 @@ export async function POST() {
       // upstream.text may not be present on mocked Responses; guard it
       let text = "";
       try {
-        if (typeof (upstream as any).text === "function") {
-          // eslint-disable-next-line no-await-in-loop
-          text = await (upstream as any).text().catch(() => "");
+        // fetch returns a Response which has a text() method; call it if available
+        if (typeof (upstream as Response).text === "function") {
+          text = await (upstream as Response).text().catch(() => "");
         }
-      } catch (e) {
+      } catch {
         text = "";
       }
       // Ensure cookie is cleared even when upstream fails (tests expect this)
