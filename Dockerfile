@@ -1,43 +1,54 @@
-# Multi-stage Dockerfile for Next.js 15 application
-# Build stage
-FROM node:18-alpine AS builder
+# ---------------------------------------------------------
+# Etapa de build
+# Se usa node:20-alpine porque algunas dependencias (p. ej. selenium-webdriver)
+# requieren Node >= 20. Esto evita errores de "engine" durante la instalación.
+FROM node:20-alpine AS builder
 WORKDIR /app
 
-# Install dependencies (including dev deps needed for build like typescript)
+# Copiamos los manifiestos de dependencias primero para aprovechar el cache
+# de Docker cuando cambian sólo los archivos de código.
 COPY package.json package-lock.json* ./
-# show npm output during build to help debugging
+
+# Mostrar salida detallada de npm durante la build para facilitar depuración
 ENV NPM_CONFIG_LOGLEVEL=info
-# Install all deps, accept legacy peer deps to avoid resolution failures in CI
+
+# Instalamos todas las dependencias (incluyendo devDependencies necesarias
+# para el build como typescript o herramientas de testing). Usamos
+# --legacy-peer-deps para evitar errores por peerDependencies en entornos CI.
 RUN npm ci --legacy-peer-deps || npm install --legacy-peer-deps
 
-# Copy source
+# Copiamos el resto del código fuente dentro del contenedor y ejecutamos
+# el build de Next.js. El comando `npm run build` genera la carpeta `.next`.
 COPY . .
 
-# Build the Next.js app
 RUN npm run build
 
-# Remove devDependencies to keep only production deps for the final image
-# On some npm versions `npm prune --production` can fail due to peer dependency
-# resolution during prune. Reinstalling only production deps is more robust:
-RUN rm -rf node_modules
-RUN npm ci --omit=dev --legacy-peer-deps || npm install --omit=dev --legacy-peer-deps
-
-# Production stage
-FROM node:18-alpine AS runner
+# ---------------------------------------------------------
+# Etapa de ejecución (runner)
+# En esta etapa sólo copiamos lo necesario desde la etapa de build para
+# ejecutar la aplicación en producción.
+FROM node:20-alpine AS runner
 WORKDIR /app
 
-# Only copy necessary files from build
+# Copiamos los artefactos resultantes del build y las dependencias.
+# Observación: copiamos `node_modules` con devDependencies ya instaladas
+# en el builder para evitar que Next intente instalar TypeScript en
+# tiempo de ejecución (esto puede bloquear el inicio si hay un mismatch
+# de versiones de Node o problemas de red).
 COPY --from=builder /app/package.json ./
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/next.config.ts ./next.config.ts
 
+# Variables de entorno y puerto
 ENV NODE_ENV=production
+ENV PORT=3000
+ENV HOST=0.0.0.0
+# EXPOSE es meramente documental; el mapeo real lo hace docker run / compose
 EXPOSE 3000
 
-# Ensure TypeScript is present at runtime to avoid Next auto-installing it when a next.config.ts is present
-RUN npm install --no-audit --no-fund --legacy-peer-deps typescript@latest --no-save || true
-
-# Use the start script from package.json
-CMD [ "npm", "start" ]
+# Comando de arranque: forzamos que Next se enlace a 0.0.0.0 para que Docker
+# pueda mapear el puerto correctamente. `npx next start` ejecuta la binaria local
+# instalada en node_modules.
+CMD [ "npx", "next", "start", "-p", "3000", "-H", "0.0.0.0" ]
